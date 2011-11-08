@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.jaxb;
+package com.fasterxml.jackson.module.jaxb.ser;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;

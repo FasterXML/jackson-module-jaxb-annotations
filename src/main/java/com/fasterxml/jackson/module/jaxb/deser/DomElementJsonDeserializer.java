@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.jaxb;
+package com.fasterxml.jackson.module.jaxb.deser;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;

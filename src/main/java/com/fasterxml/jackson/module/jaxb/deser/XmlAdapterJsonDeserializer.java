@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.jaxb;
+package com.fasterxml.jackson.module.jaxb.deser;
 
 import java.io.IOException;
 import javax.xml.bind.annotation.adapters.XmlAdapter;

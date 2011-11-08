@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.jaxb;
+package com.fasterxml.jackson.module.jaxb.ser;
 
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;

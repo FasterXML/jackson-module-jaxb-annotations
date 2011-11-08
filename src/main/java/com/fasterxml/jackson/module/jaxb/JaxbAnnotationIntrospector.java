@@ -27,6 +27,9 @@ import org.codehaus.jackson.map.util.ClassUtil;
 import org.codehaus.jackson.type.JavaType;
 import org.codehaus.jackson.util.VersionUtil;
 
+import com.fasterxml.jackson.module.jaxb.deser.XmlAdapterJsonDeserializer;
+import com.fasterxml.jackson.module.jaxb.ser.XmlAdapterJsonSerializer;
+
 /**
  * Annotation introspector that leverages JAXB annotations where applicable to JSON mapping.
  * <p/>

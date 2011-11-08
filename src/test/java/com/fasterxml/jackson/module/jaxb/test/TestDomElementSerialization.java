@@ -17,8 +17,8 @@ import org.codehaus.jackson.map.Serializers;
 import org.codehaus.jackson.map.module.SimpleModule;
 import org.codehaus.jackson.type.JavaType;
 
-import com.fasterxml.jackson.module.jaxb.DomElementJsonDeserializer;
-import com.fasterxml.jackson.module.jaxb.DomElementJsonSerializer;
+import com.fasterxml.jackson.module.jaxb.deser.DomElementJsonDeserializer;
+import com.fasterxml.jackson.module.jaxb.ser.DomElementJsonSerializer;
 
 /**
  * @author Ryan Heaton
