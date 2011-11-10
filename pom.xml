@@ -153,6 +153,7 @@ javax.activation
 ,org.codehaus.jackson.map.introspect
 ,org.codehaus.jackson.map.jsontype
 ,org.codehaus.jackson.map.jsontype.impl
+,org.codehaus.jackson.map.module
 ,org.codehaus.jackson.map.ser.std
 ,org.codehaus.jackson.map.type
 ,org.codehaus.jackson.map.util
