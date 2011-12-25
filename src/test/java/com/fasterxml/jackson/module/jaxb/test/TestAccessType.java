@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.codehaus.jackson.map.*;
+import com.fasterxml.jackson.databind.*;
 
 /**
  * Unit test(s) written for [JACKSON-303]; we should be able to detect setter

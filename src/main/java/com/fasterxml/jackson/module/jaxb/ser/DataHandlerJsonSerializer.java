@@ -7,12 +7,10 @@ import java.lang.reflect.Type;
 
 import javax.activation.DataHandler;
 
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.SerializerProvider;
-import org.codehaus.jackson.map.ser.std.SerializerBase;
-import org.codehaus.jackson.node.ObjectNode;
+import com.fasterxml.jackson.core.*;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.ser.std.SerializerBase;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * @author Ryan Heaton

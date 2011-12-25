@@ -1,7 +1,7 @@
 package com.fasterxml.jackson.module.jaxb;
 
-import org.codehaus.jackson.Version;
-import org.codehaus.jackson.map.module.SimpleModule;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 /**
  * Module that can be registered to add support for JAXB annotations.

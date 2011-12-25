@@ -7,15 +7,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 
-import org.codehaus.jackson.Version;
-import org.codehaus.jackson.map.BeanDescription;
-import org.codehaus.jackson.map.BeanProperty;
-import org.codehaus.jackson.map.JsonSerializer;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
-import org.codehaus.jackson.map.Serializers;
-import org.codehaus.jackson.map.module.SimpleModule;
-import org.codehaus.jackson.type.JavaType;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.Serializers;
 
 import com.fasterxml.jackson.module.jaxb.deser.DomElementJsonDeserializer;
 import com.fasterxml.jackson.module.jaxb.ser.DomElementJsonSerializer;

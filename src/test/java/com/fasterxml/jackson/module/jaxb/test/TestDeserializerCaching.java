@@ -1,10 +1,10 @@
 package com.fasterxml.jackson.module.jaxb.test;
 
-import org.codehaus.jackson.*;
-import org.codehaus.jackson.map.*;
-import org.codehaus.jackson.map.deser.BeanDeserializer;
-import org.codehaus.jackson.map.deser.BeanDeserializerModifier;
-import org.codehaus.jackson.map.introspect.BasicBeanDescription;
+import com.fasterxml.jackson.core.*;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.deser.BeanDeserializer;
+import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
+import com.fasterxml.jackson.databind.introspect.BasicBeanDescription;
 
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 

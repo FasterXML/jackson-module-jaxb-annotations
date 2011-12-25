@@ -6,8 +6,8 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.*;
 
-import org.codehaus.jackson.map.*;
-import org.codehaus.jackson.map.introspect.JacksonAnnotationIntrospector;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 

@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Unit tests for checking that JAXB type adapters work (to some
@@ -14,8 +14,6 @@ import org.codehaus.jackson.map.ObjectMapper;
  * Related to issues [JACKSON-288], [JACKSON-411]
  * 
  * @author tsaloranta
- *
- * @since 1.6.3
  */
 public class TestAdapters extends BaseJaxbTest
 {

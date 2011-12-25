@@ -4,12 +4,11 @@ import java.util.*;
 
 import javax.xml.bind.annotation.*;
 
-import org.codehaus.jackson.annotate.*;
-import org.codehaus.jackson.map.*;
-import org.codehaus.jackson.map.introspect.AnnotatedClass;
-import org.codehaus.jackson.map.introspect.JacksonAnnotationIntrospector;
-import org.codehaus.jackson.map.type.TypeFactory;
-import org.codehaus.jackson.type.JavaType;
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
@@ -78,7 +77,6 @@ public class TestIntrospectorPair
      * various combinations of annotation introspectors
      */
     @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
-    @JsonWriteNullProperties
     static class IgnoreBean
     {
         @JsonIgnore
@@ -128,7 +126,7 @@ public class TestIntrospectorPair
         mapper = new ObjectMapper();
         // first: test with Jackson/Jaxb pair (jackson having precedence)
         pair = new AnnotationIntrospector.Pair(_jacksonAI, _jaxbAI);
-        mapper.getSerializationConfig().setAnnotationIntrospector(pair);
+        mapper.setAnnotationIntrospector(pair);
 
         result = writeAndMap(mapper, new NamedBean());
         assertEquals(3, result.size());
@@ -139,7 +137,7 @@ public class TestIntrospectorPair
 
         mapper = new ObjectMapper();
         pair = new AnnotationIntrospector.Pair(_jaxbAI, _jacksonAI);
-        mapper.getSerializationConfig().setAnnotationIntrospector(pair);
+        mapper.setAnnotationIntrospector(pair);
 
         result = writeAndMap(mapper, new NamedBean());
         assertEquals(3, result.size());
@@ -153,7 +151,6 @@ public class TestIntrospectorPair
     {
         AnnotationIntrospector pair = new AnnotationIntrospector.Pair(_jacksonAI, _jaxbAI);
         assertTrue(pair.isHandled(NamespaceBean.class.getAnnotation(XmlRootElement.class)));
-        assertTrue(pair.isHandled(IgnoreBean.class.getAnnotation(JsonWriteNullProperties.class)));
 
         /* won't work without actually getting class annotations etc
         AnnotatedConstructor con = new AnnotatedConstructor(getClass().getConstructor(), null, null);
@@ -170,7 +167,7 @@ public class TestIntrospectorPair
         mapper = new ObjectMapper();
         // first: test with Jackson/Jaxb pair (jackson having precedence)
         pair = new AnnotationIntrospector.Pair(_jacksonAI, _jaxbAI);
-        mapper.getSerializationConfig().setAnnotationIntrospector(pair);
+        mapper.setAnnotationIntrospector(pair);
 
         result = writeAndMap(mapper, new NamedBean2());
         assertEquals(2, result.size());
@@ -180,7 +177,7 @@ public class TestIntrospectorPair
 
         mapper = new ObjectMapper();
         pair = new AnnotationIntrospector.Pair(_jaxbAI, _jacksonAI);
-        mapper.getSerializationConfig().setAnnotationIntrospector(pair);
+        mapper.setAnnotationIntrospector(pair);
 
         result = writeAndMap(mapper, new NamedBean2());
         /* Hmmh. Not 100% sure what JAXB would dictate.... thus...
@@ -201,7 +198,7 @@ public class TestIntrospectorPair
 
         // Then JAXB only
         mapper = new ObjectMapper();
-        mapper.getSerializationConfig().setAnnotationIntrospector(_jaxbAI);
+        mapper.setAnnotationIntrospector(_jaxbAI);
 
         // jackson one should have priority
         result = writeAndMap(mapper, new IgnoreBean());
@@ -211,7 +208,7 @@ public class TestIntrospectorPair
 
         // then both, Jackson first
         mapper = new ObjectMapper();
-        mapper.getSerializationConfig().setAnnotationIntrospector(new AnnotationIntrospector.Pair(_jacksonAI, _jaxbAI));
+        mapper.setAnnotationIntrospector(new AnnotationIntrospector.Pair(_jacksonAI, _jaxbAI));
 
         result = writeAndMap(mapper, new IgnoreBean());
         assertEquals(1, result.size());
@@ -219,7 +216,7 @@ public class TestIntrospectorPair
 
         // then both, JAXB first
         mapper = new ObjectMapper();
-        mapper.getSerializationConfig().setAnnotationIntrospector(new AnnotationIntrospector.Pair(_jaxbAI, _jacksonAI));
+        mapper.setAnnotationIntrospector(new AnnotationIntrospector.Pair(_jaxbAI, _jacksonAI));
 
         result = writeAndMap(mapper, new IgnoreBean());
         assertEquals(1, result.size());
@@ -239,7 +236,7 @@ public class TestIntrospectorPair
 
         // Then JAXB only
         mapper = new ObjectMapper();
-        mapper.getSerializationConfig().setAnnotationIntrospector(_jaxbAI);
+        mapper.setAnnotationIntrospector(_jaxbAI);
 
         // jackson one should have priority
         result = writeAndMap(mapper, new IgnoreFieldBean());
@@ -249,7 +246,7 @@ public class TestIntrospectorPair
 
         // then both, Jackson first
         mapper = new ObjectMapper();
-        mapper.getSerializationConfig().setAnnotationIntrospector(new AnnotationIntrospector.Pair(_jacksonAI, _jaxbAI));
+        mapper.setAnnotationIntrospector(new AnnotationIntrospector.Pair(_jacksonAI, _jaxbAI));
 
         result = writeAndMap(mapper, new IgnoreFieldBean());
         assertEquals(1, result.size());
@@ -257,7 +254,7 @@ public class TestIntrospectorPair
 
         // then both, JAXB first
         mapper = new ObjectMapper();
-        mapper.getSerializationConfig().setAnnotationIntrospector(new AnnotationIntrospector.Pair(_jaxbAI, _jacksonAI));
+        mapper.setAnnotationIntrospector(new AnnotationIntrospector.Pair(_jaxbAI, _jacksonAI));
 
         result = writeAndMap(mapper, new IgnoreFieldBean());
         assertEquals(1, result.size());
@@ -273,7 +270,7 @@ public class TestIntrospectorPair
         assertNull(ann.findCachability(testClass));
         //assertNull(ann.findSerializationInclusion(testClass, null));
 
-        JavaType type = TypeFactory.type(Object.class);
+        JavaType type = TypeFactory.defaultInstance().constructType(Object.class);
         assertNull(ann.findDeserializationType(testClass, type, null));
         assertNull(ann.findDeserializationContentType(testClass, type, null));
         assertNull(ann.findDeserializationKeyType(testClass, type, null));
@@ -306,7 +303,7 @@ public class TestIntrospectorPair
     public void testIssue495() throws Exception
     {
         ObjectMapper mapper = new ObjectMapper();
-        mapper.getDeserializationConfig().setAnnotationIntrospector(new AnnotationIntrospector.Pair(_jacksonAI, _jaxbAI));
+        mapper.setAnnotationIntrospector(new AnnotationIntrospector.Pair(_jacksonAI, _jaxbAI));
         CreatorBean bean = mapper.readValue("{\"name\":\"foo\"}", CreatorBean.class);
         assertNotNull(bean);
     }
