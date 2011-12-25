@@ -5,12 +5,10 @@ import java.util.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Unit tests to verify handling of @XmlElementWrapper annotation.
- * 
- * @since 1.7
  */
 public class TestElementWrapper extends BaseJaxbTest
 {

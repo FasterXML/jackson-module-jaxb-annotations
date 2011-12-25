@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import javax.xml.bind.annotation.*;
 
-import org.codehaus.jackson.map.*;
+import com.fasterxml.jackson.databind.*;
 
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 

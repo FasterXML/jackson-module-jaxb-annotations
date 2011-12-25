@@ -2,8 +2,8 @@ package com.fasterxml.jackson.module.jaxb.test;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationConfig;
 
 public class TestRootName  extends BaseJaxbTest
 {

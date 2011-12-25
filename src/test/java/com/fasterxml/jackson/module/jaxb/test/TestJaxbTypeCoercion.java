@@ -2,7 +2,7 @@ package com.fasterxml.jackson.module.jaxb.test;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TestJaxbTypeCoercion extends BaseJaxbTest
 {

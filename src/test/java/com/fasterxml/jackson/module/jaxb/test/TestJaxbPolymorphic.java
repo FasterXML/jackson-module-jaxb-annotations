@@ -3,12 +3,10 @@ package com.fasterxml.jackson.module.jaxb.test;
 import java.util.*;
 import javax.xml.bind.annotation.*;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Tests for handling of type-related JAXB annotations 
- *
- * @since 1.5
  * 
  * @author Tatu Saloranta
  * @author Ryan Heaton

@@ -4,8 +4,9 @@ import java.util.*;
 
 import javax.xml.bind.annotation.*;
 
-import org.codehaus.jackson.annotate.*;
-import org.codehaus.jackson.map.*;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.databind.*;
 
 /**
  * Tests for handling of type-related JAXB annotations 

@@ -1,7 +1,7 @@
 package com.fasterxml.jackson.module.jaxb.test;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Unit tests to ensure that handling of writing of null properties (or not)

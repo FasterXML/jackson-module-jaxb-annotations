@@ -4,11 +4,8 @@ import java.util.*;
 
 import javax.xml.bind.annotation.*;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-/**
- * @since 1.6
- */
 public class TestXmlAnyElementWithElementRef
     extends BaseJaxbTest
 {

@@ -2,10 +2,11 @@ package com.fasterxml.jackson.module.jaxb.test;
 
 import javax.xml.bind.annotation.*;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ObjectNode;
-import org.codehaus.jackson.schema.JsonSchema;
+import com.fasterxml.jackson.core.JsonNode;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.jsonschema.JsonSchema;
 
 /**
  * Test(s) to see that JAXB annotations-based information is properly
