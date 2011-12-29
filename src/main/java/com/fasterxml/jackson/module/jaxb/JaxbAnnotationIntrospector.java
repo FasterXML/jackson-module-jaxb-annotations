@@ -16,7 +16,6 @@ import com.fasterxml.jackson.core.util.VersionUtil;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.annotation.JsonCachable;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.introspect.*;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
@@ -128,10 +127,6 @@ public class JaxbAnnotationIntrospector
         if (pkgName.startsWith(_jaxbPackageName)) {
             return true;
         }
-        // as per [JACKSON-472], also need to recognize @JsonCachable
-        if (cls == JsonCachable.class) {
-            return true;
-        }
         return false;
     }
     
@@ -140,20 +135,6 @@ public class JaxbAnnotationIntrospector
     /* General class annotations
     /**********************************************************
      */
-
-    @Override
-    public Boolean findCachability(AnnotatedClass ac)
-    {
-        /* 30-Jan-2011, tatu: As per [JACKSON-472], we may want to also
-         *    check Jackson annotation here, because sometimes JAXB
-         *    introspector is used alone...
-         */
-        JsonCachable ann = ac.getAnnotation(JsonCachable.class);
-        if (ann != null) {
-            return ann.value() ? Boolean.TRUE : Boolean.FALSE;
-        }
-        return null;
-    }
 
     @Override
     public String findRootName(AnnotatedClass ac)

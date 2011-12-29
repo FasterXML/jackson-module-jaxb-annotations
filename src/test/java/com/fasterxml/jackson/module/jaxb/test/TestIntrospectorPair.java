@@ -267,7 +267,6 @@ public class TestIntrospectorPair
         AnnotationIntrospector ann = new AnnotationIntrospector.Pair(_jacksonAI, _jaxbAI);
 
         AnnotatedClass testClass = AnnotatedClass.construct(NamedBean.class, ann, null);
-        assertNull(ann.findCachability(testClass));
         //assertNull(ann.findSerializationInclusion(testClass, null));
 
         JavaType type = TypeFactory.defaultInstance().constructType(Object.class);
