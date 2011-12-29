@@ -352,40 +352,6 @@ public class JaxbAnnotationIntrospector
         }
         return null;
     }
-    
-    /*
-    /**********************************************************
-    /* General method annotations
-    /**********************************************************
-     */
-
-    @Override
-    public boolean isIgnorableMethod(AnnotatedMethod m)
-    {
-        return m.getAnnotation(XmlTransient.class) != null;
-    }
-
-    @Override
-    public boolean isIgnorableConstructor(AnnotatedConstructor c)
-    {
-        /* @XmlTransient can not be attached to constructors...
-         * so there seems to be no way to do this. But then again,
-         * JAXB does not use non-default constructors anyway.
-         */
-        return false;
-    }
-
-    /*
-    /**********************************************************
-    /* General field annotations
-    /**********************************************************
-     */
-
-    @Override
-    public boolean isIgnorableField(AnnotatedField f)
-    {
-        return f.getAnnotation(XmlTransient.class) != null;
-    }
 
     /*
     /**********************************************************
