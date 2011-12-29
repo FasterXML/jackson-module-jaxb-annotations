@@ -5,16 +5,13 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
 
-import javax.xml.bind.JAXBElement;
+import javax.xml.bind.*;
 import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapters;
+import javax.xml.bind.annotation.adapters.*;
 
-import com.fasterxml.jackson.core.*;
-import com.fasterxml.jackson.core.util.VersionUtil;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.introspect.*;
@@ -99,7 +96,7 @@ public class JaxbAnnotationIntrospector
      * that contains this class.
      */
     public Version version() {
-        return VersionUtil.versionFor(getClass());
+        return ModuleVersion.instance.version();
     }
 
     /*
