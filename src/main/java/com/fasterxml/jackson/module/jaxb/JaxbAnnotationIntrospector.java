@@ -560,7 +560,7 @@ public class JaxbAnnotationIntrospector
     */
 
     @Override
-    public JsonDeserializer<?> findDeserializer(Annotated am)
+    public Object findDeserializer(Annotated am)
     {
         XmlAdapter<Object,Object> adapter = findAdapter(am, false);
         if (adapter != null) {
@@ -581,14 +581,14 @@ public class JaxbAnnotationIntrospector
     }
 
     @Override
-    public Class<KeyDeserializer> findKeyDeserializer(Annotated am)
+    public Object findKeyDeserializer(Annotated am)
     {
         // Is there something like this in JAXB?
         return null;
     }
 
     @Override
-    public Class<JsonDeserializer<?>> findContentDeserializer(Annotated am)
+    public Object findContentDeserializer(Annotated am)
     {
         // Is there something like this in JAXB?
         return null;
