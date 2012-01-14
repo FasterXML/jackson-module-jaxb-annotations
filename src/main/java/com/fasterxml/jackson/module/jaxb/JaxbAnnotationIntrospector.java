@@ -62,6 +62,7 @@ import com.fasterxml.jackson.module.jaxb.ser.XmlAdapterJsonSerializer;
  * @author Ryan Heaton
  * @author Tatu Saloranta
  */
+@SuppressWarnings("restriction")
 public class JaxbAnnotationIntrospector
     extends AnnotationIntrospector
     implements Versioned

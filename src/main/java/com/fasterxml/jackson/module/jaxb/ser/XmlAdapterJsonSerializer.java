@@ -15,15 +15,16 @@ import com.fasterxml.jackson.databind.*;
 /**
  * @author Ryan Heaton
  */
+@SuppressWarnings("restriction")
 public class XmlAdapterJsonSerializer extends SerializerBase<Object>
     implements SchemaAware
 {
-    private final XmlAdapter<Object,Object> xmlAdapter;
+    private final XmlAdapter<Object,Object> _xmlAdapter;
     
     public XmlAdapterJsonSerializer(XmlAdapter<Object,Object> xmlAdapter)
     {
         super(Object.class);
-        this.xmlAdapter = xmlAdapter;
+        _xmlAdapter = xmlAdapter;
     }
 
     @Override
@@ -32,12 +33,13 @@ public class XmlAdapterJsonSerializer extends SerializerBase<Object>
     {
         Object adapted;
         try {
-            adapted = this.xmlAdapter.marshal(value);
+            adapted = _xmlAdapter.marshal(value);
         } catch (Exception e) {
             throw new JsonMappingException("Unable to marshal: "+e.getMessage(), e);
         }
         if (adapted == null) {
-            provider.getNullValueSerializer().serialize(null, jgen, provider);
+            // 14-Jan-2011, ideally should know property, use 'findNullValueSerializer' but...
+            provider.getDefaultNullValueSerializer().serialize(null, jgen, provider);
         } else {
             Class<?> c = adapted.getClass();
             // true -> do cache for future lookups
@@ -59,7 +61,7 @@ public class XmlAdapterJsonSerializer extends SerializerBase<Object>
 
     private Class<?> findValueClass()
     {
-        Type superClass = this.xmlAdapter.getClass().getGenericSuperclass();
+        Type superClass = this._xmlAdapter.getClass().getGenericSuperclass();
         while (superClass instanceof ParameterizedType && XmlAdapter.class != ((ParameterizedType)superClass).getRawType()) {
             superClass = ((Class<?>) ((ParameterizedType) superClass).getRawType()).getGenericSuperclass();
         }
