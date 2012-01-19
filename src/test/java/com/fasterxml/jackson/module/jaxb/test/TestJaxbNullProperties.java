@@ -1,7 +1,8 @@
 package com.fasterxml.jackson.module.jaxb.test;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Unit tests to ensure that handling of writing of null properties (or not)
@@ -34,7 +35,7 @@ public class TestJaxbNullProperties
      public void testNullProps() throws Exception
      {
          ObjectMapper mapper = getJaxbMapper();
-         mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
+         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
          assertEquals("{\"x\":\"y\"}", mapper.writeValueAsString(new Bean()));
      }
 }

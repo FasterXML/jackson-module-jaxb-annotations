@@ -10,10 +10,12 @@ import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.*;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.*;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder;
@@ -431,15 +433,15 @@ public class JaxbAnnotationIntrospector
      * Jackson defaults (which are configurable), and only using JAXB explicit annotations.
      */
     @Override
-    public JsonSerialize.Inclusion findSerializationInclusion(Annotated a, JsonSerialize.Inclusion defValue)
+    public JsonInclude.Include findSerializationInclusion(Annotated a, JsonInclude.Include defValue)
     {
         XmlElementWrapper w = a.getAnnotation(XmlElementWrapper.class);
         if (w != null) {
-            return w.nillable() ? JsonSerialize.Inclusion.ALWAYS : JsonSerialize.Inclusion.NON_NULL;
+            return w.nillable() ? JsonInclude.Include.ALWAYS : JsonInclude.Include.NON_NULL;
         }
         XmlElement e = a.getAnnotation(XmlElement.class);
         if (e != null) {
-            return e.nillable() ? JsonSerialize.Inclusion.ALWAYS : JsonSerialize.Inclusion.NON_NULL;
+            return e.nillable() ? JsonInclude.Include.ALWAYS : JsonInclude.Include.NON_NULL;
         }
         /* [JACKSON-256]: better pass default value through, if no explicit direction indicating
          * otherwise
@@ -495,7 +497,7 @@ public class JaxbAnnotationIntrospector
      */
 
     @Override
-    public String findGettablePropertyName(AnnotatedMethod am)
+    public String findSerializationName(AnnotatedMethod am)
     {
         if (!isVisible(am)) {
             return null;
@@ -540,7 +542,7 @@ public class JaxbAnnotationIntrospector
      */
 
     @Override
-    public String findSerializablePropertyName(AnnotatedField af)
+    public String findSerializationName(AnnotatedField af)
     {
         if (!isVisible(af)) {
             return null;
@@ -663,7 +665,7 @@ public class JaxbAnnotationIntrospector
     }
 
     @Override
-    public String findSettablePropertyName(AnnotatedMethod am)
+    public String findDeserializationName(AnnotatedMethod am)
     {
         if (!isVisible(am)) {
             return null;
@@ -690,7 +692,7 @@ public class JaxbAnnotationIntrospector
     }
 
     @Override
-    public String findDeserializablePropertyName(AnnotatedField af)
+    public String findDeserializationName(AnnotatedField af)
     {
         if (!isVisible(af)) {
             return null;
@@ -710,7 +712,7 @@ public class JaxbAnnotationIntrospector
      */
 
     @Override
-    public String findPropertyNameForParam(AnnotatedParameter param)
+    public String findDeserializationName(AnnotatedParameter param)
     {
         // JAXB has nothing like this...
         return null;
