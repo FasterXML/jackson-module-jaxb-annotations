@@ -9,13 +9,13 @@ import javax.activation.DataHandler;
 
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.SerializerBase;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * @author Ryan Heaton
  */
-public class DataHandlerJsonSerializer extends SerializerBase<DataHandler>
+public class DataHandlerJsonSerializer extends StdSerializer<DataHandler>
 {
     public DataHandlerJsonSerializer() { super(DataHandler.class); }
     

@@ -3,7 +3,7 @@ package com.fasterxml.jackson.module.jaxb.ser;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.SerializerBase;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.w3c.dom.*;
 
@@ -14,7 +14,7 @@ import java.lang.reflect.Type;
  * @author Ryan Heaton
  */
 public class DomElementJsonSerializer
-        extends SerializerBase<Element>
+        extends StdSerializer<Element>
 {
     public DomElementJsonSerializer() { super(Element.class); }
 

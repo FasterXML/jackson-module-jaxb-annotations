@@ -14,9 +14,9 @@ For Jackson 2.0 functionality will be only offered through this module.
 To use this extension on Maven-based projects, use following dependency:
 
     <dependency>
-      <groupId>com.fasterxml.jackson</groupId>
+      <groupId>com.fasterxml.jackson.module</groupId>
       <artifactId>jackson-module-jaxb-annotations</artifactId>
-      <version>1.9.2</version>
+      <version>2.0.0-SNAPSHOT</version>
     </dependency>
 
 (or whatever version is most up-to-date at the moment)

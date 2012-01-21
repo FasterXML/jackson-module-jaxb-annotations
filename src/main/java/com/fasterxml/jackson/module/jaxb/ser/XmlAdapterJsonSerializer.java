@@ -7,16 +7,17 @@ import java.lang.reflect.Type;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import com.fasterxml.jackson.core.*;
+
 import com.fasterxml.jackson.databind.jsonschema.SchemaAware;
 import com.fasterxml.jackson.databind.jsonschema.JsonSchema;
-import com.fasterxml.jackson.databind.ser.std.SerializerBase;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.databind.*;
 
 /**
  * @author Ryan Heaton
  */
 @SuppressWarnings("restriction")
-public class XmlAdapterJsonSerializer extends SerializerBase<Object>
+public class XmlAdapterJsonSerializer extends StdSerializer<Object>
     implements SchemaAware
 {
     private final XmlAdapter<Object,Object> _xmlAdapter;
