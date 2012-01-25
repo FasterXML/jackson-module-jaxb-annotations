@@ -18,7 +18,6 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
  *
  * @author Tatu Saloranta
  */
-@SuppressWarnings("deprecation")
 public class TestIntrospectorPair
     extends BaseJaxbTest
 {

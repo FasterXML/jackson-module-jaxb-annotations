@@ -64,7 +64,6 @@ import com.fasterxml.jackson.module.jaxb.ser.XmlAdapterJsonSerializer;
  * @author Ryan Heaton
  * @author Tatu Saloranta
  */
-@SuppressWarnings("restriction")
 public class JaxbAnnotationIntrospector
     extends AnnotationIntrospector
     implements Versioned
@@ -98,6 +97,7 @@ public class JaxbAnnotationIntrospector
      * Method that will return version information stored in and read from jar
      * that contains this class.
      */
+    @Override
     public Version version() {
         return ModuleVersion.instance.version();
     }

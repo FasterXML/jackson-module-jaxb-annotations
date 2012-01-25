@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * degree, anyway).
  * Related to issues [JACKSON-288], [JACKSON-411]
  * 
- * @author tsaloranta
+ * @author tatu
  */
 public class TestAdapters extends BaseJaxbTest
 {

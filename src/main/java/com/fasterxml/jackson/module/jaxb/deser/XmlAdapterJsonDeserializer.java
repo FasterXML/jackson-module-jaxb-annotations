@@ -52,9 +52,7 @@ public class XmlAdapterJsonDeserializer
          */
         JsonDeserializer<?> deser = _deserializer;
         if (deser == null) {
-            DeserializationConfig config = ctxt.getConfig();
-            _deserializer = deser = ctxt.getDeserializerProvider().findValueDeserializer
-                (config, _valueType, null);
+            _deserializer = deser = ctxt.findValueDeserializer(_valueType, null);
         }
         Object boundObject = deser.deserialize(jp, ctxt);
         try {

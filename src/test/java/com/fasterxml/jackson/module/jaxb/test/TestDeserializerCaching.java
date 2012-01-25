@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.BeanDeserializer;
 import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
-import com.fasterxml.jackson.databind.introspect.BasicBeanDescription;
 
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
@@ -25,7 +24,7 @@ public class TestDeserializerCaching extends BaseJaxbTest
         }
 
         @Override public Version version() {
-            return new Version(1,0,0, null);
+            return Version.unknownVersion();
         }
 
         @Override public void setupModule(SetupContext context) {
@@ -56,7 +55,7 @@ public class TestDeserializerCaching extends BaseJaxbTest
 
         @Override
         public JsonDeserializer<?> modifyDeserializer(DeserializationConfig config,
-                BasicBeanDescription beanDesc, JsonDeserializer<?> deserializer)
+                BeanDescription beanDesc, JsonDeserializer<?> deserializer)
         {
             if (MyType.class.isAssignableFrom(beanDesc.getBeanClass())) {
                 count++;

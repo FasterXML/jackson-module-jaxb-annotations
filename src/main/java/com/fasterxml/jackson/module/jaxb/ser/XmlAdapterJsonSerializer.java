@@ -16,7 +16,6 @@ import com.fasterxml.jackson.databind.*;
 /**
  * @author Ryan Heaton
  */
-@SuppressWarnings("restriction")
 public class XmlAdapterJsonSerializer extends StdSerializer<Object>
     implements SchemaAware
 {

@@ -1,6 +1,5 @@
 package com.fasterxml.jackson.module.jaxb;
 
-import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 /**
@@ -16,9 +15,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
  */
 public class JaxbAnnotationModule extends SimpleModule
 {
-    // TODO: externalize
-    private final static Version VERSION = new Version(1, 8, 0, null);
-
     /**
      * Enumeration that defines how we use JAXB Annotations: either
      * as "primary" annotations (before any other already configured
@@ -30,7 +26,7 @@ public class JaxbAnnotationModule extends SimpleModule
      *<p>
      * Note that if you want to use JAXB annotations as the only annotations,
      * you must directly set annotation introspector by calling 
-     * {@link org.codehaus.jackson.map.ObjectMapper#setAnnotationIntrospector}.
+     * {@link com.fasterxml.jackson.databind.ObjectMapper#setAnnotationIntrospector}.
      */
     public enum Priority {
         PRIMARY, SECONDARY;
@@ -44,7 +40,7 @@ public class JaxbAnnotationModule extends SimpleModule
     
     public JaxbAnnotationModule()
     {
-        super("jaxb-annotations", VERSION);
+        super("jaxb-annotations", ModuleVersion.instance.version());
     }
 
     public JaxbAnnotationModule setPriority(Priority p) {
