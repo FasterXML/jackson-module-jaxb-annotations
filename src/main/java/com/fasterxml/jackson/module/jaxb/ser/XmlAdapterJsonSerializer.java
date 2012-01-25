@@ -19,9 +19,9 @@ import com.fasterxml.jackson.databind.*;
 public class XmlAdapterJsonSerializer extends StdSerializer<Object>
     implements SchemaAware
 {
-    private final XmlAdapter<Object,Object> _xmlAdapter;
+    private final XmlAdapter<?,Object> _xmlAdapter;
     
-    public XmlAdapterJsonSerializer(XmlAdapter<Object,Object> xmlAdapter)
+    public XmlAdapterJsonSerializer(XmlAdapter<?,Object> xmlAdapter)
     {
         super(Object.class);
         _xmlAdapter = xmlAdapter;
@@ -34,12 +34,14 @@ public class XmlAdapterJsonSerializer extends StdSerializer<Object>
         Object adapted;
         try {
             adapted = _xmlAdapter.marshal(value);
+        } catch (IOException e) { // pass exceptions that are declared to be thrown as-is
+            throw e;
         } catch (Exception e) {
             throw new JsonMappingException("Unable to marshal: "+e.getMessage(), e);
         }
         if (adapted == null) {
             // 14-Jan-2011, ideally should know property, use 'findNullValueSerializer' but...
-            provider.getDefaultNullValueSerializer().serialize(null, jgen, provider);
+            provider.defaultSerializeNull(jgen);
         } else {
             Class<?> c = adapted.getClass();
             // true -> do cache for future lookups

@@ -23,8 +23,6 @@ public class TestIntrospectorPair
 {
     final static AnnotationIntrospector _jacksonAI = new JacksonAnnotationIntrospector();
     final static AnnotationIntrospector _jaxbAI = new JaxbAnnotationIntrospector();
-
-    public TestIntrospectorPair() { super(); }
     
     /*
     /**********************************************************
