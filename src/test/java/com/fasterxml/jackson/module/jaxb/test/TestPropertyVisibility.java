@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.*;
 
+import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
 /**

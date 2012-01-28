@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.jaxb.test;
+package com.fasterxml.jackson.module.jaxb;
 
 import java.io.IOException;
 import java.util.Map;

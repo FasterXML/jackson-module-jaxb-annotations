@@ -3,6 +3,7 @@ package com.fasterxml.jackson.module.jaxb.test;
 import javax.xml.bind.annotation.XmlElement;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
 
 /**
  * Unit test(s) to verify that annotations from super classes and

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.jsonschema.JsonSchema;
+import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
 
 /**
  * Test(s) to see that JAXB annotations-based information is properly

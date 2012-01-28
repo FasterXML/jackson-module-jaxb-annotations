@@ -448,19 +448,6 @@ public class JaxbAnnotationIntrospector
          */
         return defValue;
     }
-
-    @Override
-    public JsonSerialize.Typing findSerializationTyping(Annotated a)
-    {
-        return null;
-    }
-
-    @Override
-    public Class<?>[] findSerializationViews(Annotated a)
-    {
-        // no JAXB annotations for views (can use different schemas)
-        return null;
-    }
     
     /*
     /**********************************************************
@@ -670,7 +657,7 @@ public class JaxbAnnotationIntrospector
         if (!isVisible(am)) {
             return null;
         }
-        Class<?> rawType = am.getParameterClass(0);
+        Class<?> rawType = am.getRawParameterType(0);
         String name = findJaxbPropertyName(am, rawType, BeanUtil.okNameForSetter(am));
         return name;
     }
@@ -940,7 +927,7 @@ public class JaxbAnnotationIntrospector
         Class<?> memberType = am.getRawType();
         // ok; except for setters...
         if (memberType == Void.TYPE && (am instanceof AnnotatedMethod)) {
-            memberType = ((AnnotatedMethod) am).getParameterClass(0);
+            memberType = ((AnnotatedMethod) am).getRawParameterType(0);
         }
 
         // 09-Nov-2010, tatu: Not quite sure why we are to check declaring class... but that's how code was:

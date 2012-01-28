@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.*;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
 
 /**
  * Tests for handling of type-related JAXB annotations 

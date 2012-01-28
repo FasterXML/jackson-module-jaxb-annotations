@@ -3,6 +3,7 @@ package com.fasterxml.jackson.module.jaxb.test;
 import javax.xml.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
 
 public class TestPropertyOrdering
     extends BaseJaxbTest

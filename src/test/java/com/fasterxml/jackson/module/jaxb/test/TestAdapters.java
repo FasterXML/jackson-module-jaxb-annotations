@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
 
 /**
  * Unit tests for checking that JAXB type adapters work (to some

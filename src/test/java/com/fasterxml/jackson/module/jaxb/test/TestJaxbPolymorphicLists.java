@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
 import com.fasterxml.jackson.module.jaxb.test.TestJaxbPolymorphic.Animal;
 import com.fasterxml.jackson.module.jaxb.test.TestJaxbPolymorphic.Buffalo;
 import com.fasterxml.jackson.module.jaxb.test.TestJaxbPolymorphic.Cow;

@@ -3,6 +3,7 @@ package com.fasterxml.jackson.module.jaxb.test;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
 
 /**
  * Unit tests to ensure that handling of writing of null properties (or not)
