@@ -14,12 +14,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.*;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder;
 import com.fasterxml.jackson.databind.jsontype.impl.StdTypeResolverBuilder;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.fasterxml.jackson.databind.util.ClassUtil;
 
@@ -64,6 +64,7 @@ import com.fasterxml.jackson.module.jaxb.ser.XmlAdapterJsonSerializer;
  * @author Ryan Heaton
  * @author Tatu Saloranta
  */
+@SuppressWarnings("restriction")
 public class JaxbAnnotationIntrospector
     extends AnnotationIntrospector
     implements Versioned
@@ -74,8 +75,19 @@ public class JaxbAnnotationIntrospector
     protected final JsonSerializer<?> _dataHandlerSerializer;
     protected final JsonDeserializer<?> _dataHandlerDeserializer;
 
-    public JaxbAnnotationIntrospector()
+    protected final TypeFactory _typeFactory;
+
+    public JaxbAnnotationIntrospector() {
+        this(TypeFactory.defaultInstance());
+    }
+    
+    public JaxbAnnotationIntrospector(MapperConfig<?> config) {
+        this(config.getTypeFactory());
+    }
+    
+    public JaxbAnnotationIntrospector(TypeFactory typeFactory)
     {
+        _typeFactory = (typeFactory == null)? TypeFactory.defaultInstance() : typeFactory;
         _jaxbPackageName = XmlElement.class.getPackage().getName();
 
         JsonSerializer<?> dataHandlerSerializer = null;
@@ -365,12 +377,20 @@ public class JaxbAnnotationIntrospector
     @Override
     public JsonSerializer<?> findSerializer(Annotated am)
     {
-        XmlAdapter<Object,Object> adapter = findAdapter(am, true);
+        final Class<?> type = am.getRawType();
+        // As per [JACKSON-722], more checks for structured types
+        XmlAdapter<Object,Object> adapter = findAdapter(am, true, type);
         if (adapter != null) {
-            return new XmlAdapterJsonSerializer(adapter);
+            // Ugh. Must match to see if adapter's bounded type (result to map to) matches property type
+            if (isContainerType(type)) {
+                if (adapterTypeMatches(adapter, type)) {
+                    return new XmlAdapterJsonSerializer(adapter);
+                }
+            } else {
+                return new XmlAdapterJsonSerializer(adapter);
+            }
         }
         // [JACKSON-150]: add support for additional core XML types needed by JAXB
-        Class<?> type = am.getRawType();
         if (type != null) {
             if (_dataHandlerSerializer != null && isDataHandler(type)) {
                 return _dataHandlerSerializer;
@@ -393,6 +413,14 @@ public class JaxbAnnotationIntrospector
     }
 
     @Override
+    public Object findContentSerializer(Annotated am)
+    {
+        // [JACKSON-722]: Adapter applicable to value types
+        XmlAdapter<?,?> adapter = _findContentAdapter(am);
+        return (adapter == null) ? null : new XmlAdapterJsonSerializer(adapter);
+    }
+    
+    @Override
     public Class<?> findSerializationType(Annotated a)
     {
         // As per [JACKSON-416], need to allow coercing serialization type...
@@ -410,7 +438,7 @@ public class JaxbAnnotationIntrospector
          *   type on another method.
          */
         Class<?> rawPropType = a.getRawType();
-        if (isIndexedType(rawPropType)) {
+        if (isContainerType(rawPropType)) {
             return null;
         }
         /* [JACKSON-288]: Further, JAXB has peculiar notion of declaring intermediate
@@ -551,15 +579,22 @@ public class JaxbAnnotationIntrospector
     @Override
     public Object findDeserializer(Annotated am)
     {
-        XmlAdapter<Object,Object> adapter = findAdapter(am, false);
+        final Class<?> type = am.getRawType();
+
+        // As per [JACKSON-722], more checks for structured types
+        XmlAdapter<Object,Object> adapter = findAdapter(am, true, type);
         if (adapter != null) {
-            return new XmlAdapterJsonDeserializer(adapter);
+            // Ugh. Must match to see if adapter's bounded type (result to map to) matches property type
+            if (isContainerType(type)) {
+                if (adapterTypeMatches(adapter, type)) {
+                    return new XmlAdapterJsonDeserializer(adapter);
+                }
+            } else {
+                return new XmlAdapterJsonDeserializer(adapter);
+            }
         }
 
-        /* [JACKSON-150]: add support for additional core XML
-         * types needed by JAXB
-         */
-        Class<?> type = am.getRawType();
+        // [JACKSON-150]: add support for additional core XML types needed by JAXB
         if (type != null) {
             if (_dataHandlerDeserializer != null && isDataHandler(type)) {
                 return _dataHandlerDeserializer;
@@ -579,8 +614,9 @@ public class JaxbAnnotationIntrospector
     @Override
     public Object findContentDeserializer(Annotated am)
     {
-        // Is there something like this in JAXB?
-        return null;
+        // [JACKSON-722]: Adapter applicable to value types
+        XmlAdapter<?,?> adapter = _findContentAdapter(am);
+        return (adapter == null) ? null : new XmlAdapterJsonDeserializer(adapter);
     }
 
     /**
@@ -914,21 +950,18 @@ public class JaxbAnnotationIntrospector
      *
      * @param am The annotated element.
      * @param forSerialization If true, adapter for serialization; if false, for deserialization
+     * @param type
      * 
      * @return The adapter, or null if none.
      */
-    private XmlAdapter<Object,Object> findAdapter(Annotated am, boolean forSerialization)
+    private XmlAdapter<Object,Object> findAdapter(Annotated am, boolean forSerialization,
+            Class<?> type)
     {
         // First of all, are we looking for annotations for class?
         if (am instanceof AnnotatedClass) {
             return findAdapterForClass((AnnotatedClass) am, forSerialization);
         }
         // Otherwise for a member. First, let's figure out type of property
-        Class<?> memberType = am.getRawType();
-        // ok; except for setters...
-        if (memberType == Void.TYPE && (am instanceof AnnotatedMethod)) {
-            memberType = ((AnnotatedMethod) am).getRawParameterType(0);
-        }
 
         // 09-Nov-2010, tatu: Not quite sure why we are to check declaring class... but that's how code was:
         Member member = (Member) am.getAnnotated();
@@ -938,7 +971,7 @@ public class JaxbAnnotationIntrospector
             if (potentialAdaptee != null) {
                 XmlJavaTypeAdapter adapterInfo = (XmlJavaTypeAdapter) potentialAdaptee.getAnnotation(XmlJavaTypeAdapter.class);
                 if (adapterInfo != null) { // should we try caching this?
-                    XmlAdapter<Object,Object> adapter = checkAdapter(adapterInfo, memberType);
+                    XmlAdapter<Object,Object> adapter = checkAdapter(adapterInfo, type);
                     if (adapter != null) {
                         return adapter;
                     }
@@ -948,7 +981,7 @@ public class JaxbAnnotationIntrospector
 
         XmlJavaTypeAdapter adapterInfo = findAnnotation(XmlJavaTypeAdapter.class, am, true, false, false);
         if (adapterInfo != null) {
-            XmlAdapter<Object,Object> adapter = checkAdapter(adapterInfo, memberType);
+            XmlAdapter<Object,Object> adapter = checkAdapter(adapterInfo, type);
             if (adapter != null) {
                 return adapter;
             }
@@ -956,7 +989,7 @@ public class JaxbAnnotationIntrospector
         XmlJavaTypeAdapters adapters = findAnnotation(XmlJavaTypeAdapters.class, am, true, false, false);
         if (adapters != null) {
             for (XmlJavaTypeAdapter info : adapters.value()) {
-                XmlAdapter<Object,Object> adapter = checkAdapter(info, memberType);
+                XmlAdapter<Object,Object> adapter = checkAdapter(info, type);
                 if (adapter != null) {
                     return adapter;
                 }
@@ -964,7 +997,7 @@ public class JaxbAnnotationIntrospector
         }
         return null;
     }
-
+    
     @SuppressWarnings("unchecked")
     private final XmlAdapter<Object,Object> checkAdapter(XmlJavaTypeAdapter adapterInfo, Class<?> typeNeeded)
     {
@@ -996,13 +1029,51 @@ public class JaxbAnnotationIntrospector
         return null;
     }
 
+    private final TypeFactory getTypeFactory() {
+        return _typeFactory;
+    }
+    
     /**
-     * Helper method used to distinguish structured type, which with JAXB use different
-     * rules for defining content types.
+     * Helper method used to distinguish structured types (arrays, Lists, Maps),
+     * which with JAXB use different rules for defining content types.
      */
-    private boolean isIndexedType(Class<?> raw)
+    private boolean isContainerType(Class<?> raw)
     {
         return raw.isArray() || Collection.class.isAssignableFrom(raw)
             || Map.class.isAssignableFrom(raw);
+    }
+
+    private boolean adapterTypeMatches(XmlAdapter adapter, Class<?> targetType)
+    {
+        return targetType.isAssignableFrom(findAdapterBoundType(adapter));
+    }
+
+    private Class<?> findAdapterBoundType(XmlAdapter adapter)
+    {
+        TypeFactory tf = getTypeFactory();
+        JavaType adapterType = tf.constructType(adapter.getClass());
+        JavaType[] params = tf.findTypeParameters(adapterType, XmlAdapter.class);
+        // should not happen, except if our type resolution has a flaw, but:
+        if (params == null || params.length < 2) {
+            return Object.class;
+        }
+        return params[1].getRawClass();
+    }
+
+    protected XmlAdapter<?,?> _findContentAdapter(Annotated ann)
+    {
+        Class<?> type = ann.getRawType();
+        // and let's assume this only applies as member annotation:
+        if (isContainerType(type) && (ann instanceof AnnotatedMember)) {
+            AnnotatedMember member = (AnnotatedMember) ann;
+            JavaType containerType = getTypeFactory().constructType(member.getGenericType(),
+                    member.getDeclaringClass());
+            Class<?> contentType = containerType.getContentType().getRawClass();
+            XmlAdapter<Object,Object> adapter = findAdapter(member, true, type);
+            if (adapter != null && this.adapterTypeMatches(adapter, contentType)) {
+                return adapter;
+            }
+        }
+        return null;
     }
 }

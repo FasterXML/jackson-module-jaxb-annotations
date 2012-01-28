@@ -16,15 +16,17 @@ import com.fasterxml.jackson.databind.*;
 /**
  * @author Ryan Heaton
  */
+@SuppressWarnings("restriction")
 public class XmlAdapterJsonSerializer extends StdSerializer<Object>
     implements SchemaAware
 {
     private final XmlAdapter<?,Object> _xmlAdapter;
     
-    public XmlAdapterJsonSerializer(XmlAdapter<?,Object> xmlAdapter)
+    @SuppressWarnings("unchecked")
+    public XmlAdapterJsonSerializer(XmlAdapter<?,?> xmlAdapter)
     {
         super(Object.class);
-        _xmlAdapter = xmlAdapter;
+        _xmlAdapter = (XmlAdapter<?,Object>) xmlAdapter;
     }
 
     @Override

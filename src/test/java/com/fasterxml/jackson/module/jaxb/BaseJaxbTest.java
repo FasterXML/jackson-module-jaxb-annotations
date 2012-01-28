@@ -22,7 +22,7 @@ public abstract class BaseJaxbTest
     protected ObjectMapper getJaxbMapper()
     {
         ObjectMapper mapper = new ObjectMapper();
-        AnnotationIntrospector intr = new JaxbAnnotationIntrospector();
+        AnnotationIntrospector intr = new JaxbAnnotationIntrospector(mapper.getTypeFactory());
         mapper.setAnnotationIntrospector(intr);
         return mapper;
     }
@@ -30,8 +30,8 @@ public abstract class BaseJaxbTest
     protected ObjectMapper getJaxbAndJacksonMapper()
     {
         ObjectMapper mapper = new ObjectMapper();
-        AnnotationIntrospector intr = new AnnotationIntrospector.Pair(new JaxbAnnotationIntrospector(),
-                        new JacksonAnnotationIntrospector());
+        AnnotationIntrospector intr = new AnnotationIntrospector.Pair(new JaxbAnnotationIntrospector(
+                mapper.getTypeFactory()), new JacksonAnnotationIntrospector());
         mapper.setAnnotationIntrospector(intr);
         return mapper;
     }

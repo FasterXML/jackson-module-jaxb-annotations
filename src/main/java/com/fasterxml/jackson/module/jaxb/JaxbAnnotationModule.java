@@ -53,7 +53,7 @@ public class JaxbAnnotationModule extends SimpleModule
     @Override
     public void setupModule(SetupContext context)
     {
-        JaxbAnnotationIntrospector intr = new JaxbAnnotationIntrospector();
+        JaxbAnnotationIntrospector intr = new JaxbAnnotationIntrospector(context.getTypeFactory());
         switch (_priority) {
         case PRIMARY:
             context.insertAnnotationIntrospector(intr);

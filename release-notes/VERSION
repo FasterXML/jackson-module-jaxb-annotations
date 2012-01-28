@@ -1,0 +1,17 @@
+Version: 2.0.0
+
+Release date:
+  xx-Feb-2012
+
+Description:
+  The son of Jackson! Behold...
+
+Fixes:
+
+* [JACKSON-722]: Ability to use @XmlJavaTypeAdapter for List/Map values
+
+------------------------------------------------------------------------
+=== History: ===
+------------------------------------------------------------------------
+
+[entries for versions 1.x and earlier not retained; refer to earlier releases)

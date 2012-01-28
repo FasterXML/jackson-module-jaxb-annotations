@@ -206,47 +206,6 @@ public class TestJaxbAnnotationIntrospector
 			this.value = value;
 		};
     }
-    
-    public static class JAXBMapAdapter extends XmlAdapter<List<KeyValuePair>,Map<String, String>> { 
-
-    	@Override
-    	public List<KeyValuePair> marshal(Map<String, String> arg0) throws Exception { 
-    		List<KeyValuePair> keyValueList = new ArrayList<KeyValuePair>();
-    		for(Entry<String, String> entry : arg0.entrySet()) { 
-    			KeyValuePair keyValuePair = new KeyValuePair();
-    			keyValuePair.setKey(entry.getKey());
-    			keyValuePair.setValue(entry.getValue());
-    			keyValueList.add(keyValuePair);
-    			} 
-    		return keyValueList; 
-    	} 
-    	@Override
-    	public Map<String, String> unmarshal(List<KeyValuePair> arg0) throws Exception 
-    	{ 
-    		HashMap<String, String> hashMap = new HashMap<String, String>(); 
-    		for (int i = 0; i < arg0.size(); i++) {
-    			hashMap.put(arg0.get(i).getKey(), arg0.get(i).getValue());
-    		}
-    		return hashMap; 
-    	} 
-    }
-    
-    @XmlRootElement
-    @XmlAccessorType(XmlAccessType.FIELD)
-    public static class ParentJAXBBean
-    {
-    	@XmlJavaTypeAdapter(JAXBMapAdapter.class) 
-    	private Map<String, String> params = new HashMap<String, String>();
-
-		public Map<String, String> getParams() {
-			return params;
-		}
-
-		public void setParams(Map<String, String> params) {
-			this.params = params;
-		}
-    	
-    }
 
     // Beans for [JACKSON-256]
     
@@ -355,38 +314,11 @@ public class TestJaxbAnnotationIntrospector
     }
 
     // Test for [JACKSON-256], thanks John.
-    // @since 1.5
     public void testWriteNulls() throws Exception
     {
         ObjectMapper mapper = getJaxbMapper();
         BeanWithNillable bean = new BeanWithNillable();
         bean.X = new Nillable();
         assertEquals("{\"X\":{\"Z\":null}}", serializeAsString(mapper, bean));
-    }
-    
-    public void testAdapter() throws Exception
-    {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector());
-        mapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector());
-        mapper.enable(SerializationConfig.Feature.INDENT_OUTPUT);
-        ParentJAXBBean parentJaxbBean = new ParentJAXBBean();
-        HashMap<String, String> params = new HashMap<String, String>();
-        params.put("sampleKey", "sampleValue");
-        parentJaxbBean.setParams(params);
-        
-        StringWriter writer = new StringWriter();
-        mapper.writeValue(writer, parentJaxbBean);
-        writer.flush();
-        writer.close();
-
-        String json = writer.toString();
-
-        // uncomment to see what the json looks like.
-        //System.out.println(json);
-         
-         //now make sure it gets deserialized correctly.
-         ParentJAXBBean readEx = mapper.readValue(json, ParentJAXBBean.class);
-         assertEquals("sampleValue", readEx.getParams().get("sampleKey"));
     }
 }

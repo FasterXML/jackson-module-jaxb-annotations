@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
  * @author Ryan Heaton
  * @author Tatu Saloranta
  */
+@SuppressWarnings("restriction")
 public class XmlAdapterJsonDeserializer
     extends StdDeserializer<Object>
 {
@@ -24,10 +25,11 @@ public class XmlAdapterJsonDeserializer
 
     protected JsonDeserializer<?> _deserializer;
     
-    public XmlAdapterJsonDeserializer(XmlAdapter<Object,Object> xmlAdapter)
+    @SuppressWarnings("unchecked")
+    public XmlAdapterJsonDeserializer(XmlAdapter<?,?> xmlAdapter)
     {
         super(Object.class); // type not yet known (will be in a second), but that's ok...
-        _xmlAdapter = xmlAdapter;
+        _xmlAdapter = (XmlAdapter<Object,Object>) xmlAdapter;
         // [JACKSON-404] Need to figure out generic type parameters used...
         /* 14-Mar-2011, tatu: This is sub-optimal, as we really should use
          *    configured TypeFactory, not global one; but it should not cause
