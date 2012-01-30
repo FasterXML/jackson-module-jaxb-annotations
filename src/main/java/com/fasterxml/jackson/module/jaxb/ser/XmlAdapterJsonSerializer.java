@@ -7,13 +7,12 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import com.fasterxml.jackson.core.*;
 
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.jsonschema.SchemaAware;
 import com.fasterxml.jackson.databind.jsonschema.JsonSchema;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.module.jaxb.deser.XmlAdapterJsonDeserializer;
 
 /**
  * @author Ryan Heaton
