@@ -8,6 +8,8 @@ import java.lang.reflect.Type;
 import javax.activation.DataHandler;
 
 import com.fasterxml.jackson.core.*;
+
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.databind.node.ObjectNode;

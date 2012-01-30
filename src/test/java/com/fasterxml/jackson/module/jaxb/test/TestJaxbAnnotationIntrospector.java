@@ -2,14 +2,12 @@ package com.fasterxml.jackson.module.jaxb.test;
 
 import java.io.StringWriter;
 import java.util.*;
-import java.util.Map.Entry;
 
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.namespace.QName;
 
-import com.fasterxml.jackson.core.JsonNode;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 

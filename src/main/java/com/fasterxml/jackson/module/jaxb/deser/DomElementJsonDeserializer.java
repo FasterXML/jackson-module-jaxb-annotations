@@ -11,8 +11,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.fasterxml.jackson.core.*;
+
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
@@ -47,7 +49,8 @@ public class DomElementJsonDeserializer
         throws IOException, JsonProcessingException
     {
         Document document = builder.newDocument();
-        return fromNode(document, jp.readValueAsTree());
+        JsonNode root = jp.readValueAsTree();
+        return fromNode(document, root);
     }
 
     protected Element fromNode(Document document, JsonNode jsonNode)
@@ -62,7 +65,7 @@ public class DomElementJsonDeserializer
 
         JsonNode attributesNode = jsonNode.get("attributes");
         if (attributesNode != null && attributesNode instanceof ArrayNode) {
-            Iterator<JsonNode> atts = attributesNode.getElements();
+            Iterator<JsonNode> atts = attributesNode.elements();
             while (atts.hasNext()) {
                 JsonNode node = atts.next();
                 ns = node.get("namespace") != null ? node.get("namespace").asText() : null;
@@ -77,7 +80,7 @@ public class DomElementJsonDeserializer
 
         JsonNode childsNode = jsonNode.get("children");
         if (childsNode != null && childsNode instanceof ArrayNode) {
-            Iterator<JsonNode> els = childsNode.getElements();
+            Iterator<JsonNode> els = childsNode.elements();
             while (els.hasNext()) {
                 JsonNode node = els.next();
                 name = node.get("name") != null ? node.get("name").asText() : null;

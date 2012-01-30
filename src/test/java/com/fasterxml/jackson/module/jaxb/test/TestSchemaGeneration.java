@@ -2,8 +2,7 @@ package com.fasterxml.jackson.module.jaxb.test;
 
 import javax.xml.bind.annotation.*;
 
-import com.fasterxml.jackson.core.JsonNode;
-
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.jsonschema.JsonSchema;

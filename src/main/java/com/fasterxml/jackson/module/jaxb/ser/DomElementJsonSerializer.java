@@ -1,14 +1,17 @@
 package com.fasterxml.jackson.module.jaxb.ser;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
+
+import org.w3c.dom.*;
+
 import com.fasterxml.jackson.core.*;
+
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.w3c.dom.*;
-
-import java.io.IOException;
-import java.lang.reflect.Type;
 
 /**
  * @author Ryan Heaton
