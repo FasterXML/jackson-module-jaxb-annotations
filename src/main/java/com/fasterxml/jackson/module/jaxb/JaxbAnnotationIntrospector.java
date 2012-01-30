@@ -1043,12 +1043,12 @@ public class JaxbAnnotationIntrospector
             || Map.class.isAssignableFrom(raw);
     }
 
-    private boolean adapterTypeMatches(XmlAdapter adapter, Class<?> targetType)
+    private boolean adapterTypeMatches(XmlAdapter<?,?> adapter, Class<?> targetType)
     {
         return targetType.isAssignableFrom(findAdapterBoundType(adapter));
     }
 
-    private Class<?> findAdapterBoundType(XmlAdapter adapter)
+    private Class<?> findAdapterBoundType(XmlAdapter<?,?> adapter)
     {
         TypeFactory tf = getTypeFactory();
         JavaType adapterType = tf.constructType(adapter.getClass());

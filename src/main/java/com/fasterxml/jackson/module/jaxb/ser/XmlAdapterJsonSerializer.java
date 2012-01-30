@@ -1,7 +1,6 @@
 package com.fasterxml.jackson.module.jaxb.ser;
 
 import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
@@ -10,30 +9,61 @@ import com.fasterxml.jackson.core.*;
 
 import com.fasterxml.jackson.databind.jsonschema.SchemaAware;
 import com.fasterxml.jackson.databind.jsonschema.JsonSchema;
+import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.module.jaxb.deser.XmlAdapterJsonDeserializer;
 
 /**
  * @author Ryan Heaton
  */
 @SuppressWarnings("restriction")
-public class XmlAdapterJsonSerializer extends StdSerializer<Object>
-    implements SchemaAware
+public class XmlAdapterJsonSerializer
+    extends StdSerializer<Object>
+    implements ContextualSerializer<Object>,
+        SchemaAware
 {
-    private final XmlAdapter<?,Object> _xmlAdapter;
+    protected final XmlAdapter<?,Object> _xmlAdapter;
+
+    protected final JavaType _valueType;
+    
+    protected final JsonSerializer<Object> _serializer;
     
     @SuppressWarnings("unchecked")
-    public XmlAdapterJsonSerializer(XmlAdapter<?,?> xmlAdapter)
-    {
-        super(Object.class);
-        _xmlAdapter = (XmlAdapter<?,Object>) xmlAdapter;
+    public XmlAdapterJsonSerializer(XmlAdapter<?,?> xmlAdapter) {
+        this((XmlAdapter<?,Object>)  xmlAdapter, null, null);
     }
 
+    protected XmlAdapterJsonSerializer(XmlAdapter<?,Object> xmlAdapter,
+            JavaType valueType, JsonSerializer<Object> serializer)
+    {
+        super(Object.class);
+        _xmlAdapter = xmlAdapter;
+        _valueType = valueType;
+        _serializer = serializer;
+    }
+
+    public JsonSerializer<Object> createContextual(SerializerProvider prov,
+            BeanProperty property) throws JsonMappingException
+    {
+        TypeFactory typeFactory = prov.getConfig().getTypeFactory();
+
+        JavaType type = typeFactory.constructType(_xmlAdapter.getClass());
+        JavaType[] rawTypes = typeFactory.findTypeParameters(type, XmlAdapter.class);
+        JavaType valueType = (rawTypes == null || rawTypes.length < 2)
+            ? TypeFactory.unknownType() : rawTypes[0];
+
+        JsonSerializer<Object> ser = prov.findValueSerializer(valueType, property);
+        return new XmlAdapterJsonSerializer(_xmlAdapter, valueType, ser);
+    }
+    
     @Override
     public void serialize(Object value, JsonGenerator jgen, SerializerProvider provider)
         throws IOException
     {
         Object adapted;
+        // first, use adapter to get a familiar type of a value
         try {
             adapted = _xmlAdapter.marshal(value);
         } catch (IOException e) { // pass exceptions that are declared to be thrown as-is
@@ -41,13 +71,13 @@ public class XmlAdapterJsonSerializer extends StdSerializer<Object>
         } catch (Exception e) {
             throw new JsonMappingException("Unable to marshal: "+e.getMessage(), e);
         }
+        // then serialize that
         if (adapted == null) {
             // 14-Jan-2011, ideally should know property, use 'findNullValueSerializer' but...
             provider.defaultSerializeNull(jgen);
         } else {
-            Class<?> c = adapted.getClass();
-            // true -> do cache for future lookups
-            provider.findTypedValueSerializer(c, true, null).serialize(adapted, jgen, provider);
+            _checkSerializer();
+            _serializer.serialize(adapted, jgen, provider);
         }
     }
 
@@ -55,21 +85,18 @@ public class XmlAdapterJsonSerializer extends StdSerializer<Object>
     public JsonNode getSchema(SerializerProvider provider, Type typeHint)
             throws JsonMappingException
     {
-        // no type resolver needed for schema
-        JsonSerializer<Object> ser = provider.findValueSerializer(findValueClass(), null);
-        JsonNode schemaNode = (ser instanceof SchemaAware) ?
-                ((SchemaAware) ser).getSchema(provider, null) :
-                JsonSchema.getDefaultSchemaNode();
-        return schemaNode;
-    }
-
-    private Class<?> findValueClass()
-    {
-        Type superClass = this._xmlAdapter.getClass().getGenericSuperclass();
-        while (superClass instanceof ParameterizedType && XmlAdapter.class != ((ParameterizedType)superClass).getRawType()) {
-            superClass = ((Class<?>) ((ParameterizedType) superClass).getRawType()).getGenericSuperclass();
+        _checkSerializer();
+        if (_serializer instanceof SchemaAware) {
+            return ((SchemaAware) _serializer).getSchema(provider, null);
         }
-        return (Class<?>) ((ParameterizedType) superClass).getActualTypeArguments()[0];
+        return JsonSchema.getDefaultSchemaNode();
     }
 
+    private final void _checkSerializer()
+    {
+        if (_serializer == null) {
+            throw new IllegalStateException("No serializer assigned for XmlAdapterJsonDeserializer ("
+                +_xmlAdapter.getClass().getName()+"): resolve() not called?");
+        }
+    }
 }
