@@ -15,10 +15,9 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
  * @author Ryan Heaton
  * @author Tatu Saloranta
  */
-@SuppressWarnings("restriction")
 public class XmlAdapterJsonDeserializer
     extends StdDeserializer<Object>
-    implements ContextualDeserializer<Object>
+    implements ContextualDeserializer
 {
     protected final XmlAdapter<Object,Object> _xmlAdapter;
 
@@ -63,7 +62,7 @@ public class XmlAdapterJsonDeserializer
         JavaType[] rawTypes = typeFactory.findTypeParameters(type, XmlAdapter.class);
         JavaType valueType = (rawTypes == null || rawTypes.length == 0)
             ? TypeFactory.unknownType() : rawTypes[0];
-        JsonDeserializer<Object> deser = ctxt.findValueDeserializer(valueType, property);
+        JsonDeserializer<Object> deser = ctxt.findContextualValueDeserializer(valueType, property);
         return new XmlAdapterJsonDeserializer(_xmlAdapter, valueType, deser);
     }
     

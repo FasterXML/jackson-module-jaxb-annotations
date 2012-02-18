@@ -268,9 +268,9 @@ public class TestIntrospectorPair
         //assertNull(ann.findSerializationInclusion(testClass, null));
 
         JavaType type = TypeFactory.defaultInstance().constructType(Object.class);
-        assertNull(ann.findDeserializationType(testClass, type, null));
-        assertNull(ann.findDeserializationContentType(testClass, type, null));
-        assertNull(ann.findDeserializationKeyType(testClass, type, null));
+        assertNull(ann.findDeserializationType(testClass, type));
+        assertNull(ann.findDeserializationContentType(testClass, type));
+        assertNull(ann.findDeserializationKeyType(testClass, type));
         assertNull(ann.findSerializationType(testClass));
 
         assertNull(ann.findDeserializer(testClass));

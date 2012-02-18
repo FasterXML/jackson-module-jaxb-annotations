@@ -14,13 +14,9 @@ import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-/**
- * @author Ryan Heaton
- */
-@SuppressWarnings("restriction")
 public class XmlAdapterJsonSerializer
     extends StdSerializer<Object>
-    implements ContextualSerializer<Object>,
+    implements ContextualSerializer,
         SchemaAware
 {
     protected final XmlAdapter<?,Object> _xmlAdapter;

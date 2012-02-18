@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationConfig;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import com.fasterxml.jackson.module.jaxb.test.TestJaxbAnnotationIntrospector.KeyValuePair;
@@ -16,7 +16,6 @@ import com.fasterxml.jackson.module.jaxb.test.TestJaxbAnnotationIntrospector.Key
  * Unit tests to check that {@link XmlAdapter}s also work with
  * container types (Lists, Maps)
  */
-@SuppressWarnings("restriction")
 public class TestAdaptersForContainers extends BaseJaxbTest
 {
     // Support for Maps
@@ -120,7 +119,7 @@ public class TestAdaptersForContainers extends BaseJaxbTest
     {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector());
-        mapper.enable(SerializationConfig.Feature.INDENT_OUTPUT);
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
         ParentJAXBBean parentJaxbBean = new ParentJAXBBean();
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("sampleKey", "sampleValue");

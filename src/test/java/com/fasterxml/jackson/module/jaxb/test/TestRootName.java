@@ -3,10 +3,11 @@ package com.fasterxml.jackson.module.jaxb.test;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationConfig;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
 
-public class TestRootName  extends BaseJaxbTest
+public class TestRootName extends BaseJaxbTest
 {
     /*
     /**********************************************************
@@ -29,7 +30,7 @@ public class TestRootName  extends BaseJaxbTest
     public void testRootName() throws Exception
     {
         ObjectMapper mapper = getJaxbMapper();
-        mapper.configure(SerializationConfig.Feature.WRAP_ROOT_VALUE, true);
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
         assertEquals("{\"rooty\":{\"value\":37}}", mapper.writeValueAsString(new MyType()));
     }
 }

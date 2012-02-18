@@ -64,7 +64,6 @@ import com.fasterxml.jackson.module.jaxb.ser.XmlAdapterJsonSerializer;
  * @author Ryan Heaton
  * @author Tatu Saloranta
  */
-@SuppressWarnings("restriction")
 public class JaxbAnnotationIntrospector
     extends AnnotationIntrospector
     implements Versioned
@@ -624,26 +623,21 @@ public class JaxbAnnotationIntrospector
      * deserialization by using \@XmlElement annotation.
      */
     @Override
-    public Class<?> findDeserializationType(Annotated a, JavaType baseType, String propName)
+    public Class<?> findDeserializationType(Annotated a, JavaType baseType)
     {
         /* First: only applicable for non-structured types (yes, JAXB annotations
          * are tricky)
          */
         if (!baseType.isContainerType()) {
-            return _doFindDeserializationType(a, baseType, propName);
+            return _doFindDeserializationType(a, baseType);
         }
         return null;
     }
 
-    @Override
-    public Class<?> findDeserializationKeyType(Annotated am, JavaType baseKeyType,
-            String propName)
-    {
-        return null;
-    }
+    //public Class<?> findDeserializationKeyType(Annotated am, JavaType baseKeyType)
 
     @Override
-    public Class<?> findDeserializationContentType(Annotated a, JavaType baseContentType, String propName)
+    public Class<?> findDeserializationContentType(Annotated a, JavaType baseContentType)
     {
         /* 15-Feb-2010, tatus: JAXB usage of XmlElement/XmlElements is really
          *   confusing: sometimes it's for type (non-container types), sometimes for
@@ -651,10 +645,10 @@ public class JaxbAnnotationIntrospector
          *   I think it's rather short-sighted. Whatever, it is what it is, and here
          *   we are being given content type explicitly.
          */
-        return _doFindDeserializationType(a, baseContentType, propName);
+        return _doFindDeserializationType(a, baseContentType);
     }
 
-    protected Class<?> _doFindDeserializationType(Annotated a, JavaType baseType, String propName)
+    protected Class<?> _doFindDeserializationType(Annotated a, JavaType baseType)
     {
         /* As per [JACKSON-288], @XmlJavaTypeAdapter will complicate handling of type
          * information; basically we better just ignore type we might find here altogether
@@ -677,13 +671,17 @@ public class JaxbAnnotationIntrospector
         /* 16-Feb-2010, tatu: May also have annotation associated with field, not method
          *    itself... and findAnnotation() won't find that (nor property descriptor)
          */
-        if ((a instanceof AnnotatedMethod) && propName != null) {
+        /*
+        if (a instanceof AnnotatedMethod) {
             AnnotatedMethod am = (AnnotatedMethod) a;
-            annotation = this.findFieldAnnotation(XmlElement.class, am.getDeclaringClass(), propName);
+            // Hmmhh. does name have to match?
+            String propName = am.getName();
+            annotation = findFieldAnnotation(XmlElement.class, am.getDeclaringClass(), propName);
             if (annotation != null && annotation.type() != XmlElement.DEFAULT.class) {
                 return annotation.type();
             }
         }
+        */
         return null;
     }
 
@@ -854,29 +852,6 @@ public class JaxbAnnotationIntrospector
                 }
             }
         }
-        return null;
-    }
-
-    /**
-     * Helper method for locating field on given class, checking if
-     * it has specified annotation, and returning it if found.
-     * 
-     * @since 1.5
-     */
-    private <A extends Annotation> A findFieldAnnotation(Class<A> annotationType,
-            Class<?> cls, String fieldName)
-    {
-        do {
-            for (Field f : cls.getDeclaredFields()) {
-                if (fieldName.equals(f.getName())) {
-                    return f.getAnnotation(annotationType);
-                }
-            }
-            if (cls.isInterface() || cls == Object.class) {
-                break;
-            }
-            cls = cls.getSuperclass();
-        } while (cls != null);
         return null;
     }
 

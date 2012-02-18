@@ -249,7 +249,7 @@ public class TestJaxbAnnotationIntrospector
     {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector());
-        mapper.enable(SerializationConfig.Feature.INDENT_OUTPUT);
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
         JaxbExample ex = new JaxbExample();
         QName qname = new QName("urn:hi", "hello");
         ex.setQname(qname);

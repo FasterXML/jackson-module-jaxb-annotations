@@ -51,7 +51,7 @@ public class TestDomElementSerialization extends BaseJaxbTest
     {
         @Override
         public JsonSerializer<?> findSerializer(SerializationConfig config,
-                JavaType type, BeanDescription beanDesc, BeanProperty property)
+                JavaType type, BeanDescription beanDesc)
         {
             if (Element.class.isAssignableFrom(type.getRawClass())) {
                 return new DomElementJsonSerializer();

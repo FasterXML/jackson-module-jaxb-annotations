@@ -7,7 +7,6 @@ import java.util.Map;
 import javax.xml.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 
 import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
@@ -114,7 +113,7 @@ public class TestJaxbAutoDetect extends BaseJaxbTest
         // But when disabling auto-detection, just one
         mapper = new ObjectMapper();
         mapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector());
-        mapper.configure(MapperConfig.Feature.AUTO_DETECT_GETTERS, false);
+        mapper.configure(MapperFeature.AUTO_DETECT_GETTERS, false);
         result = writeAndMap(mapper, bean);
         assertEquals(1, result.size());
         assertNull(result.get("a"));
