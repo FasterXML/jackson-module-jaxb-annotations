@@ -159,11 +159,13 @@ public class JaxbAnnotationIntrospector
         return null;
     }
 
+    /*
     @Override
-    public String[] findPropertiesToIgnore(AnnotatedClass ac) {
+    public String[] findPropertiesToIgnore(Annotated a) {
         // nothing in JAXB for this?
         return null;
     }
+    */
 
     @Override
     public Boolean findIgnoreUnknownProperties(AnnotatedClass ac) {
