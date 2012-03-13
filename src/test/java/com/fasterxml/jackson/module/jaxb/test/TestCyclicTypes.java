@@ -7,7 +7,6 @@ import javax.xml.bind.annotation.*;
 import com.fasterxml.jackson.databind.*;
 
 import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
 /**
  * Simple unit tests to verify that it is possible to handle
@@ -52,8 +51,7 @@ public class TestCyclicTypes
      */
     public void testWithJAXB() throws Exception
     {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector());
+        ObjectMapper mapper = getJaxbMapper();
         Bean bean =  new Bean(null, "abx");
 
         Map<String,Object> results = writeAndMap(mapper, bean);

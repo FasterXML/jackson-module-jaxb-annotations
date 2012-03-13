@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.adapters.*;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
@@ -115,7 +116,7 @@ public class JaxbAnnotationIntrospector
 
     /*
     /**********************************************************
-    /* General annotation properties
+    /* Meta-annotations
     /**********************************************************
      */
 
@@ -139,6 +140,65 @@ public class JaxbAnnotationIntrospector
             return true;
         }
         return false;
+    }
+
+    /*
+    /**********************************************************
+    /* General annotations (for classes, properties)
+    /**********************************************************
+     */
+    
+    @Override
+    public ObjectIdInfo findObjectIdInfo(Annotated ann)
+    {
+        /* To work in the way that works with JAXB and Jackson,
+         * we need to do things in bit of round-about way, starting
+         * with AnnotatedClass, locating @XmlID property, if any.
+         */
+        if (!(ann instanceof AnnotatedClass)) {
+            return null;
+        }
+        AnnotatedClass ac = (AnnotatedClass) ann;
+        /* Ideally, should not have to infer settings for class from
+         * individual fields and/or methods; but for now this
+         * has to do ...
+         */
+        String idPropName = null;
+
+        method_loop:
+        for (AnnotatedMethod m : ac.memberMethods()) {
+            XmlID idProp = m.getAnnotation(XmlID.class);
+            if (idProp == null) {
+                continue;
+            }
+            switch (m.getParameterCount()) {
+            case 0: // getter
+                idPropName = findJaxbPropertyName(m, m.getRawType(), BeanUtil.okNameForGetter(m));
+                break method_loop;
+            case 1: // setter
+                idPropName = findJaxbPropertyName(m, m.getRawType(), BeanUtil.okNameForSetter(m));
+                break method_loop;
+            }
+        }
+        if (idPropName == null) {
+            for (AnnotatedField f : ac.fields()) {
+                XmlID idProp = f.getAnnotation(XmlID.class);
+                if (idProp != null) {
+                    idPropName = findJaxbPropertyName(f, f.getRawType(), f.getName());
+                    break;
+                }
+            }
+        }
+        if (idPropName != null) {
+            /* Scoping... hmmh. Could XML requires somewhat global scope, n'est pas?
+             * The alternative would be to use declared type of this class.
+             */
+            Class<?> scope = Object.class; // alternatively would use 'ac.getRawClass()'
+            // and we will assume that there exists property thus named...
+            return new ObjectIdInfo(idPropName, scope, ObjectIdGenerators.PropertyGenerator.class);
+        }
+        
+        return null;
     }
     
     /*

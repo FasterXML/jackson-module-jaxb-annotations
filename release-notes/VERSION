@@ -10,6 +10,10 @@ Fixes:
 
 * [JACKSON-722]: Ability to use @XmlJavaTypeAdapter for List/Map values
 
+New features:
+
+* [Issue#2]: Support @XmlID, @XmlIDREF
+
 ------------------------------------------------------------------------
 === History: ===
 ------------------------------------------------------------------------
