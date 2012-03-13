@@ -83,7 +83,6 @@ public class TestXmlID extends BaseJaxbTest
         String json = mapper.writeValueAsString(company);
         // this is the easy part actually...
         assertNotNull(json);
-System.out.println("Company = "+json);    
 
         // then try bringing back
         Company result = mapper.readValue(json, Company.class);

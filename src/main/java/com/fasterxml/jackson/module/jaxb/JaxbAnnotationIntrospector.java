@@ -29,8 +29,8 @@ import com.fasterxml.jackson.module.jaxb.ser.XmlAdapterJsonSerializer;
 
 /**
  * Annotation introspector that leverages JAXB annotations where applicable to JSON mapping.
- * <p/>
- * The following JAXB annotations are not supported yet (but some may be supported in future)
+ * As of Jackson 2.0, most JAXB annotations are supported at least to some degree.
+ * Ones that are NOT yet supported are:
  * <ul>
  * <li>{@link XmlAnyAttribute} not yet used (as of 1.5) but may be in future (as an alias for @JsonAnySetter?)
  * <li>{@link XmlAnyElement} not yet used, may be as per [JACKSON-253]
@@ -38,9 +38,6 @@ import com.fasterxml.jackson.module.jaxb.ser.XmlAdapterJsonSerializer;
  * <li>{@link XmlElementDecl}
  * <li>{@link XmlElementRefs} because Jackson doesn't have any support for 'named' collection items -- however,
  *    this may become partially supported as per [JACKSON-253].
- * <li>{@link XmlID} because Jackson doesn't support referential integrity. NOTE: this too may be supported
- *   in future if/when id references are handled
- * <li>{@link XmlIDREF} same as <code>XmlID</code>
  * <li>{@link javax.xml.bind.annotation.XmlInlineBinaryData} since the underlying concepts
  *    (like XOP) do not exist in JSON -- Jackson will always use inline base64 encoding as the method
  * <li>{@link javax.xml.bind.annotation.XmlList} because JSON does have (or necessarily need)
@@ -48,18 +45,17 @@ import com.fasterxml.jackson.module.jaxb.ser.XmlAdapterJsonSerializer;
  * <li>{@link javax.xml.bind.annotation.XmlMimeType}
  * <li>{@link javax.xml.bind.annotation.XmlMixed} since JSON has no concept of mixed content
  * <li>{@link XmlRegistry}
- * <li>{@link XmlRootElement} is recognized and used (as of 1.7) for defining root wrapper name (if used)
  * <li>{@link XmlSchema} not used, unlikely to be used
  * <li>{@link XmlSchemaType} not used, unlikely to be used
  * <li>{@link XmlSchemaTypes} not used, unlikely to be used
- * <li>{@link XmlSeeAlso} not needed for anything currently (could theoretically be useful
- *    for locating subtypes for Polymorphic Type Handling)
+ * <li>{@link XmlSeeAlso} not yet supported, but [ISSUE-1] filed to use it, so may be supported.
  * </ul>
  *
  * Note also the following limitations:
  *
  * <ul>
  * <li>Any property annotated with {@link XmlValue} will have a property named 'value' on its JSON object.
+ *   </li>
  * </ul>
  *
  * @author Ryan Heaton
