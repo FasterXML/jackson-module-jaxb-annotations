@@ -36,12 +36,12 @@ Module registration works in standard way:
 
 and the alternative -- explicit configuration is done as:
 
-   AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
-   // if ONLY using JAXB annotations:
-   mapper.setAnnotationIntrospector(introspector);
-   // if using BOTH JAXB annotations AND Jackson annotations:
-   AnnotationIntrospector secondary = new JacksonAnnotationIntrospector();
-   mapper.setAnnotationIntrospector(new AnnotationIntrospector.Pair(introspector, secondary);
+    AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
+    // if ONLY using JAXB annotations:
+    mapper.setAnnotationIntrospector(introspector);
+    // if using BOTH JAXB annotations AND Jackson annotations:
+    AnnotationIntrospector secondary = new JacksonAnnotationIntrospector();
+    mapper.setAnnotationIntrospector(new AnnotationIntrospector.Pair(introspector, secondary);
 
 Note that by default Module version will use JAXB annotations as the primary, and Jackson annotations as secondary source; but you can change this behavior
 
