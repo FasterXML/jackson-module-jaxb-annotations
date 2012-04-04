@@ -1109,4 +1109,10 @@ public class JaxbAnnotationIntrospector
         }
         return null;
     }
+    
+    @Override
+    public Boolean hasRequiredMarker(AnnotatedMember m) {
+    	XmlElement annotation = m.getAnnotation(XmlElement.class);
+    	return annotation == null ? null : Boolean.valueOf(annotation.required());
+    }
 }
