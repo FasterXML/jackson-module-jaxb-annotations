@@ -1,10 +1,22 @@
-Version: 2.0.0
+Version: 2.0.2
 
 Release date:
-  25-Mar-2012
+  xx-xxx-2012
 
 Description:
-  Jackson 2.0 by FasterXML, baked at GitHub.
+  Second patch release for 2.0
+
+Fixes:
+
+------------------------------------------------------------------------
+=== History: ===
+------------------------------------------------------------------------
+
+2.0.1 [23-Apr-2012]
+
+* Made compilation target 1.5; should now work on JDK 1.5
+
+2.0.0 [25-Mar-2012]
 
 Fixes:
 
@@ -13,9 +25,5 @@ Fixes:
 New features:
 
 * [Issue#2]: Support @XmlID, @XmlIDREF
-
-------------------------------------------------------------------------
-=== History: ===
-------------------------------------------------------------------------
 
 [entries for versions 1.x and earlier not retained; refer to earlier releases)
