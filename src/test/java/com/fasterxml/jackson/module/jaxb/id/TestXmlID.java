@@ -27,8 +27,7 @@ public class TestXmlID extends BaseJaxbTest
      
     }
 
-    @XmlAccessorType
-    (XmlAccessType.FIELD)
+    @XmlAccessorType(XmlAccessType.FIELD)
     static class Employee {
      
         @XmlAttribute
