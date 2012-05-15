@@ -1,24 +1,26 @@
-Version: 2.0.2
+Version: 2.0.3
 
 Release date:
-  14-May-2012
+  xx-Jun-2012
 
 Description:
-  Second patch release for 2.0
+  Another patch release for 2.0
 
 Fixes:
-
-  No fixes; updated core dependencies to 2.0.2.
 
 ------------------------------------------------------------------------
 === History: ===
 ------------------------------------------------------------------------
 
-2.0.1 [23-Apr-2012]
+2.0.2 (14-May-2012)
+
+No fixes; updated core dependencies to 2.0.2.
+
+2.0.1 (23-Apr-2012)
 
 * Made compilation target 1.5; should now work on JDK 1.5
 
-2.0.0 [25-Mar-2012]
+2.0.0 (25-Mar-2012)
 
 Fixes:
 
