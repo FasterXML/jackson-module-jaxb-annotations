@@ -921,15 +921,6 @@ public class JaxbAnnotationIntrospector
 
     private static String findJaxbPropertyName(Annotated ae, Class<?> aeType, String defaultName)
     {
-        XmlElementWrapper elementWrapper = ae.getAnnotation(XmlElementWrapper.class);
-        if (elementWrapper != null) {
-            String name = elementWrapper.name();
-            if (!MARKER_FOR_DEFAULT.equals(name)) {
-                return name;
-            }
-            return defaultName;
-        }
-
         XmlAttribute attribute = ae.getAnnotation(XmlAttribute.class);
         if (attribute != null) {
             String name = attribute.name();
@@ -941,6 +932,14 @@ public class JaxbAnnotationIntrospector
         XmlElement element = ae.getAnnotation(XmlElement.class);
         if (element != null) {
             String name = element.name();
+            if (!MARKER_FOR_DEFAULT.equals(name)) {
+                return name;
+            }
+            return defaultName;
+        }
+        XmlElementWrapper elementWrapper = ae.getAnnotation(XmlElementWrapper.class);
+        if (elementWrapper != null) {
+            String name = elementWrapper.name();
             if (!MARKER_FOR_DEFAULT.equals(name)) {
                 return name;
             }
@@ -963,7 +962,6 @@ public class JaxbAnnotationIntrospector
                 }
             }
         }
-
         XmlValue valueInfo = ae.getAnnotation(XmlValue.class);
         if (valueInfo != null) {
             return "value";

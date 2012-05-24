@@ -25,10 +25,9 @@ public class TestPropertyOrdering
         public String getCpartyDto() { return cpartyDto; }
         public void setCpartyDto(String cpartyDto) { this.cpartyDto = cpartyDto; }
 	
-        @XmlElement(name="contact")
         @XmlElementWrapper(name="contacts")
-        public int[] getContacts() { return contacts; }
-        public void setContacts(int[] contacts) { this.contacts = contacts; }
+        public int[] getContact() { return contacts; }
+        public void setContact(int[] contacts) { this.contacts = contacts; }
     }
 
     /* Also, considering that JAXB actually seems to expect original
@@ -47,10 +46,9 @@ public class TestPropertyOrdering
         public String getCpartyDto() { return cpartyDto; }
         public void setCpartyDto(String cpartyDto) { this.cpartyDto = cpartyDto; }
         
-        @XmlElement(name="contact")
-        @XmlElementWrapper(name="contacts")
-        public int[] getContacts() { return contacts; }
-        public void setContacts(int[] contacts) { this.contacts = contacts; }
+        @XmlElement(name="contacts")
+        public int[] getContact() { return contacts; }
+        public void setContact(int[] contacts) { this.contacts = contacts; }
     }
 
     @XmlType(propOrder={"b", "a", "c"})

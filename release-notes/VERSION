@@ -8,6 +8,9 @@ Description:
 
 Fixes:
 
+* [Issue-7] Handling of @XmlElementWrapper incorrect wrt @XmlElement
+ (wrong precedence), when used with Jackon XML backend
+
 ------------------------------------------------------------------------
 === History: ===
 ------------------------------------------------------------------------
