@@ -1076,7 +1076,7 @@ public class JaxbAnnotationIntrospector
 
     private boolean adapterTypeMatches(XmlAdapter<?,?> adapter, Class<?> targetType)
     {
-        return targetType.isAssignableFrom(findAdapterBoundType(adapter));
+        return findAdapterBoundType(adapter).isAssignableFrom(targetType);
     }
 
     private Class<?> findAdapterBoundType(XmlAdapter<?,?> adapter)
