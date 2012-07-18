@@ -122,6 +122,41 @@ public class TestAdapters extends BaseJaxbTest
             return (javax.xml.bind.DatatypeConverter.printLong((long) (long) value));
         }   
     }    
+
+    // [Issue-10]: Infinite recursion in "self" adapters
+    public static class IdentityAdapter extends XmlAdapter<IdentityAdapterBean, IdentityAdapterBean> {
+        @Override
+        public IdentityAdapterBean unmarshal(IdentityAdapterBean b) {
+            b.value += "U";
+            return b;
+        }
+
+        @Override
+        public IdentityAdapterBean marshal(IdentityAdapterBean b) {
+            if (b != null) {
+                b.value += "M";
+            }
+            return b;
+        }   
+    }
+
+    @XmlJavaTypeAdapter(IdentityAdapter.class)
+    static class IdentityAdapterBean
+    {
+        public String value;
+
+        public IdentityAdapterBean() { }
+        public IdentityAdapterBean(String s) { value = s; }
+    }
+
+    static class IdentityAdapterPropertyBean
+    {
+        @XmlJavaTypeAdapter(IdentityAdapter.class)
+        public String value;
+
+        public IdentityAdapterPropertyBean() { }
+        public IdentityAdapterPropertyBean(String s) { value = s; }
+    }
     
     /*
     /**********************************************************
@@ -161,5 +196,26 @@ public class TestAdapters extends BaseJaxbTest
         ObjectMapper mapper = getJaxbMapper();
         String json = mapper.writeValueAsString(bean);
         assertEquals("{\"numFound\":\"3232\"}", json);
+    }
+
+    // [Issue-10]
+    public void testIdentityAdapterForClass() throws Exception
+    {
+        IdentityAdapterBean input = new IdentityAdapterBean("A");
+        ObjectMapper mapper = getJaxbMapper();
+        String json = mapper.writeValueAsString(input);
+        assertEquals("{\"value\":\"AM\"}", json);
+        IdentityAdapterBean result = mapper.readValue(json, IdentityAdapterBean.class);
+        assertEquals("AMU", result.value);
+    }
+
+    public void testIdentityAdapterForProperty() throws Exception
+    {
+        IdentityAdapterPropertyBean input = new IdentityAdapterPropertyBean("B");
+        ObjectMapper mapper = getJaxbMapper();
+        String json = mapper.writeValueAsString(input);
+        assertEquals("{\"value\":\"BM\"}", json);
+        IdentityAdapterPropertyBean result = mapper.readValue(json, IdentityAdapterPropertyBean.class);
+        assertEquals("BMU", result.value);
     }
 }

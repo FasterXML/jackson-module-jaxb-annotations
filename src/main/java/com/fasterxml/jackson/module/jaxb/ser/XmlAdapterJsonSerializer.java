@@ -46,9 +46,19 @@ public class XmlAdapterJsonSerializer
 
         JavaType type = typeFactory.constructType(_xmlAdapter.getClass());
         JavaType[] rawTypes = typeFactory.findTypeParameters(type, XmlAdapter.class);
-        JavaType valueType = (rawTypes == null || rawTypes.length < 2)
-            ? TypeFactory.unknownType() : rawTypes[0];
-
+        JavaType valueType;
+        
+        if (rawTypes == null || rawTypes.length < 2) {
+            valueType = TypeFactory.unknownType();
+        } else {
+            valueType = rawTypes[0];
+            // [Issue-10]: Infinite loop for "identity" adapter; try to prevent
+            JavaType otherType = rawTypes[1];
+            if (otherType != null && otherType.getRawClass() == valueType.getRawClass()) {
+		// 17-Jul-2012, tatu: Report an error? Handle some other way?
+                throw new IllegalArgumentException("Can not yet support 'identity' adapters");
+            }
+        }
         JsonSerializer<Object> ser = prov.findValueSerializer(valueType, property);
         return new XmlAdapterJsonSerializer(_xmlAdapter, valueType, ser);
     }
