@@ -4,6 +4,7 @@ import java.util.*;
 
 import javax.xml.bind.annotation.*;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
@@ -13,7 +14,7 @@ public class TestXmlID2 extends BaseJaxbTest
 {
     @XmlRootElement(name = "department")
     @XmlAccessorType(XmlAccessType.FIELD)
-    public class Department {
+    static class Department {
         @XmlElement
         @XmlID
         public Long id;
@@ -22,6 +23,11 @@ public class TestXmlID2 extends BaseJaxbTest
 
         @XmlIDREF
         public List<User> employees = new ArrayList<User>();
+
+        protected Department() { }
+        public Department(Long id) {
+            this.id = id;
+        }
         
         public void setId(Long id) {
             this.id = id;
@@ -39,7 +45,7 @@ public class TestXmlID2 extends BaseJaxbTest
     
     @XmlRootElement(name = "user")
     @XmlAccessorType(XmlAccessType.FIELD)
-    public class User
+    static class User
     {
         @XmlElement @XmlID
         public Long id;
@@ -49,7 +55,12 @@ public class TestXmlID2 extends BaseJaxbTest
 
         @XmlIDREF
         public Department department;
-            
+
+        protected User() { }
+        public User(Long id) {
+            this.id = id;
+        }
+        
         public void setId(Long id) {
             this.id = id;
         }
@@ -74,21 +85,17 @@ public class TestXmlID2 extends BaseJaxbTest
 
         User user1, user2, user3;
         Department dep;
-        user1 = new User();
-        user1.setId(11L);
+        user1 = new User(11L);
         user1.setUsername("11");
         user1.setEmail("11@test.com");
-        user2 = new User();
-        user2.setId(22L);
+        user2 = new User(22L);
         user2.setUsername("22");
         user2.setEmail("22@test.com");
-        user3 = new User();
-        user3.setId(33L);
+        user3 = new User(33L);
         user3.setUsername("33");
         user3.setEmail("33@test.com");
 
-        dep = new Department();
-        dep.setId(9L);
+        dep = new Department(9L);
         dep.setName("department9");
         user1.setDepartment(dep);
         users.add(user1);
@@ -105,11 +112,20 @@ public class TestXmlID2 extends BaseJaxbTest
     
     public void testIdWithJaxb() throws Exception
     {
-        String expected = "[{\"id\":11,\"username\":\"11\",\"email\":\"11@test.com\",\"department\":9},{\"id\":22,\"username\":\"22\",\"email\":\"22@test.com\",\"department\":9}]}},{\"id\":22,\"username\":\"22\",\"email\":\"22@test.com\",\"department\":9},{\"id\":33,\"username\":\"33\",\"email\":\"33@test.com\",\"department\":null}]";
+        String expected = "[{\"id\":11,\"username\":\"11\",\"email\":\"11@test.com\","
+                +"\"department\":{\"id\":9,\"name\":\"department9\",\"employees\":["
+                +"11,{\"id\":22,\"username\":\"22\",\"email\":\"22@test.com\","
+                +"\"department\":9}]}},22,{\"id\":33,\"username\":\"33\",\"email\":\"33@test.com\",\"department\":null}]";
         ObjectMapper mapper = new ObjectMapper();
         mapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector(mapper.getTypeFactory()));
         List<User> users = getUserList();
-        System.out.println(mapper.writeValueAsString(users));
-        assertEquals(expected,mapper.writeValueAsString(users));
+        String json = mapper.writeValueAsString(users);
+        assertEquals(expected, json);
+    
+        List<User> result = mapper.readValue(json, new TypeReference<List<User>>() { });
+        assertEquals(3, result.size());
+        assertEquals(Long.valueOf(11), result.get(0).id);
+        assertEquals(Long.valueOf(22), result.get(1).id);
+        assertEquals(Long.valueOf(33), result.get(2).id);
     }
 }

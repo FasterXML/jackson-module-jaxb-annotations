@@ -189,7 +189,7 @@ public class JaxbAnnotationIntrospector
             /* Scoping... hmmh. Could XML requires somewhat global scope, n'est pas?
              * The alternative would be to use declared type of this class.
              */
-            Class<?> scope = Object.class; // alternatively would use 'ac.getRawClass()'
+            Class<?> scope = Object.class; // alternatively would use 'ac.getRawType()'
             // and we will assume that there exists property thus named...
             return new ObjectIdInfo(idPropName, scope, ObjectIdGenerators.PropertyGenerator.class);
         }
