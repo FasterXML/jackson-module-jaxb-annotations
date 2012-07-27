@@ -6,11 +6,17 @@ Release date:
 Description:
   Another patch release for 2.0
 
-No fixes or changes, released along with other core components
+Fixes:
+
+* [Issue-9]: Problems with multiple @XmlID, @XmlIDREF properties
 
 ------------------------------------------------------------------------
 === History: ===
 ------------------------------------------------------------------------
+
+2.0.4 (26-Jun-2012)
+
+No fixes or changes, released along with other core components
 
 2.0.3 (15-Jun-2012)
 
