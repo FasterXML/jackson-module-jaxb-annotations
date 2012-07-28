@@ -198,7 +198,8 @@ public class TestAdapters extends BaseJaxbTest
         assertEquals("{\"numFound\":\"3232\"}", json);
     }
 
-    /* 27-Jul-2012, tatu: Temporarily comment out to get 2.0.5 out
+    // 27-Jul-2012, tatu: NOTE that these 2 are still failing as of 2.0.5;
+    //   should be fixed soon
     
     // [Issue-10]
     public void testIdentityAdapterForClass() throws Exception
@@ -221,6 +222,4 @@ public class TestAdapters extends BaseJaxbTest
         IdentityAdapterPropertyBean result = mapper.readValue(json, IdentityAdapterPropertyBean.class);
         assertEquals("BMU", result.value);
     }
-*/
-
 }
