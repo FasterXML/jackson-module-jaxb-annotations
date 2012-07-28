@@ -16,7 +16,7 @@ To use this extension on Maven-based projects, use following dependency:
     <dependency>
       <groupId>com.fasterxml.jackson.module</groupId>
       <artifactId>jackson-module-jaxb-annotations</artifactId>
-      <version>2.0.0-SNAPSHOT</version>
+      <version>2.0.5</version>
     </dependency>
 
 (or whatever version is most up-to-date at the moment)
