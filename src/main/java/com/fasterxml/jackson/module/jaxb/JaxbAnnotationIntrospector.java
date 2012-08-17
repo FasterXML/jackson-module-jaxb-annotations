@@ -89,10 +89,6 @@ public class JaxbAnnotationIntrospector
         this(config.getTypeFactory(), DEFAULT_FIRST_XMLIDREF_AS_ID);
     }
     
-    /**
-     * @deprecated Since 2.1, use the ctor with 2 args
-     */
-    @Deprecated
     public JaxbAnnotationIntrospector(TypeFactory typeFactory)
     {
         this(typeFactory, DEFAULT_FIRST_XMLIDREF_AS_ID);
@@ -399,19 +395,18 @@ public class JaxbAnnotationIntrospector
     {
         // No package/superclass defaulting (only used with fields, methods)
         XmlElements elems = findAnnotation(XmlElements.class, a, false, false, false);
+        ArrayList<NamedType> result = null;
         if (elems != null) {
-            ArrayList<NamedType> result = new ArrayList<NamedType>();
+            result = new ArrayList<NamedType>();
             for (XmlElement elem : elems.value()) {
                 String name = elem.name();
                 if (MARKER_FOR_DEFAULT.equals(name)) name = null;
                 result.add(new NamedType(elem.type(), name));
             }
-            return result;
-        }
-        else {
+        } else {
             XmlElementRefs elemRefs = findAnnotation(XmlElementRefs.class, a, false, false, false);
             if (elemRefs != null) {
-                ArrayList<NamedType> result = new ArrayList<NamedType>();
+                result = new ArrayList<NamedType>();
                 for (XmlElementRef elemRef : elemRefs.value()) {
                     Class<?> refType = elemRef.type();
                     // only good for types other than JAXBElement (which is XML based)
@@ -430,10 +425,27 @@ public class JaxbAnnotationIntrospector
                         result.add(new NamedType(refType, name));
                     }
                 }
-                return result;
             }
         }
-        return null;
+        
+        // [Issue#1] check @XmlSeeAlso as well.
+        /* 17-Aug-2012, tatu:  But wait! For structured type, what we really is
+         *    value (content) type!
+         *    If code below does not make full (or any) sense, do not despair -- it
+         *    is wrong. Yet it works. The call sequence before we get here is mangled,
+         *    its logic twisted... but as Dire Straits put it: "That ain't working --
+         *    that's The Way You Do It!"
+         */
+        XmlSeeAlso ann = a.getAnnotation(XmlSeeAlso.class);
+        if (ann != null) {
+            if (result == null) {
+                result = new ArrayList<NamedType>();
+            }
+            for (Class<?> cls : ann.value()) {
+                result.add(new NamedType(cls));
+            }
+        }
+        return result;
     }
 
     @Override
