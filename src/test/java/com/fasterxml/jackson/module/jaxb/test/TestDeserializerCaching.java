@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.deser.BeanDeserializer;
 import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
 
 import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
 /**
  * Unit test(s) for [JACKSON-472]
@@ -78,8 +77,7 @@ public class TestDeserializerCaching extends BaseJaxbTest
             +"\"value2\" : {\"name\" : \"color\", \"value\" : \"red\"},\n"
             +"\"value3\" : {\"name\" : \"size\", \"value\" : \"small\"}}"
             ;
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector());
+        ObjectMapper mapper = getJaxbMapper();
         mapper.registerModule(new MyBeanModule());
         mapper.readValue(JSON, MyBean.class);
         assertEquals(1, MyBeanDeserializerModifier.count);

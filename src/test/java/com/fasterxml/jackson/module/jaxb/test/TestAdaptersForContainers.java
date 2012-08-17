@@ -9,7 +9,6 @@ import javax.xml.bind.annotation.adapters.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import com.fasterxml.jackson.module.jaxb.test.TestJaxbAnnotationIntrospector.KeyValuePair;
 
 /**
@@ -117,8 +116,7 @@ public class TestAdaptersForContainers extends BaseJaxbTest
     
     public void testAdapterForBeanWithMap() throws Exception
     {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector());
+        ObjectMapper mapper = getJaxbMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         ParentJAXBBean parentJaxbBean = new ParentJAXBBean();
         HashMap<String, String> params = new HashMap<String, String>();

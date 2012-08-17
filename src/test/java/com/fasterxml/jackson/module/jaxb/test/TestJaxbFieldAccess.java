@@ -7,7 +7,6 @@ import javax.xml.bind.annotation.*;
 import com.fasterxml.jackson.databind.*;
 
 import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
 public class TestJaxbFieldAccess extends BaseJaxbTest
 {
@@ -34,16 +33,14 @@ public class TestJaxbFieldAccess extends BaseJaxbTest
     // Verify serialization wrt [JACKSON-202]
     public void testFieldSerialization() throws IOException
     {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector());
+        ObjectMapper mapper = getJaxbMapper();
         assertEquals("{\"x\":3}", serializeAsString(mapper, new Fields(3)));
     }
 
     // Verify deserialization wrt [JACKSON-202]
     public void testFieldDeserialization() throws IOException
     {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector());
+        ObjectMapper mapper = getJaxbMapper();
         Fields result = mapper.readValue("{ \"x\":3 }", Fields.class);
         assertEquals(3, result.x);
     }

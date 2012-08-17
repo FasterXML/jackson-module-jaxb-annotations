@@ -3,16 +3,15 @@ package com.fasterxml.jackson.module.jaxb.test;
 import java.io.*;
 import java.util.HashMap;
 
-import junit.framework.TestCase;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
+import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
 
 /**
  * @author Ryan Heaton
  */
-public class TestAdaptedMapType extends TestCase {
+public class TestAdaptedMapType extends BaseJaxbTest
+{
 
   public void testJacksonAdaptedMapType() throws IOException {
     ObjectContainingAMap obj = new ObjectContainingAMap();
@@ -20,8 +19,7 @@ public class TestAdaptedMapType extends TestCase {
     obj.getMyMap().put("this", "that");
     obj.getMyMap().put("how", "here");
 
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector());
+    ObjectMapper mapper = getJaxbMapper();
     byte[] json = mapper.writeValueAsBytes(obj);
     obj = mapper.readValue(new ByteArrayInputStream(json), ObjectContainingAMap.class);
     assertNotNull(obj.getMyMap());

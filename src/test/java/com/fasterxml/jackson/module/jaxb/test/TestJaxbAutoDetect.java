@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
@@ -82,7 +83,7 @@ public class TestJaxbAutoDetect extends BaseJaxbTest
 
         public DualAnnotationObjectMapper() {
             super();
-            AnnotationIntrospector primary = new JaxbAnnotationIntrospector();
+            AnnotationIntrospector primary = new JaxbAnnotationIntrospector(TypeFactory.defaultInstance());
             AnnotationIntrospector secondary = new JacksonAnnotationIntrospector();
 
             // make de/serializer use JAXB annotations first, then jackson ones
@@ -99,8 +100,7 @@ public class TestJaxbAutoDetect extends BaseJaxbTest
 
     public void testAutoDetectDisable() throws IOException
     {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector());
+        ObjectMapper mapper = getJaxbMapper();
         Jackson183Bean bean = new Jackson183Bean();
         Map<String,Object> result;
 
@@ -111,8 +111,7 @@ public class TestJaxbAutoDetect extends BaseJaxbTest
         assertEquals("b", result.get("b"));
 
         // But when disabling auto-detection, just one
-        mapper = new ObjectMapper();
-        mapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector());
+        mapper = getJaxbMapper();
         mapper.configure(MapperFeature.AUTO_DETECT_GETTERS, false);
         result = writeAndMap(mapper, bean);
         assertEquals(1, result.size());
@@ -122,8 +121,7 @@ public class TestJaxbAutoDetect extends BaseJaxbTest
 
     public void testIssue246() throws IOException
     {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector());
+        ObjectMapper mapper = getJaxbMapper();
         Identified id = new Identified();
         id.id = "123";
         assertEquals("{\"id\":\"123\"}", mapper.writeValueAsString(id));

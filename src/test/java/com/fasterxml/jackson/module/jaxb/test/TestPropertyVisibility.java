@@ -7,7 +7,6 @@ import javax.xml.bind.annotation.*;
 import com.fasterxml.jackson.databind.*;
 
 import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
 /**
  * Those JAXB support unit tests that fail, mostly because our JAXB
@@ -71,8 +70,7 @@ public class TestPropertyVisibility
     // NOTE: fails currently because we use Bean Introspector which only sees public methods -- need to rewrite
     public void testJackson354Serialization() throws IOException
     {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector());
+        ObjectMapper mapper = getJaxbMapper();
         assertEquals("{\"name\":\"foo\"}", mapper.writeValueAsString(new Bean354()));
     }
 

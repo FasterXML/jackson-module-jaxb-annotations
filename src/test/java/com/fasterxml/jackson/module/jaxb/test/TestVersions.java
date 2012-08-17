@@ -2,6 +2,7 @@ package com.fasterxml.jackson.module.jaxb.test;
 
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.core.Versioned;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
@@ -20,7 +21,7 @@ public class TestVersions extends BaseJaxbTest
 
     public void testMapperVersions()
     {
-        assertVersion(new JaxbAnnotationIntrospector());
+        assertVersion(new JaxbAnnotationIntrospector(TypeFactory.defaultInstance()));
     }
 
     /*

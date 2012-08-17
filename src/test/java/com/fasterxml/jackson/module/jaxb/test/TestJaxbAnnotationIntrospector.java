@@ -10,6 +10,7 @@ import javax.xml.namespace.QName;
 
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
@@ -224,18 +225,17 @@ public class TestJaxbAnnotationIntrospector
     /****************************************************
      */
 
+    private final ObjectMapper MAPPER = getJaxbMapper();
+    
     public void testDetection() throws Exception
     {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector());
-
-        Map<String,Object> result = writeAndMap(mapper, new SimpleBean());
+        Map<String,Object> result = writeAndMap(MAPPER, new SimpleBean());
         assertEquals(3, result.size());
         assertEquals("1", result.get("jaxb"));
         assertEquals("2", result.get("jaxb2"));
         assertEquals("3", result.get("jaxb3"));
 
-        result = writeAndMap(mapper, new SimpleBean2());
+        result = writeAndMap(MAPPER, new SimpleBean2());
         assertEquals(3, result.size());
         assertEquals("1", result.get("jaxb"));
         assertEquals("2", result.get("jaxb2"));
@@ -247,8 +247,7 @@ public class TestJaxbAnnotationIntrospector
      */
     public void testSerializeDeserializeWithJaxbAnnotations() throws Exception
     {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector());
+        ObjectMapper mapper = getJaxbMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         JaxbExample ex = new JaxbExample();
         QName qname = new QName("urn:hi", "hello");
@@ -295,7 +294,7 @@ public class TestJaxbAnnotationIntrospector
 
     public void testRootNameAccess() throws Exception
     {
-        AnnotationIntrospector ai = new JaxbAnnotationIntrospector();
+        AnnotationIntrospector ai = new JaxbAnnotationIntrospector(TypeFactory.defaultInstance());
         // If no @XmlRootElement, should get null (unless pkg has etc)
         assertNull(ai.findRootName(AnnotatedClass.construct(SimpleBean.class, ai, null)));
         // With @XmlRootElement, but no name, empty String
@@ -307,16 +306,14 @@ public class TestJaxbAnnotationIntrospector
     // JAXB can specify that properties are to be written in alphabetic order...
     public void testSerializationAlphaOrdering() throws Exception
     {
-        ObjectMapper mapper = getJaxbMapper();
-        assertEquals("{\"a\":1,\"b\":2,\"c\":3}", serializeAsString(mapper, new AlphaBean()));
+        assertEquals("{\"a\":1,\"b\":2,\"c\":3}", MAPPER.writeValueAsString(new AlphaBean()));
     }
 
     // Test for [JACKSON-256], thanks John.
     public void testWriteNulls() throws Exception
     {
-        ObjectMapper mapper = getJaxbMapper();
         BeanWithNillable bean = new BeanWithNillable();
         bean.X = new Nillable();
-        assertEquals("{\"X\":{\"Z\":null}}", serializeAsString(mapper, bean));
+        assertEquals("{\"X\":{\"Z\":null}}", MAPPER.writeValueAsString(bean));
     }
 }

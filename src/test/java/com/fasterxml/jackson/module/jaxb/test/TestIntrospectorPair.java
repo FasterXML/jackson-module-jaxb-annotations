@@ -23,7 +23,7 @@ public class TestIntrospectorPair
     extends BaseJaxbTest
 {
     final static AnnotationIntrospector _jacksonAI = new JacksonAnnotationIntrospector();
-    final static AnnotationIntrospector _jaxbAI = new JaxbAnnotationIntrospector();
+    final static AnnotationIntrospector _jaxbAI = new JaxbAnnotationIntrospector(TypeFactory.defaultInstance());
     
     /*
     /**********************************************************
@@ -143,17 +143,6 @@ public class TestIntrospectorPair
         assertEquals("2", result.get("jaxb"));
         // JAXB one should have priority
         assertEquals("3", result.get("bothJaxb"));
-    }
-
-    public void testProperties() throws Exception
-    {
-        AnnotationIntrospector pair = new AnnotationIntrospector.Pair(_jacksonAI, _jaxbAI);
-        assertTrue(pair.isHandled(NamespaceBean.class.getAnnotation(XmlRootElement.class)));
-
-        /* won't work without actually getting class annotations etc
-        AnnotatedConstructor con = new AnnotatedConstructor(getClass().getConstructor(), null, null);
-        assertFalse(pair.isIgnorableConstructor(con));
-        */
     }
 
     public void testNaming() throws Exception
