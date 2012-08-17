@@ -37,23 +37,34 @@ public class JaxbAnnotationModule extends SimpleModule
      * value is {@link Priority#PRIMARY}.
      */
     protected Priority _priority = Priority.PRIMARY;
+
+    /**
+     * Setting to determine whether default behavior with JAXB
+     * {@link javax.xml.bind.annotations.XmlIDXX}
+     *<p>
+     * The default value is <code>false</code>, for backwards compatibility
+     * (since 2.0 only allowed this value)
+     *
+     * @since 2.1
+     */
+    protected boolean _firstXmlidRefAsId = false;
+
+    /*
+    /**********************************************************
+    /* Life cycle
+    /**********************************************************
+     */
     
     public JaxbAnnotationModule()
     {
         super("jaxb-annotations", ModuleVersion.instance.version());
     }
-
-    public JaxbAnnotationModule setPriority(Priority p) {
-        _priority = p;
-        return this;
-    }
-
-    public Priority getPriority() { return _priority; }
     
     @Override
     public void setupModule(SetupContext context)
     {
-        JaxbAnnotationIntrospector intr = new JaxbAnnotationIntrospector(context.getTypeFactory());
+        JaxbAnnotationIntrospector intr = new JaxbAnnotationIntrospector(context.getTypeFactory(),
+                _firstXmlidRefAsId);
         switch (_priority) {
         case PRIMARY:
             context.insertAnnotationIntrospector(intr);
@@ -63,4 +74,44 @@ public class JaxbAnnotationModule extends SimpleModule
             break;
         }
     }
+
+    /*
+    /**********************************************************
+    /* Configuration
+    /**********************************************************
+     */
+    
+    /**
+     * Method for defining whether JAXB annotations should be added
+     * as primary or secondary annotations (compared to already registered
+     * annotations).
+     *<p>
+     * NOTE: method MUST be called before registering the module -- calling
+     * afterwards will not have any effect on previous registrations.
+     */
+    public JaxbAnnotationModule setPriority(Priority p) {
+        _priority = p;
+        return this;
+    }
+
+    /**
+     * Method for definining whether to always use id value when serializing
+     * something indicated with {@link XmlIdRef} or not: if not, then first instance
+     * will be serialized as POJOs, and only later references using id.
+     * If enabled, serialization will always use value of Object Id.
+     * 
+     * @param state of "first-ref-as-id" feature: true means "yes, always serialize
+     *    reference as id", and true "serialize first reference normally, and other
+     *    as id"
+     * 
+     * @return This module, to allow call chaining
+     * @since 2.1
+     */
+    public JaxbAnnotationModule setFirstAsId(boolean state) {
+        _firstXmlidRefAsId = state;
+        return this;
+    }
+    
+    
+    public Priority getPriority() { return _priority; }
 }

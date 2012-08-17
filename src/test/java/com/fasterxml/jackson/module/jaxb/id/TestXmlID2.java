@@ -110,14 +110,16 @@ public class TestXmlID2 extends BaseJaxbTest
         return resultList;
     }
     
-    public void testIdWithJaxb() throws Exception
+    public void testIdWithJacksonRules() throws Exception
     {
         String expected = "[{\"id\":11,\"username\":\"11\",\"email\":\"11@test.com\","
                 +"\"department\":{\"id\":9,\"name\":\"department9\",\"employees\":["
                 +"11,{\"id\":22,\"username\":\"22\",\"email\":\"22@test.com\","
                 +"\"department\":9}]}},22,{\"id\":33,\"username\":\"33\",\"email\":\"33@test.com\",\"department\":null}]";
         ObjectMapper mapper = new ObjectMapper();
-        mapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector(mapper.getTypeFactory()));
+        
+        // first, with default settings (first NOT as id)
+        mapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector(mapper.getTypeFactory(), false));
         List<User> users = getUserList();
         String json = mapper.writeValueAsString(users);
         assertEquals(expected, json);
@@ -127,5 +129,18 @@ public class TestXmlID2 extends BaseJaxbTest
         assertEquals(Long.valueOf(11), result.get(0).id);
         assertEquals(Long.valueOf(22), result.get(1).id);
         assertEquals(Long.valueOf(33), result.get(2).id);
+    }
+    
+    public void testIdWithJaxbRules() throws Exception
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        // but then also variant where ID is ALWAYS used for XmlID / XmlIDREF
+        mapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector(mapper.getTypeFactory(), true));
+        List<User> users = getUserList();
+        final String json = mapper.writeValueAsString(users);
+        String expected = "[11,22,33]";
+        assertEquals(expected, json);
+
+        // However, there is no way to resolve those back, without some external mechanism...
     }
 }

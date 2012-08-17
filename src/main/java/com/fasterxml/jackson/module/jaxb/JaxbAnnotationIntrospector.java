@@ -67,23 +67,43 @@ public class JaxbAnnotationIntrospector
 {
     protected final static String MARKER_FOR_DEFAULT = "##default";
 
+    private final static boolean DEFAULT_FIRST_XMLIDREF_AS_ID = false;
+    
     protected final String _jaxbPackageName;
     protected final JsonSerializer<?> _dataHandlerSerializer;
     protected final JsonDeserializer<?> _dataHandlerDeserializer;
 
     protected final TypeFactory _typeFactory;
 
+    protected final boolean _firstXmlidRefAsId;
+    
+    /**
+     * @deprecated Since 2.1, use the ctor with 2 args
+     */
+    @Deprecated
     public JaxbAnnotationIntrospector() {
-        this(TypeFactory.defaultInstance());
+        this(TypeFactory.defaultInstance(), DEFAULT_FIRST_XMLIDREF_AS_ID);
     }
-    
+
     public JaxbAnnotationIntrospector(MapperConfig<?> config) {
-        this(config.getTypeFactory());
+        this(config.getTypeFactory(), DEFAULT_FIRST_XMLIDREF_AS_ID);
     }
     
+    /**
+     * @deprecated Since 2.1, use the ctor with 2 args
+     */
+    @Deprecated
     public JaxbAnnotationIntrospector(TypeFactory typeFactory)
     {
+        this(typeFactory, DEFAULT_FIRST_XMLIDREF_AS_ID);
+    }
+
+    public JaxbAnnotationIntrospector(TypeFactory typeFactory,
+            boolean firstXmlidRefAsId)
+    {
         _typeFactory = (typeFactory == null)? TypeFactory.defaultInstance() : typeFactory;
+        _firstXmlidRefAsId = firstXmlidRefAsId;
+
         _jaxbPackageName = XmlElement.class.getPackage().getName();
 
         JsonSerializer<?> dataHandlerSerializer = null;
@@ -191,7 +211,8 @@ public class JaxbAnnotationIntrospector
              */
             Class<?> scope = Object.class; // alternatively would use 'ac.getRawType()'
             // and we will assume that there exists property thus named...
-            return new ObjectIdInfo(idPropName, scope, ObjectIdGenerators.PropertyGenerator.class);
+            return new ObjectIdInfo(idPropName, scope, ObjectIdGenerators.PropertyGenerator.class,
+                    _firstXmlidRefAsId);
         }
         
         return null;
