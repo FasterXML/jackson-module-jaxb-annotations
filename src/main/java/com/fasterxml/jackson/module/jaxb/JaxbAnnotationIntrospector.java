@@ -134,29 +134,6 @@ public class JaxbAnnotationIntrospector
     /* Meta-annotations
     /**********************************************************
      */
-
-    /**
-     * An annotation is handled if it's in the same package as @XmlElement, including subpackages.
-     *
-     * @param ann The annotation.
-     * @return Whether the annotation is in the JAXB package.
-     */
-    @Override
-    public boolean isHandled(Annotation ann)
-    {
-        /* note: class we want is the annotation class, not instance
-         * (since annotation instances, like enums, may be of different
-         * physical type!)
-         */
-        Class<?> cls = ann.annotationType();
-        Package pkg = cls.getPackage();
-        String pkgName = (pkg != null) ? pkg.getName() : cls.getName();
-        if (pkgName.startsWith(_jaxbPackageName)) {
-            return true;
-        }
-        return false;
-    }
-
     /*
     /**********************************************************
     /* General annotations (for classes, properties)
@@ -864,7 +841,7 @@ public class JaxbAnnotationIntrospector
     {
         // TODO: use AnnotatedField's annotations directly
         for (Annotation annotation : f.getAnnotated().getDeclaredAnnotations()) {
-            if (isHandled(annotation)) {
+            if (isJAXBAnnotation(annotation)) {
                 return true;
             }
         }
@@ -886,7 +863,7 @@ public class JaxbAnnotationIntrospector
     {
         // TODO: use AnnotatedField's annotations directly
         for (Annotation annotation : m.getAnnotated().getDeclaredAnnotations()) {
-            if (isHandled(annotation)) {
+            if (isJAXBAnnotation(annotation)) {
                 return true;
             }
         }
@@ -970,6 +947,29 @@ public class JaxbAnnotationIntrospector
     /**********************************************************
      */
 
+    /**
+     * An annotation is handled if it's in the same package as @XmlElement, including subpackages.
+     *
+     * @param ann The annotation.
+     * @return Whether the annotation is in the JAXB package.
+     */
+    protected boolean isJAXBAnnotation(Annotation ann)
+    {
+        /* note: class we want is the annotation class, not instance
+         * (since annotation instances, like enums, may be of different
+         * physical type!)
+         */
+        Class<?> cls = ann.annotationType();
+        Package pkg = cls.getPackage();
+        String pkgName = (pkg != null) ? pkg.getName() : cls.getName();
+        if (pkgName.startsWith(_jaxbPackageName)) {
+            return true;
+        }
+        return false;
+    }
+
+
+    
     private static String findJaxbPropertyName(Annotated ae, Class<?> aeType, String defaultName)
     {
         XmlAttribute attribute = ae.getAnnotation(XmlAttribute.class);

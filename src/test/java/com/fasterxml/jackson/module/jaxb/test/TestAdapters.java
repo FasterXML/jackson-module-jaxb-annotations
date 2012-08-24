@@ -197,29 +197,4 @@ public class TestAdapters extends BaseJaxbTest
         String json = mapper.writeValueAsString(bean);
         assertEquals("{\"numFound\":\"3232\"}", json);
     }
-
-    // 27-Jul-2012, tatu: NOTE that these 2 are still failing as of 2.0.5;
-    //   should be fixed soon
-    
-    // [Issue-10]
-    public void testIdentityAdapterForClass() throws Exception
-    {
-        IdentityAdapterBean input = new IdentityAdapterBean("A");
-        ObjectMapper mapper = getJaxbMapper();
-        String json = mapper.writeValueAsString(input);
-        assertEquals("{\"value\":\"AM\"}", json);
-        IdentityAdapterBean result = mapper.readValue(json, IdentityAdapterBean.class);
-        assertEquals("AMU", result.value);
-    }
-
-    // [Issue-10]
-    public void testIdentityAdapterForProperty() throws Exception
-    {
-        IdentityAdapterPropertyBean input = new IdentityAdapterPropertyBean("B");
-        ObjectMapper mapper = getJaxbMapper();
-        String json = mapper.writeValueAsString(input);
-        assertEquals("{\"value\":\"BM\"}", json);
-        IdentityAdapterPropertyBean result = mapper.readValue(json, IdentityAdapterPropertyBean.class);
-        assertEquals("BMU", result.value);
-    }
 }

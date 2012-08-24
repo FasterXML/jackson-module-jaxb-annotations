@@ -1,0 +1,79 @@
+package com.fasterxml.jackson.module.jaxb.failing;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
+
+/**
+ * Failing unit tests related to Adapter handling.
+ */
+public class TestAdapters extends BaseJaxbTest
+{
+    // [Issue-10]: Infinite recursion in "self" adapters
+    public static class IdentityAdapter extends XmlAdapter<IdentityAdapterBean, IdentityAdapterBean> {
+        @Override
+        public IdentityAdapterBean unmarshal(IdentityAdapterBean b) {
+            b.value += "U";
+            return b;
+        }
+
+        @Override
+        public IdentityAdapterBean marshal(IdentityAdapterBean b) {
+            if (b != null) {
+                b.value += "M";
+            }
+            return b;
+        }   
+    }
+
+    @XmlJavaTypeAdapter(IdentityAdapter.class)
+    static class IdentityAdapterBean
+    {
+        public String value;
+
+        public IdentityAdapterBean() { }
+        public IdentityAdapterBean(String s) { value = s; }
+    }
+
+    static class IdentityAdapterPropertyBean
+    {
+        @XmlJavaTypeAdapter(IdentityAdapter.class)
+        public String value;
+
+        public IdentityAdapterPropertyBean() { }
+        public IdentityAdapterPropertyBean(String s) { value = s; }
+    }
+    
+    /*
+    /**********************************************************
+    /* Unit tests
+    /**********************************************************
+     */
+
+    // 27-Jul-2012, tatu: NOTE that these 2 are still failing as of 2.0.5;
+    //   should be fixed soon
+    
+    // [Issue-10]
+    public void testIdentityAdapterForClass() throws Exception
+    {
+        IdentityAdapterBean input = new IdentityAdapterBean("A");
+        ObjectMapper mapper = getJaxbMapper();
+        String json = mapper.writeValueAsString(input);
+        assertEquals("{\"value\":\"AM\"}", json);
+        IdentityAdapterBean result = mapper.readValue(json, IdentityAdapterBean.class);
+        assertEquals("AMU", result.value);
+    }
+
+    // [Issue-10]
+    public void testIdentityAdapterForProperty() throws Exception
+    {
+        IdentityAdapterPropertyBean input = new IdentityAdapterPropertyBean("B");
+        ObjectMapper mapper = getJaxbMapper();
+        String json = mapper.writeValueAsString(input);
+        assertEquals("{\"value\":\"BM\"}", json);
+        IdentityAdapterPropertyBean result = mapper.readValue(json, IdentityAdapterPropertyBean.class);
+        assertEquals("BMU", result.value);
+    }
+}
