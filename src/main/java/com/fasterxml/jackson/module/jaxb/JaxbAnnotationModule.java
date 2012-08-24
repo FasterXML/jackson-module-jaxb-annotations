@@ -38,17 +38,6 @@ public class JaxbAnnotationModule extends SimpleModule
      */
     protected Priority _priority = Priority.PRIMARY;
 
-    /**
-     * Setting to determine whether default behavior with JAXB
-     * {@link javax.xml.bind.annotations.XmlIDXX}
-     *<p>
-     * The default value is <code>false</code>, for backwards compatibility
-     * (since 2.0 only allowed this value)
-     *
-     * @since 2.1
-     */
-    protected boolean _firstXmlidRefAsId = false;
-
     /*
     /**********************************************************
     /* Life cycle
@@ -63,8 +52,7 @@ public class JaxbAnnotationModule extends SimpleModule
     @Override
     public void setupModule(SetupContext context)
     {
-        JaxbAnnotationIntrospector intr = new JaxbAnnotationIntrospector(context.getTypeFactory(),
-                _firstXmlidRefAsId);
+        JaxbAnnotationIntrospector intr = new JaxbAnnotationIntrospector(context.getTypeFactory());
         switch (_priority) {
         case PRIMARY:
             context.insertAnnotationIntrospector(intr);
@@ -93,25 +81,6 @@ public class JaxbAnnotationModule extends SimpleModule
         _priority = p;
         return this;
     }
-
-    /**
-     * Method for definining whether to always use id value when serializing
-     * something indicated with {@link XmlIdRef} or not: if not, then first instance
-     * will be serialized as POJOs, and only later references using id.
-     * If enabled, serialization will always use value of Object Id.
-     * 
-     * @param state of "first-ref-as-id" feature: true means "yes, always serialize
-     *    reference as id", and true "serialize first reference normally, and other
-     *    as id"
-     * 
-     * @return This module, to allow call chaining
-     * @since 2.1
-     */
-    public JaxbAnnotationModule setFirstAsId(boolean state) {
-        _firstXmlidRefAsId = state;
-        return this;
-    }
-    
     
     public Priority getPriority() { return _priority; }
 }

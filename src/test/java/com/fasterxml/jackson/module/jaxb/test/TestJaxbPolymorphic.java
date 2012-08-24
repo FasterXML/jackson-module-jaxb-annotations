@@ -210,8 +210,6 @@ public class TestJaxbPolymorphic
          ContainerForBase input = new ContainerForBase();
          input.stuff = new Base[] { new BaseImpl("xyz") };
          String json = MAPPER.writeValueAsString(input);
-
-System.out.println("JSON == "+json);         
          
          // so far so good. But can we read it back?
          ContainerForBase output = MAPPER.readValue(json, ContainerForBase.class);

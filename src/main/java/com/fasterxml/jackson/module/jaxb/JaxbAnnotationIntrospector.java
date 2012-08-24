@@ -65,41 +65,44 @@ public class JaxbAnnotationIntrospector
     extends AnnotationIntrospector
     implements Versioned
 {
+    protected final static boolean DEFAULT_IGNORE_XMLIDREF = false;
+    
     protected final static String MARKER_FOR_DEFAULT = "##default";
-
-    private final static boolean DEFAULT_FIRST_XMLIDREF_AS_ID = false;
     
     protected final String _jaxbPackageName;
     protected final JsonSerializer<?> _dataHandlerSerializer;
     protected final JsonDeserializer<?> _dataHandlerDeserializer;
 
     protected final TypeFactory _typeFactory;
-
-    protected final boolean _firstXmlidRefAsId;
+    
+    protected final boolean _ignoreXmlIDREF;
     
     /**
-     * @deprecated Since 2.1, use the ctor with 2 args
+     * @deprecated Since 2.1, use the ctor that takes TypeFactory
      */
     @Deprecated
     public JaxbAnnotationIntrospector() {
-        this(TypeFactory.defaultInstance(), DEFAULT_FIRST_XMLIDREF_AS_ID);
+        this(TypeFactory.defaultInstance());
     }
 
     public JaxbAnnotationIntrospector(MapperConfig<?> config) {
-        this(config.getTypeFactory(), DEFAULT_FIRST_XMLIDREF_AS_ID);
-    }
-    
-    public JaxbAnnotationIntrospector(TypeFactory typeFactory)
-    {
-        this(typeFactory, DEFAULT_FIRST_XMLIDREF_AS_ID);
+        this(config.getTypeFactory());
     }
 
-    public JaxbAnnotationIntrospector(TypeFactory typeFactory,
-            boolean firstXmlidRefAsId)
+    public JaxbAnnotationIntrospector(TypeFactory typeFactory) {
+        this(typeFactory, DEFAULT_IGNORE_XMLIDREF);
+    }
+
+    /**
+     * @param typeFactory Type factory used for resolving type information
+     * @param ignoreXmlIDREF Whether {@link XmlIDREF} annotation should be processed
+     *   JAXB style (meaning that references are always serialized using id), or
+     *   not (first reference as full POJO, others as ids)
+     */
+    public JaxbAnnotationIntrospector(TypeFactory typeFactory, boolean ignoreXmlIDREF)
     {
         _typeFactory = (typeFactory == null)? TypeFactory.defaultInstance() : typeFactory;
-        _firstXmlidRefAsId = firstXmlidRefAsId;
-
+        _ignoreXmlIDREF = ignoreXmlIDREF;
         _jaxbPackageName = XmlElement.class.getPackage().getName();
 
         JsonSerializer<?> dataHandlerSerializer = null;
@@ -207,11 +210,26 @@ public class JaxbAnnotationIntrospector
              */
             Class<?> scope = Object.class; // alternatively would use 'ac.getRawType()'
             // and we will assume that there exists property thus named...
-            return new ObjectIdInfo(idPropName, scope, ObjectIdGenerators.PropertyGenerator.class,
-                    _firstXmlidRefAsId);
+            return new ObjectIdInfo(idPropName, scope, ObjectIdGenerators.PropertyGenerator.class);
         }
         
         return null;
+    }
+
+    @Override
+    public ObjectIdInfo findObjectReferenceInfo(Annotated ann, ObjectIdInfo base)
+    {
+        if (!_ignoreXmlIDREF) {
+            XmlIDREF idref = ann.getAnnotation(XmlIDREF.class);
+            /* JAXB makes XmlIDREF mean "always as id", as far as I know.
+             * May need to make it configurable in future, but for not that
+             * is fine...
+             */
+            if (idref != null) {
+                base = base.withAlwaysAsId(true);
+            }
+        }
+        return base;
     }
     
     /*
@@ -1093,7 +1111,7 @@ public class JaxbAnnotationIntrospector
         return null;
     }
 
-    private final TypeFactory getTypeFactory() {
+    protected final TypeFactory getTypeFactory() {
         return _typeFactory;
     }
     
