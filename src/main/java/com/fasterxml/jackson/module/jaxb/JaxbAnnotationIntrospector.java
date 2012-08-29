@@ -968,8 +968,6 @@ public class JaxbAnnotationIntrospector
         return false;
     }
 
-
-    
     private static String findJaxbPropertyName(Annotated ae, Class<?> aeType, String defaultName)
     {
         XmlAttribute attribute = ae.getAnnotation(XmlAttribute.class);
