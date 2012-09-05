@@ -150,7 +150,7 @@ public class JaxbAnnotationIntrospector
          * individual fields and/or methods; but for now this
          * has to do ...
          */
-        String idPropName = null;
+        PropertyName idPropName = null;
 
         method_loop:
         for (AnnotatedMethod m : ac.memberMethods()) {
@@ -182,7 +182,7 @@ public class JaxbAnnotationIntrospector
              */
             Class<?> scope = Object.class; // alternatively would use 'ac.getRawType()'
             // and we will assume that there exists property thus named...
-            return new ObjectIdInfo(idPropName, scope, ObjectIdGenerators.PropertyGenerator.class);
+            return new ObjectIdInfo(idPropName.getSimpleName(), scope, ObjectIdGenerators.PropertyGenerator.class);
         }
         
         return null;
@@ -596,21 +596,37 @@ public class JaxbAnnotationIntrospector
     {
         // [Issue#69], need bit of delegation (note: copy of super-class functionality)
         // !!! TODO: in 2.2, remove old methods?
-        String name;
-        if (a instanceof AnnotatedField) {
-            name = findSerializationName((AnnotatedField) a);
-        } else if (a instanceof AnnotatedMethod) {
-            name = findSerializationName((AnnotatedMethod) a);
-        } else {
-            name = null;
+        if (a instanceof AnnotatedMethod) {
+            AnnotatedMethod am = (AnnotatedMethod) a;
+            if (!isVisible(am)) {
+                return null;
+            }
+            return findJaxbPropertyName(am, am.getRawType(), BeanUtil.okNameForGetter(am));
         }
+        if (a instanceof AnnotatedField) {
+            AnnotatedField af = (AnnotatedField) a;
+            if (!isVisible(af)) {
+                return null;
+            }
+            PropertyName name = findJaxbPropertyName(af, af.getRawType(), null);
+            /* This may seem wrong, but since JAXB field auto-detection
+             * needs to find even non-public fields (if enabled by
+             * JAXB access type), we need to return name like so:
+             */
+            if (name == null) {
+                return new PropertyName(af.getName());
+            }
+            return name;
+        }
+        return null;
+/*
         if (name != null) {
             if (name.length() == 0) { // empty String means 'default'
                 return PropertyName.USE_DEFAULT;
             }
             return new PropertyName(name);
         }
-        return null;
+        */
     }
     
     @Deprecated
@@ -620,9 +636,9 @@ public class JaxbAnnotationIntrospector
         if (!isVisible(am)) {
             return null;
         }
-        return findJaxbPropertyName(am, am.getRawType(), BeanUtil.okNameForGetter(am));
+        return _propertyNameToString(findJaxbPropertyName(am, am.getRawType(), BeanUtil.okNameForGetter(am)));
     }
-
+    
     @Deprecated
     @Override
     public String findSerializationName(AnnotatedField af)
@@ -630,12 +646,15 @@ public class JaxbAnnotationIntrospector
         if (!isVisible(af)) {
             return null;
         }
-        String name = findJaxbPropertyName(af, af.getRawType(), null);
+        PropertyName name = findJaxbPropertyName(af, af.getRawType(), null);
         /* This may seem wrong, but since JAXB field auto-detection
          * needs to find even non-public fields (if enabled by
          * JAXB access type), we need to return name like so:
          */
-        return (name == null) ? af.getName() : name;
+        if (name == null) {
+            return af.getName();
+        }
+        return _propertyNameToString(name);
     }
     
     @Override
@@ -786,29 +805,44 @@ public class JaxbAnnotationIntrospector
     /**********************************************************
      */
 
-    @SuppressWarnings("deprecation")
     @Override
     public PropertyName findNameForDeserialization(Annotated a)
     {
         // [Issue#69], need bit of delegation -- note: copy from super-class
-        // !!! TODO: in 2.2, remove old methods?
-        String name;
-        if (a instanceof AnnotatedField) {
-            name = findDeserializationName((AnnotatedField) a);
-        } else if (a instanceof AnnotatedMethod) {
-            name = findDeserializationName((AnnotatedMethod) a);
-        } else if (a instanceof AnnotatedParameter) {
-            name = findDeserializationName((AnnotatedParameter) a);
-        } else {
-            name = null;
+        // TODO: should simplify, messy.
+        if (a instanceof AnnotatedMethod) {
+            AnnotatedMethod am = (AnnotatedMethod) a;
+            if (!isVisible((AnnotatedMethod) a)) {
+                return null;
+            }
+            Class<?> rawType = am.getRawParameterType(0);
+            return findJaxbPropertyName(am, rawType, BeanUtil.okNameForSetter(am));
         }
+        if (a instanceof AnnotatedField) {
+            AnnotatedField af = (AnnotatedField) a;
+            if (!isVisible(af)) {
+                return null;
+            }
+            PropertyName name = findJaxbPropertyName(af, af.getRawType(), null);
+            /* This may seem wrong, but since JAXB field auto-detection
+             * needs to find even non-public fields (if enabled by
+             * JAXB access type), we need to return name like so:
+             */
+            if (name == null) {
+                return new PropertyName(af.getName());
+            }
+            return name;
+        }
+        return null;
+
+        /*
         if (name != null) {
             if (name.length() == 0) { // empty String means 'default'
                 return PropertyName.USE_DEFAULT;
             }
             return new PropertyName(name);
         }
-        return null;
+        */
     }
     
     @Deprecated
@@ -819,8 +853,7 @@ public class JaxbAnnotationIntrospector
             return null;
         }
         Class<?> rawType = am.getRawParameterType(0);
-        String name = findJaxbPropertyName(am, rawType, BeanUtil.okNameForSetter(am));
-        return name;
+        return _propertyNameToString(findJaxbPropertyName(am, rawType, BeanUtil.okNameForSetter(am)));
     }
 
     @Deprecated
@@ -830,12 +863,15 @@ public class JaxbAnnotationIntrospector
         if (!isVisible(af)) {
             return null;
         }
-        String name = findJaxbPropertyName(af, af.getRawType(), null);
+        PropertyName name = findJaxbPropertyName(af, af.getRawType(), null);
         /* This may seem wrong, but since JAXB field auto-detection
          * needs to find even non-public fields (if enabled by
          * JAXB access type), we need to return name like so:
          */
-        return (name == null) ? af.getName() : name;
+        if (name == null) {
+            return af.getName();
+        }
+        return _propertyNameToString(name);
     }
 
     /*
@@ -862,6 +898,12 @@ public class JaxbAnnotationIntrospector
         return false;
     }
 
+    @Override
+    public Boolean hasRequiredMarker(AnnotatedMember m) {
+        XmlElement annotation = m.getAnnotation(XmlElement.class);
+        return annotation == null ? null : Boolean.valueOf(annotation.required());
+    }
+    
     /*
     /**********************************************************
     /* Helper methods (non-API)
@@ -1004,58 +1046,61 @@ public class JaxbAnnotationIntrospector
         }
         return false;
     }
-
-    private static String findJaxbPropertyName(Annotated ae, Class<?> aeType, String defaultName)
+    
+    private static PropertyName findJaxbPropertyName(Annotated ae, Class<?> aeType, String defaultName)
     {
         XmlAttribute attribute = ae.getAnnotation(XmlAttribute.class);
         if (attribute != null) {
-            String name = attribute.name();
-            if (!MARKER_FOR_DEFAULT.equals(name)) {
-                return name;
-            }
-            return defaultName;
+            return _combineNames(attribute.name(), attribute.namespace(), defaultName);
         }
         XmlElement element = ae.getAnnotation(XmlElement.class);
         if (element != null) {
-            String name = element.name();
-            if (!MARKER_FOR_DEFAULT.equals(name)) {
-                return name;
-            }
-            return defaultName;
+            return _combineNames(element.name(), element.namespace(), defaultName);
         }
         XmlElementWrapper elementWrapper = ae.getAnnotation(XmlElementWrapper.class);
         if (elementWrapper != null) {
-            String name = elementWrapper.name();
-            if (!MARKER_FOR_DEFAULT.equals(name)) {
-                return name;
-            }
-            return defaultName;
+            return _combineNames(elementWrapper.name(), elementWrapper.namespace(), defaultName);
         }
         XmlElementRef elementRef = ae.getAnnotation(XmlElementRef.class);
         if (elementRef != null) {
-            String name = elementRef.name();
-            if (!MARKER_FOR_DEFAULT.equals(name)) {
-                return name;
+            if (!MARKER_FOR_DEFAULT.equals(elementRef.name())) {
+                return _combineNames(elementRef.name(), elementRef.namespace(), defaultName);
             }
             if (aeType != null) {
                 XmlRootElement rootElement = (XmlRootElement) aeType.getAnnotation(XmlRootElement.class);
                 if (rootElement != null) {
-                    name = rootElement.name();
+                    String name = rootElement.name();
                     if (!MARKER_FOR_DEFAULT.equals(name)) {
-                        return name;
+                        return _combineNames(name, rootElement.namespace(), defaultName);
                     }
-                    return Introspector.decapitalize(aeType.getSimpleName());
+                    // Is there a namespace there to use? Probably not?
+                    return new PropertyName(Introspector.decapitalize(aeType.getSimpleName()));
                 }
             }
         }
         XmlValue valueInfo = ae.getAnnotation(XmlValue.class);
         if (valueInfo != null) {
-            return "value";
+            return new PropertyName("value");
         }
 
         return null;
     }
 
+    private static PropertyName _combineNames(String localName, String namespace,
+            String defaultName)
+    {
+        if (MARKER_FOR_DEFAULT.equals(localName)) {
+            if (MARKER_FOR_DEFAULT.equals(namespace)) {
+                return new PropertyName(defaultName);
+            }
+            return new PropertyName(defaultName, namespace);
+        }
+        if (MARKER_FOR_DEFAULT.equals(namespace)) {
+            return new PropertyName(localName);
+        }
+        return new PropertyName(localName, namespace);
+    }
+    
     private XmlRootElement findRootElementAnnotation(AnnotatedClass ac)
     {
         // Yes, check package, no class (already included), yes superclasses
@@ -1194,9 +1239,8 @@ public class JaxbAnnotationIntrospector
         return null;
     }
     
-    @Override
-    public Boolean hasRequiredMarker(AnnotatedMember m) {
-    	XmlElement annotation = m.getAnnotation(XmlElement.class);
-    	return annotation == null ? null : Boolean.valueOf(annotation.required());
+    protected String _propertyNameToString(PropertyName n)
+    {
+        return (n == null) ? null : n.getSimpleName();
     }
 }

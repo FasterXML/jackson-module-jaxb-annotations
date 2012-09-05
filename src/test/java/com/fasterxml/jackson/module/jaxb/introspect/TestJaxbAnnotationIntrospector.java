@@ -10,6 +10,7 @@ import javax.xml.namespace.QName;
 
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
+import com.fasterxml.jackson.databind.introspect.AnnotatedField;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
@@ -192,18 +193,18 @@ public class TestJaxbAnnotationIntrospector
     	private String key;
     	private String value;
     	public KeyValuePair() {}
-		public String getKey() {
-			return key;
-		}
-		public void setKey(String key) {
-			this.key = key;
-		}
-		public String getValue() {
-			return value;
-		}
-		public void setValue(String value) {
-			this.value = value;
-		};
+    	public String getKey() {
+    	    return key;
+    	}
+    	public void setKey(String key) {
+    	    this.key = key;
+    	}
+    	public String getValue() {
+    	    return value;
+    	}
+    	public void setValue(String value) {
+    	    this.value = value;
+    	}
     }
 
     // Beans for [JACKSON-256]
@@ -302,7 +303,7 @@ public class TestJaxbAnnotationIntrospector
         // and otherwise explicit name
         assertEquals("test", ai.findRootName(AnnotatedClass.construct(RootNameBean.class, ai, null)));
     }
-
+    
     // JAXB can specify that properties are to be written in alphabetic order...
     public void testSerializationAlphaOrdering() throws Exception
     {
@@ -315,5 +316,35 @@ public class TestJaxbAnnotationIntrospector
         BeanWithNillable bean = new BeanWithNillable();
         bean.X = new Nillable();
         assertEquals("{\"X\":{\"Z\":null}}", MAPPER.writeValueAsString(bean));
+    }
+
+    /**
+     * Additional simple tests to ensure we will retain basic namespace information
+     * now that it can be included
+     * 
+     * @since 2.1
+     */
+    public void testNamespaces() throws Exception
+    {
+        JaxbAnnotationIntrospector ai = new JaxbAnnotationIntrospector(TypeFactory.defaultInstance());
+        AnnotatedClass ac = AnnotatedClass.construct(NamespaceBean.class, ai, null);
+        AnnotatedField af = _findField(ac, "string");
+        assertNotNull(af);
+        PropertyName pn = ai.findNameForDeserialization(af);
+        assertNotNull(pn);
+        
+        // JAXB seems to assert field name instead of giving "use default"...
+        assertEquals("", pn.getSimpleName());
+        assertEquals("urn:method", pn.getNamespace());
+    }
+ 
+    private AnnotatedField _findField(AnnotatedClass ac, String name)
+    {
+        for (AnnotatedField af : ac.fields()) {
+            if (name.equals(af.getName())) {
+                return af;
+            }
+        }
+        return null;
     }
 }
