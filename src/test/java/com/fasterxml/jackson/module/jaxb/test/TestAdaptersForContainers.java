@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.adapters.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
-import com.fasterxml.jackson.module.jaxb.test.TestJaxbAnnotationIntrospector.KeyValuePair;
+import com.fasterxml.jackson.module.jaxb.introspect.TestJaxbAnnotationIntrospector.KeyValuePair;
 
 /**
  * Unit tests to check that {@link XmlAdapter}s also work with

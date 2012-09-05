@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.jaxb.test;
+package com.fasterxml.jackson.module.jaxb.introspect;
 
 import java.util.*;
 
@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.*;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
+import com.fasterxml.jackson.databind.introspect.AnnotationIntrospectorPair;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
@@ -123,7 +124,7 @@ public class TestIntrospectorPair
 
         mapper = new ObjectMapper();
         // first: test with Jackson/Jaxb pair (jackson having precedence)
-        pair = new AnnotationIntrospector.Pair(_jacksonAI, _jaxbAI);
+        pair = new AnnotationIntrospectorPair(_jacksonAI, _jaxbAI);
         mapper.setAnnotationIntrospector(pair);
 
         result = writeAndMap(mapper, new NamedBean());
@@ -134,7 +135,7 @@ public class TestIntrospectorPair
         assertEquals("3", result.get("bothJackson"));
 
         mapper = new ObjectMapper();
-        pair = new AnnotationIntrospector.Pair(_jaxbAI, _jacksonAI);
+        pair = new AnnotationIntrospectorPair(_jaxbAI, _jacksonAI);
         mapper.setAnnotationIntrospector(pair);
 
         result = writeAndMap(mapper, new NamedBean());
@@ -153,7 +154,7 @@ public class TestIntrospectorPair
 
         mapper = new ObjectMapper();
         // first: test with Jackson/Jaxb pair (jackson having precedence)
-        pair = new AnnotationIntrospector.Pair(_jacksonAI, _jaxbAI);
+        pair = new AnnotationIntrospectorPair(_jacksonAI, _jaxbAI);
         mapper.setAnnotationIntrospector(pair);
 
         result = writeAndMap(mapper, new NamedBean2());
@@ -163,7 +164,7 @@ public class TestIntrospectorPair
         assertEquals("abc", result.get("jaxb"));
 
         mapper = new ObjectMapper();
-        pair = new AnnotationIntrospector.Pair(_jaxbAI, _jacksonAI);
+        pair = new AnnotationIntrospectorPair(_jaxbAI, _jacksonAI);
         mapper.setAnnotationIntrospector(pair);
 
         result = writeAndMap(mapper, new NamedBean2());
@@ -195,7 +196,7 @@ public class TestIntrospectorPair
 
         // then both, Jackson first
         mapper = new ObjectMapper();
-        mapper.setAnnotationIntrospector(new AnnotationIntrospector.Pair(_jacksonAI, _jaxbAI));
+        mapper.setAnnotationIntrospector(new AnnotationIntrospectorPair(_jacksonAI, _jaxbAI));
 
         result = writeAndMap(mapper, new IgnoreBean());
         assertEquals(1, result.size());
@@ -203,7 +204,7 @@ public class TestIntrospectorPair
 
         // then both, JAXB first
         mapper = new ObjectMapper();
-        mapper.setAnnotationIntrospector(new AnnotationIntrospector.Pair(_jaxbAI, _jacksonAI));
+        mapper.setAnnotationIntrospector(new AnnotationIntrospectorPair(_jaxbAI, _jacksonAI));
 
         result = writeAndMap(mapper, new IgnoreBean());
         assertEquals(1, result.size());
@@ -233,7 +234,7 @@ public class TestIntrospectorPair
 
         // then both, Jackson first
         mapper = new ObjectMapper();
-        mapper.setAnnotationIntrospector(new AnnotationIntrospector.Pair(_jacksonAI, _jaxbAI));
+        mapper.setAnnotationIntrospector(new AnnotationIntrospectorPair(_jacksonAI, _jaxbAI));
 
         result = writeAndMap(mapper, new IgnoreFieldBean());
         assertEquals(1, result.size());
@@ -241,7 +242,7 @@ public class TestIntrospectorPair
 
         // then both, JAXB first
         mapper = new ObjectMapper();
-        mapper.setAnnotationIntrospector(new AnnotationIntrospector.Pair(_jaxbAI, _jacksonAI));
+        mapper.setAnnotationIntrospector(new AnnotationIntrospectorPair(_jaxbAI, _jacksonAI));
 
         result = writeAndMap(mapper, new IgnoreFieldBean());
         assertEquals(1, result.size());
@@ -251,7 +252,7 @@ public class TestIntrospectorPair
     public void testSimpleOther() throws Exception
     {
         // Let's use Jackson+JAXB comb
-        AnnotationIntrospector ann = new AnnotationIntrospector.Pair(_jacksonAI, _jaxbAI);
+        AnnotationIntrospector ann = new AnnotationIntrospectorPair(_jacksonAI, _jaxbAI);
 
         AnnotatedClass testClass = AnnotatedClass.construct(NamedBean.class, ann, null);
         //assertNull(ann.findSerializationInclusion(testClass, null));
@@ -272,12 +273,12 @@ public class TestIntrospectorPair
     public void testRootName() throws Exception
     {
         // first: test with Jackson/Jaxb pair (jackson having precedence)
-        AnnotationIntrospector pair = new AnnotationIntrospector.Pair(_jacksonAI, _jaxbAI);
+        AnnotationIntrospector pair = new AnnotationIntrospectorPair(_jacksonAI, _jaxbAI);
         assertNull(pair.findRootName(AnnotatedClass.construct(NamedBean.class, pair, null)));
         assertEquals("test", pair.findRootName(AnnotatedClass.construct(NamespaceBean.class, pair, null)));
 
         // then reverse; should make no difference
-        pair = new AnnotationIntrospector.Pair(_jaxbAI, _jacksonAI);
+        pair = new AnnotationIntrospectorPair(_jaxbAI, _jacksonAI);
         assertNull(pair.findRootName(AnnotatedClass.construct(NamedBean.class, pair, null)));
         assertEquals("test", pair.findRootName(AnnotatedClass.construct(NamespaceBean.class, pair, null)));
     }
@@ -289,7 +290,7 @@ public class TestIntrospectorPair
     public void testIssue495() throws Exception
     {
         ObjectMapper mapper = new ObjectMapper();
-        mapper.setAnnotationIntrospector(new AnnotationIntrospector.Pair(_jacksonAI, _jaxbAI));
+        mapper.setAnnotationIntrospector(new AnnotationIntrospectorPair(_jacksonAI, _jaxbAI));
         CreatorBean bean = mapper.readValue("{\"name\":\"foo\"}", CreatorBean.class);
         assertNotNull(bean);
     }

@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.jaxb.test;
+package com.fasterxml.jackson.module.jaxb.introspect;
 
 import java.io.StringWriter;
 import java.util.*;

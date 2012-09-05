@@ -131,11 +131,6 @@ public class JaxbAnnotationIntrospector
 
     /*
     /**********************************************************
-    /* Meta-annotations
-    /**********************************************************
-     */
-    /*
-    /**********************************************************
     /* General annotations (for classes, properties)
     /**********************************************************
      */
@@ -597,18 +592,38 @@ public class JaxbAnnotationIntrospector
      */
 
     @Override
+    public PropertyName findNameForSerialization(Annotated a)
+    {
+        // [Issue#69], need bit of delegation (note: copy of super-class functionality)
+        // !!! TODO: in 2.2, remove old methods?
+        String name;
+        if (a instanceof AnnotatedField) {
+            name = findSerializationName((AnnotatedField) a);
+        } else if (a instanceof AnnotatedMethod) {
+            name = findSerializationName((AnnotatedMethod) a);
+        } else {
+            name = null;
+        }
+        if (name != null) {
+            if (name.length() == 0) { // empty String means 'default'
+                return PropertyName.USE_DEFAULT;
+            }
+            return new PropertyName(name);
+        }
+        return null;
+    }
+    
+    @Deprecated
+    @Override
     public String findSerializationName(AnnotatedMethod am)
     {
         if (!isVisible(am)) {
             return null;
         }
-        String name = findJaxbPropertyName(am, am.getRawType(),
-                BeanUtil.okNameForGetter(am));
-        if (name == null) {
-        }
-        return name;
+        return findJaxbPropertyName(am, am.getRawType(), BeanUtil.okNameForGetter(am));
     }
 
+    @Deprecated
     @Override
     public String findSerializationName(AnnotatedField af)
     {
@@ -770,7 +785,33 @@ public class JaxbAnnotationIntrospector
     /* Deserialization: property annotations
     /**********************************************************
      */
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public PropertyName findNameForDeserialization(Annotated a)
+    {
+        // [Issue#69], need bit of delegation -- note: copy from super-class
+        // !!! TODO: in 2.2, remove old methods?
+        String name;
+        if (a instanceof AnnotatedField) {
+            name = findDeserializationName((AnnotatedField) a);
+        } else if (a instanceof AnnotatedMethod) {
+            name = findDeserializationName((AnnotatedMethod) a);
+        } else if (a instanceof AnnotatedParameter) {
+            name = findDeserializationName((AnnotatedParameter) a);
+        } else {
+            name = null;
+        }
+        if (name != null) {
+            if (name.length() == 0) { // empty String means 'default'
+                return PropertyName.USE_DEFAULT;
+            }
+            return new PropertyName(name);
+        }
+        return null;
+    }
     
+    @Deprecated
     @Override
     public String findDeserializationName(AnnotatedMethod am)
     {
@@ -782,6 +823,7 @@ public class JaxbAnnotationIntrospector
         return name;
     }
 
+    @Deprecated
     @Override
     public String findDeserializationName(AnnotatedField af)
     {
@@ -796,12 +838,13 @@ public class JaxbAnnotationIntrospector
         return (name == null) ? af.getName() : name;
     }
 
-    @Override
+    /*
     public String findDeserializationName(AnnotatedParameter param)
     {
         // JAXB has nothing like this...
         return null;
     }
+    */
 
     @Override
     public boolean hasAnySetterAnnotation(AnnotatedMethod am)

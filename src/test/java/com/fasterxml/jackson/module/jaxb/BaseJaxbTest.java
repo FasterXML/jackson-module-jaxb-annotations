@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.introspect.AnnotationIntrospectorPair;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
@@ -30,7 +31,7 @@ public abstract class BaseJaxbTest
     protected ObjectMapper getJaxbAndJacksonMapper()
     {
         ObjectMapper mapper = new ObjectMapper();
-        AnnotationIntrospector intr = new AnnotationIntrospector.Pair(new JaxbAnnotationIntrospector(
+        AnnotationIntrospector intr = new AnnotationIntrospectorPair(new JaxbAnnotationIntrospector(
                 mapper.getTypeFactory()), new JacksonAnnotationIntrospector());
         mapper.setAnnotationIntrospector(intr);
         return mapper;

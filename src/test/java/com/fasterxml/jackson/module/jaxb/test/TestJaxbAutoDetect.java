@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.xml.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.introspect.AnnotationIntrospectorPair;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
@@ -87,7 +88,7 @@ public class TestJaxbAutoDetect extends BaseJaxbTest
             AnnotationIntrospector secondary = new JacksonAnnotationIntrospector();
 
             // make de/serializer use JAXB annotations first, then jackson ones
-            AnnotationIntrospector pair = new AnnotationIntrospector.Pair(primary, secondary);
+            AnnotationIntrospector pair = new AnnotationIntrospectorPair(primary, secondary);
             setAnnotationIntrospector(pair);
         }
     }

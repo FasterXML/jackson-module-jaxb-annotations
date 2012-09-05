@@ -4,7 +4,7 @@
 @javax.xml.bind.annotation.adapters.XmlJavaTypeAdapters({
   @javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter(
     type = javax.xml.namespace.QName.class,
-    value = com.fasterxml.jackson.module.jaxb.test.TestJaxbAnnotationIntrospector.QNameAdapter.class
+    value = com.fasterxml.jackson.module.jaxb.introspect.TestJaxbAnnotationIntrospector.QNameAdapter.class
   )
 })
 package com.fasterxml.jackson.module.jaxb.test;
