@@ -592,7 +592,7 @@ public class JaxbAnnotationIntrospector
 
     /*
     /**********************************************************
-    /* Serialization: method annotations
+    /* Serialization: property annotations
     /**********************************************************
      */
 
@@ -609,6 +609,20 @@ public class JaxbAnnotationIntrospector
         return name;
     }
 
+    @Override
+    public String findSerializationName(AnnotatedField af)
+    {
+        if (!isVisible(af)) {
+            return null;
+        }
+        String name = findJaxbPropertyName(af, af.getRawType(), null);
+        /* This may seem wrong, but since JAXB field auto-detection
+         * needs to find even non-public fields (if enabled by
+         * JAXB access type), we need to return name like so:
+         */
+        return (name == null) ? af.getName() : name;
+    }
+    
     @Override
     public boolean hasAsValueAnnotation(AnnotatedMethod am)
     {
@@ -637,29 +651,9 @@ public class JaxbAnnotationIntrospector
 
     /*
     /**********************************************************
-    /* Serialization: field annotations
-    /**********************************************************
-     */
-
-    @Override
-    public String findSerializationName(AnnotatedField af)
-    {
-        if (!isVisible(af)) {
-            return null;
-        }
-        String name = findJaxbPropertyName(af, af.getRawType(), null);
-        /* This may seem wrong, but since JAXB field auto-detection
-         * needs to find even non-public fields (if enabled by
-         * JAXB access type), we need to return name like so:
-         */
-        return (name == null) ? af.getName() : name;
-    }
-
-    /*
-    /**********************************************************
     /* Deserialization: general annotations
     /**********************************************************
-    */
+     */
 
     @Override
     public Object findDeserializer(Annotated am)
@@ -771,6 +765,12 @@ public class JaxbAnnotationIntrospector
         return null;
     }
 
+    /*
+    /**********************************************************
+    /* Deserialization: property annotations
+    /**********************************************************
+     */
+    
     @Override
     public String findDeserializationName(AnnotatedMethod am)
     {
@@ -780,22 +780,6 @@ public class JaxbAnnotationIntrospector
         Class<?> rawType = am.getRawParameterType(0);
         String name = findJaxbPropertyName(am, rawType, BeanUtil.okNameForSetter(am));
         return name;
-    }
-
-    @Override
-    public boolean hasAnySetterAnnotation(AnnotatedMethod am)
-    {
-        //(ryan) JAXB has @XmlAnyAttribute and @XmlAnyElement annotations, but they're not applicable in this case
-        // because JAXB says those annotations are only applicable to methods with specific signatures
-        // that Jackson doesn't support (Jackson's any setter needs 2 arguments, name and value, whereas
-        // JAXB expects use of Map
-        return false;
-    }
-
-    @Override
-    public boolean hasCreatorAnnotation(Annotated am)
-    {
-        return false;
     }
 
     @Override
@@ -812,17 +796,27 @@ public class JaxbAnnotationIntrospector
         return (name == null) ? af.getName() : name;
     }
 
-    /*
-    /**********************************************************
-    /* Deserialization: parameters annotations
-    /**********************************************************
-     */
-
     @Override
     public String findDeserializationName(AnnotatedParameter param)
     {
         // JAXB has nothing like this...
         return null;
+    }
+
+    @Override
+    public boolean hasAnySetterAnnotation(AnnotatedMethod am)
+    {
+        //(ryan) JAXB has @XmlAnyAttribute and @XmlAnyElement annotations, but they're not applicable in this case
+        // because JAXB says those annotations are only applicable to methods with specific signatures
+        // that Jackson doesn't support (Jackson's any setter needs 2 arguments, name and value, whereas
+        // JAXB expects use of Map
+        return false;
+    }
+
+    @Override
+    public boolean hasCreatorAnnotation(Annotated am)
+    {
+        return false;
     }
 
     /*
