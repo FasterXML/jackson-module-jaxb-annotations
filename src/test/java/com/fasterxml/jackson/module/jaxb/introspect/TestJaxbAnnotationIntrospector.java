@@ -299,9 +299,16 @@ public class TestJaxbAnnotationIntrospector
         // If no @XmlRootElement, should get null (unless pkg has etc)
         assertNull(ai.findRootName(AnnotatedClass.construct(SimpleBean.class, ai, null)));
         // With @XmlRootElement, but no name, empty String
-        assertEquals("", ai.findRootName(AnnotatedClass.construct(NamespaceBean.class, ai, null)));
+        PropertyName rootName = ai.findRootName(AnnotatedClass.construct(NamespaceBean.class, ai, null));
+        assertNotNull(rootName);
+        assertEquals("", rootName.getSimpleName());
+        assertEquals("urn:class", rootName.getNamespace());
+
         // and otherwise explicit name
-        assertEquals("test", ai.findRootName(AnnotatedClass.construct(RootNameBean.class, ai, null)));
+        rootName = ai.findRootName(AnnotatedClass.construct(RootNameBean.class, ai, null));
+        assertNotNull(rootName);
+        assertEquals("test", rootName.getSimpleName());
+        assertNull(rootName.getNamespace());
     }
     
     // JAXB can specify that properties are to be written in alphabetic order...

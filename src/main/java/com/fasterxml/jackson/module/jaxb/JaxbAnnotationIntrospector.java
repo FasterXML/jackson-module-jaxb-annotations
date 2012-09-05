@@ -211,13 +211,11 @@ public class JaxbAnnotationIntrospector
      */
 
     @Override
-    public String findRootName(AnnotatedClass ac)
+    public PropertyName findRootName(AnnotatedClass ac)
     {
         XmlRootElement elem = findRootElementAnnotation(ac);
         if (elem != null) {
-            String name = elem.name();
-            // default means "derive from class name"; so we'll return ""
-            return MARKER_FOR_DEFAULT.equals(name) ? "" : name;
+            return _combineNames(elem.name(), elem.namespace(), "");
         }
         return null;
     }
@@ -619,14 +617,6 @@ public class JaxbAnnotationIntrospector
             return name;
         }
         return null;
-/*
-        if (name != null) {
-            if (name.length() == 0) { // empty String means 'default'
-                return PropertyName.USE_DEFAULT;
-            }
-            return new PropertyName(name);
-        }
-        */
     }
     
     @Deprecated

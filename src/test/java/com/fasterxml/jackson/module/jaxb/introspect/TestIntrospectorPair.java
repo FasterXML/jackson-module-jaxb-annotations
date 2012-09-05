@@ -275,12 +275,19 @@ public class TestIntrospectorPair
         // first: test with Jackson/Jaxb pair (jackson having precedence)
         AnnotationIntrospector pair = new AnnotationIntrospectorPair(_jacksonAI, _jaxbAI);
         assertNull(pair.findRootName(AnnotatedClass.construct(NamedBean.class, pair, null)));
-        assertEquals("test", pair.findRootName(AnnotatedClass.construct(NamespaceBean.class, pair, null)));
+        PropertyName name = pair.findRootName(AnnotatedClass.construct(NamespaceBean.class, pair, null));
+        assertNotNull(name);
+        assertEquals("test", name.getSimpleName());
+        assertEquals("urn:whatever", name.getNamespace());
 
         // then reverse; should make no difference
         pair = new AnnotationIntrospectorPair(_jaxbAI, _jacksonAI);
-        assertNull(pair.findRootName(AnnotatedClass.construct(NamedBean.class, pair, null)));
-        assertEquals("test", pair.findRootName(AnnotatedClass.construct(NamespaceBean.class, pair, null)));
+        name = pair.findRootName(AnnotatedClass.construct(NamedBean.class, pair, null));
+        assertNull(name);
+        
+        name = pair.findRootName(AnnotatedClass.construct(NamespaceBean.class, pair, null));
+        assertEquals("test", name.getSimpleName());
+        assertEquals("urn:whatever", name.getNamespace());
     }
 
     /**
