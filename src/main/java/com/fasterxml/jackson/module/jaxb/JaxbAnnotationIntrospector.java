@@ -219,7 +219,7 @@ public class JaxbAnnotationIntrospector
         }
         return null;
     }
-
+    
     /*
     @Override
     public String[] findPropertiesToIgnore(Annotated a) {
@@ -256,6 +256,16 @@ public class JaxbAnnotationIntrospector
         return m.getAnnotation(XmlTransient.class) != null;
     }
 
+    @Override
+    public PropertyName findWrapperName(Annotated ann)
+    {
+        XmlElementWrapper w = findAnnotation(XmlElementWrapper.class, ann, false, false, false);
+        if (w != null) {
+            return _combineNames(w.name(), w.namespace(), "");
+        }
+        return null;
+    }
+    
     /*
     /**********************************************************
     /* Property auto-detection
