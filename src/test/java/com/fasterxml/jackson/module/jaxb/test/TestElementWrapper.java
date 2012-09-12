@@ -5,6 +5,7 @@ import java.util.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
 
@@ -21,9 +22,9 @@ public class TestElementWrapper extends BaseJaxbTest
 
     // Beans for [JACKSON-436]
     static class Person {
-        @XmlElementWrapper
+        @XmlElementWrapper(name="phones")
         @XmlElement(type=Phone.class)
-        public Collection<IPhone> phones;
+        public Collection<IPhone> phone;
     }
 
     interface IPhone {
@@ -51,17 +52,23 @@ public class TestElementWrapper extends BaseJaxbTest
     public void testWrapperWithCollection() throws Exception
     {
         ObjectMapper mapper = getJaxbMapper();
+        // for fun, force renaming with wrapper annotation, even for JSON
+        mapper.enable(MapperFeature.USE_WRAPPER_NAME_AS_PROPERTY_NAME);
         Collection<IPhone> phones = new HashSet<IPhone>();
         phones.add(new Phone("555-6666"));
         Person p = new Person();
-        p.phones = phones;
+        p.phone = phones;
 
         String json = mapper.writeValueAsString(p);
+
+        // as per 
+        assertEquals("{\"phones\":[{\"number\":\"555-6666\"}]}", json);
+
 //        System.out.println("JSON == "+json);
 
         Person result = mapper.readValue(json, Person.class);
-        assertNotNull(result.phones);
-        assertEquals(1, result.phones.size());
-        assertEquals("555-6666", result.phones.iterator().next().getNumber());
+        assertNotNull(result.phone);
+        assertEquals(1, result.phone.size());
+        assertEquals("555-6666", result.phone.iterator().next().getNumber());
     }
 }

@@ -15,12 +15,6 @@ import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
 public class TestJaxbTypes
     extends BaseJaxbTest
 {
-    /*
-    /**********************************************************
-    /* Helper beans
-    /**********************************************************
-     */
-
     static class AbstractWrapper {
         @XmlElement(type=BeanImpl.class)
         public AbstractBean wrapped;

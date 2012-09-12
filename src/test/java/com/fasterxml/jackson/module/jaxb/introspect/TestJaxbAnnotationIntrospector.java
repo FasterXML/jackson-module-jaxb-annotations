@@ -1,6 +1,5 @@
 package com.fasterxml.jackson.module.jaxb.introspect;
 
-import java.io.StringWriter;
 import java.util.*;
 
 import javax.xml.bind.annotation.*;
@@ -40,7 +39,6 @@ public class TestJaxbAnnotationIntrospector
 
     public static class JaxbExample
     {
-
         private String attributeProperty;
         private String elementProperty;
         private List<String> wrappedElementProperty;
@@ -249,6 +247,9 @@ public class TestJaxbAnnotationIntrospector
     public void testSerializeDeserializeWithJaxbAnnotations() throws Exception
     {
         ObjectMapper mapper = getJaxbMapper();
+        // test expects that wrapper name be used...
+        mapper.enable(MapperFeature.USE_WRAPPER_NAME_AS_PROPERTY_NAME);
+        
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         JaxbExample ex = new JaxbExample();
         QName qname = new QName("urn:hi", "hello");
@@ -260,16 +261,13 @@ public class TestJaxbAnnotationIntrospector
         ex.setWrappedElementProperty(Arrays.asList("wrappedElementValue"));
         ex.setEnumProperty(EnumExample.VALUE1);
         ex.setPropertyToIgnore("ignored");
-        StringWriter writer = new StringWriter();
-        mapper.writeValue(writer, ex);
-        writer.flush();
-        writer.close();
+        String json = mapper.writeValueAsString(ex);
 
-        String json = writer.toString();
-
-        // uncomment to see what the json looks like.
+        // uncomment to see what the JSON looks like.
         // System.out.println(json);
 
+System.out.println(json);
+        
         //make sure the json is written out correctly.
         JsonNode node = mapper.readValue(json, JsonNode.class);
         assertEquals(qname.toString(), node.get("qname").asText());
@@ -277,11 +275,12 @@ public class TestJaxbAnnotationIntrospector
         assertNotNull(attr);
         assertEquals("attributeValue", attr.asText());
         assertEquals("elementValue", node.get("myelement").asText());
+        assertTrue(node.has("mywrapped"));
         assertEquals(1, node.get("mywrapped").size());
         assertEquals("wrappedElementValue", node.get("mywrapped").get(0).asText());
         assertEquals("Value One", node.get("enumProperty").asText());
         assertNull(node.get("propertyToIgnore"));
-        
+
         //now make sure it gets deserialized correctly.
         JaxbExample readEx = mapper.readValue(json, JaxbExample.class);
         assertEquals(ex.qname, readEx.qname);

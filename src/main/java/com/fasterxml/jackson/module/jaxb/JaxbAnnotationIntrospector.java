@@ -1057,10 +1057,15 @@ public class JaxbAnnotationIntrospector
         if (element != null) {
             return _combineNames(element.name(), element.namespace(), defaultName);
         }
+        /* 11-Sep-2012, tatu: Wrappers should not be automatically used for renaming.
+         *   At least not here (databinding core can do it if feature enabled).
+         */
+        /*
         XmlElementWrapper elementWrapper = ae.getAnnotation(XmlElementWrapper.class);
         if (elementWrapper != null) {
             return _combineNames(elementWrapper.name(), elementWrapper.namespace(), defaultName);
         }
+        */
         XmlElementRef elementRef = ae.getAnnotation(XmlElementRef.class);
         if (elementRef != null) {
             if (!MARKER_FOR_DEFAULT.equals(elementRef.name())) {

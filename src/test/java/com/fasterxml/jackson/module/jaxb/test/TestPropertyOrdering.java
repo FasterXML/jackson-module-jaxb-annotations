@@ -25,7 +25,7 @@ public class TestPropertyOrdering
         public String getCpartyDto() { return cpartyDto; }
         public void setCpartyDto(String cpartyDto) { this.cpartyDto = cpartyDto; }
 	
-        @XmlElementWrapper(name="contacts")
+        @XmlElement(name="contacts")
         public int[] getContact() { return contacts; }
         public void setContact(int[] contacts) { this.contacts = contacts; }
     }
