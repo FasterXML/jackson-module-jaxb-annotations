@@ -265,8 +265,6 @@ public class TestJaxbAnnotationIntrospector
 
         // uncomment to see what the JSON looks like.
         // System.out.println(json);
-
-System.out.println(json);
         
         //make sure the json is written out correctly.
         JsonNode node = mapper.readValue(json, JsonNode.class);
