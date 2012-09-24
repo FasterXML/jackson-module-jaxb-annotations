@@ -1,18 +1,21 @@
-Version: 2.0.5
+Version: 2.0.6
 
 Release date:
-  26-Jun-2012
+  23-Sep-2012
 
 Description:
-  Another patch release for 2.0
 
-Fixes:
-
-* [Issue-9]: Problems with multiple @XmlID, @XmlIDREF properties
+No fixes or changes, released along with other core components
 
 ------------------------------------------------------------------------
 === History: ===
 ------------------------------------------------------------------------
+
+2.0.5 (26-Jul-2012)
+
+Fixes:
+
+* [Issue-9]: Problems with multiple @XmlID, @XmlIDREF properties
 
 2.0.4 (26-Jun-2012)
 
