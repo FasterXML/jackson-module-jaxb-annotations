@@ -26,8 +26,7 @@ public class DataHandlerJsonDeserializer
         throws IOException, JsonProcessingException
     {
         final byte[] value = jp.getBinaryValue();
-        return new DataHandler(new DataSource()
-        {
+        return new DataHandler(new DataSource() {
             public InputStream getInputStream() throws IOException
             {
                 return new ByteArrayInputStream(value);

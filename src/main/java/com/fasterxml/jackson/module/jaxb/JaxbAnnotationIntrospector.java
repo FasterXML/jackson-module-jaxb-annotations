@@ -24,7 +24,9 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.fasterxml.jackson.databind.util.ClassUtil;
 
+import com.fasterxml.jackson.module.jaxb.deser.DataHandlerJsonDeserializer;
 import com.fasterxml.jackson.module.jaxb.deser.XmlAdapterJsonDeserializer;
+import com.fasterxml.jackson.module.jaxb.ser.DataHandlerJsonSerializer;
 import com.fasterxml.jackson.module.jaxb.ser.XmlAdapterJsonSerializer;
 
 /**
@@ -111,8 +113,8 @@ public class JaxbAnnotationIntrospector
          * with less than complete support for JAXB API
          */
         try {
-            dataHandlerSerializer = (JsonSerializer<?>) Class.forName("org.codehaus.jackson.xc.DataHandlerJsonSerializer").newInstance();
-            dataHandlerDeserializer = (JsonDeserializer<?>) Class.forName("org.codehaus.jackson.xc.DataHandlerJsonDeserializer").newInstance();
+            dataHandlerSerializer = (JsonSerializer<?>) DataHandlerJsonSerializer.class.newInstance();
+            dataHandlerDeserializer = (JsonDeserializer<?>) DataHandlerJsonDeserializer.class.newInstance();
         } catch (Throwable e) {
             //dataHandlers not supported...
         }
