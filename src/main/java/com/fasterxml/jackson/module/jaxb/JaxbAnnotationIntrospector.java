@@ -88,12 +88,14 @@ public class JaxbAnnotationIntrospector
 
         JsonSerializer<?> dataHandlerSerializer = null;
         JsonDeserializer<?> dataHandlerDeserializer = null;
-        /* Data handlers included dynamically, to try to prevent issues on platforms
-         * with less than complete support for JAXB API
+        /* Data handlers included dynamically, to try to prevent issues on
+         * platforms with less than complete support for JAXB API
          */
         try {
-            dataHandlerSerializer = (JsonSerializer<?>) Class.forName("org.codehaus.jackson.xc.DataHandlerJsonSerializer").newInstance();
-            dataHandlerDeserializer = (JsonDeserializer<?>) Class.forName("org.codehaus.jackson.xc.DataHandlerJsonDeserializer").newInstance();
+            dataHandlerSerializer = (JsonSerializer<?>) Class.forName(
+"com.fasterxml.jackson.module.jaxb.ser.DataHandlerJsonSerializer").newInstance();
+            dataHandlerDeserializer = (JsonDeserializer<?>) Class.forName(
+"com.fasterxml.jackson.module.jaxb.deser.DataHandlerJsonDeserializer").newInstance();
         } catch (Throwable e) {
             //dataHandlers not supported...
         }
