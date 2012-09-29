@@ -15,31 +15,37 @@ public class TestAdapters extends BaseJaxbTest
     public static class IdentityAdapter extends XmlAdapter<IdentityAdapterBean, IdentityAdapterBean> {
         @Override
         public IdentityAdapterBean unmarshal(IdentityAdapterBean b) {
-            b.value += "U";
-            return b;
+            return new IdentityAdapterBean(b.value + "U");
         }
 
         @Override
         public IdentityAdapterBean marshal(IdentityAdapterBean b) {
-            if (b != null) {
-                b.value += "M";
-            }
-            return b;
+            return new IdentityAdapterBean(b.value + "M");
         }   
     }
 
+    public static class IdentityStringAdapter extends XmlAdapter<String, String> {
+        @Override
+        public String unmarshal(String b) {
+            return b + "U";
+        }
+        @Override
+        public String marshal(String b) {
+            return b + "M";
+        }   
+    }
+    
     @XmlJavaTypeAdapter(IdentityAdapter.class)
     static class IdentityAdapterBean
     {
         public String value;
 
-        public IdentityAdapterBean() { }
         public IdentityAdapterBean(String s) { value = s; }
     }
 
     static class IdentityAdapterPropertyBean
     {
-        @XmlJavaTypeAdapter(IdentityAdapter.class)
+        @XmlJavaTypeAdapter(IdentityStringAdapter.class)
         public String value;
 
         public IdentityAdapterPropertyBean() { }

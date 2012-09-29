@@ -11,6 +11,8 @@ Fixes:
 Improvements:
 
 * [Issue#1]: Support @XmlSeeAlso for specifying subtypes
+* [Issue#10]: (partial) support for "identity" adapters, for property adapters
+ (but not yet for class-annotated)
 * [Issue#11]: Add 'JaxbAnnotationModule.setFirstAsId()' to support alternative
  Object Id serialization ("always-as-id" instead of "first-as-POJO-then-as-id")
 

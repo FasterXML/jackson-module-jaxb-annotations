@@ -471,13 +471,14 @@ public class JaxbAnnotationIntrospector
         // As per [JACKSON-722], more checks for structured types
         XmlAdapter<Object,Object> adapter = findAdapter(am, true, type);
         if (adapter != null) {
+            boolean fromClass = !(am instanceof AnnotatedMember);
             // Ugh. Must match to see if adapter's bounded type (result to map to) matches property type
             if (isContainerType(type)) {
                 if (adapterTypeMatches(adapter, type)) {
-                    return new XmlAdapterJsonSerializer(adapter);
+                    return new XmlAdapterJsonSerializer(adapter, fromClass);
                 }
             } else {
-                return new XmlAdapterJsonSerializer(adapter);
+                return new XmlAdapterJsonSerializer(adapter, fromClass);
             }
         }
         // [JACKSON-150]: add support for additional core XML types needed by JAXB
@@ -507,9 +508,10 @@ public class JaxbAnnotationIntrospector
     {
         // [JACKSON-722]: Adapter applicable to value types
         XmlAdapter<?,?> adapter = _findContentAdapter(am);
-        return (adapter == null) ? null : new XmlAdapterJsonSerializer(adapter);
+        boolean fromClass = !(am instanceof AnnotatedMember);
+        return (adapter == null) ? null : new XmlAdapterJsonSerializer(adapter, fromClass);
     }
-    
+
     @Override
     public Class<?> findSerializationType(Annotated a)
     {

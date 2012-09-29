@@ -21,20 +21,25 @@ public class XmlAdapterJsonSerializer
 {
     protected final XmlAdapter<?,Object> _xmlAdapter;
 
+    protected final boolean _fromClassAnnotation;
+    
     protected final JavaType _valueType;
     
     protected final JsonSerializer<Object> _serializer;
     
     @SuppressWarnings("unchecked")
-    public XmlAdapterJsonSerializer(XmlAdapter<?,?> xmlAdapter) {
-        this((XmlAdapter<?,Object>)  xmlAdapter, null, null);
+    public XmlAdapterJsonSerializer(XmlAdapter<?,?> xmlAdapter,
+            boolean fromClassAnnotation) {
+        this((XmlAdapter<?,Object>)  xmlAdapter, fromClassAnnotation, null, null);
     }
 
     protected XmlAdapterJsonSerializer(XmlAdapter<?,Object> xmlAdapter,
+            boolean fromClassAnnotation,
             JavaType valueType, JsonSerializer<Object> serializer)
     {
         super(Object.class);
         _xmlAdapter = xmlAdapter;
+        _fromClassAnnotation = fromClassAnnotation;
         _valueType = valueType;
         _serializer = serializer;
     }
@@ -52,15 +57,20 @@ public class XmlAdapterJsonSerializer
             valueType = TypeFactory.unknownType();
         } else {
             valueType = rawTypes[0];
-            // [Issue-10]: Infinite loop for "identity" adapter; try to prevent
-            JavaType otherType = rawTypes[1];
-            if (otherType != null && otherType.getRawClass() == valueType.getRawClass()) {
-		// 17-Jul-2012, tatu: Report an error? Handle some other way?
-                throw new IllegalArgumentException("Can not yet support 'identity' adapters");
+            /* [Issue-10]: Infinite loop for "identity" adapter; try to prevent,
+             * if (but only if!) we are resolving something that came from class
+             * annotation. Property annotations are ok.
+             */
+            if (_fromClassAnnotation) {
+                JavaType otherType = rawTypes[1];
+                if (otherType != null && otherType.getRawClass() == valueType.getRawClass()) {
+                    // 17-Jul-2012, tatu: Report an error? Handle some other way?
+                    throw new IllegalArgumentException("'Identity' adapters for Class annotations not allowed");
+                }
             }
         }
         JsonSerializer<Object> ser = prov.findValueSerializer(valueType, property);
-        return new XmlAdapterJsonSerializer(_xmlAdapter, valueType, ser);
+        return new XmlAdapterJsonSerializer(_xmlAdapter, _fromClassAnnotation, valueType, ser);
     }
     
     @Override
