@@ -1040,8 +1040,7 @@ public class JaxbAnnotationIntrospector
                 || adaptedType.isAssignableFrom(typeNeeded)) {
             @SuppressWarnings("rawtypes")
             Class<? extends XmlAdapter> cls = adapterInfo.value();
-            // true -> yes, force access if need be
-            return ClassUtil.createInstance(cls, true);
+            return ClassUtil.createInstance(cls, false);
         }
         return null;
     }
@@ -1058,8 +1057,7 @@ public class JaxbAnnotationIntrospector
         if (adapterInfo != null) { // should we try caching this?
             @SuppressWarnings("rawtypes")
             Class<? extends XmlAdapter> cls = adapterInfo.value();
-            // true -> yes, force access if need be
-            return ClassUtil.createInstance(cls, true);
+            return ClassUtil.createInstance(cls, false);
         }
         return null;
     }
