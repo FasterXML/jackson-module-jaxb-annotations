@@ -1,11 +1,17 @@
-Version: 2.1.1 (11-Nov-2012)
+Version: 2.1.2 (xx-xxx-2012)
 
-Description:
-  No functional changes.
+Fixes:
+
+* Changed JaxbAnnotationIntrospector to force access if need be (mostly
+  needed for constructing Adapter instances)
 
 ------------------------------------------------------------------------
 === History: ===
 ------------------------------------------------------------------------
+
+2.1.1 (11-Nov-2012)
+
+No functional changes.
 
 2.1.0 (08-Oct-2012)
 
