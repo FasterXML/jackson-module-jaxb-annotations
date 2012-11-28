@@ -51,11 +51,11 @@ public class TestAdaptersForContainers extends BaseJaxbTest
         @Override
         public Map<String, String> unmarshal(List<KeyValuePair> arg0) throws Exception 
         { 
-                HashMap<String, String> hashMap = new HashMap<String, String>(); 
-                for (int i = 0; i < arg0.size(); i++) {
-                        hashMap.put(arg0.get(i).getKey(), arg0.get(i).getValue());
-                }
-                return hashMap; 
+            HashMap<String, String> hashMap = new HashMap<String, String>(); 
+            for (int i = 0; i < arg0.size(); i++) {
+                hashMap.put(arg0.get(i).getKey(), arg0.get(i).getValue());
+            }
+            return hashMap; 
         } 
     }
     

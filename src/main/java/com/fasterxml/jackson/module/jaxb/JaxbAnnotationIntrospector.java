@@ -467,16 +467,18 @@ public class JaxbAnnotationIntrospector
     @Override
     public JsonSerializer<?> findSerializer(Annotated am)
     {
-        final Class<?> type = am.getRawType();
+        final Class<?> type = _rawSerializationType(am);
         // As per [JACKSON-722], more checks for structured types
         XmlAdapter<Object,Object> adapter = findAdapter(am, true, type);
         if (adapter != null) {
             boolean fromClass = !(am instanceof AnnotatedMember);
             // Ugh. Must match to see if adapter's bounded type (result to map to) matches property type
             if (isContainerType(type)) {
-                if (adapterTypeMatches(adapter, type)) {
+                Class<?> bt = findAdapterBoundType(adapter);
+                if (bt.isAssignableFrom(type)) {
                     return new XmlAdapterJsonSerializer(adapter, fromClass);
                 }
+                // Note: if used for value type, handled in different place
             } else {
                 return new XmlAdapterJsonSerializer(adapter, fromClass);
             }
@@ -529,7 +531,7 @@ public class JaxbAnnotationIntrospector
          *   itself. So; we must return null here for those cases, and modify content
          *   type on another method.
          */
-        Class<?> rawPropType = a.getRawType();
+        Class<?> rawPropType = _rawSerializationType(a);
         if (isContainerType(rawPropType)) {
             return null;
         }
@@ -613,7 +615,8 @@ public class JaxbAnnotationIntrospector
             if (!isVisible(am)) {
                 return null;
             }
-            return findJaxbPropertyName(am, am.getRawType(), BeanUtil.okNameForGetter(am));
+            return findJaxbPropertyName(am, am.getRawType(),
+                    BeanUtil.okNameForGetter(am));
         }
         if (a instanceof AnnotatedField) {
             AnnotatedField af = (AnnotatedField) a;
@@ -692,12 +695,11 @@ public class JaxbAnnotationIntrospector
     /* Deserialization: general annotations
     /**********************************************************
      */
-
+    
     @Override
     public Object findDeserializer(Annotated am)
     {
-        final Class<?> type = am.getRawType();
-
+        final Class<?> type = _rawDeserializationType(am);
         // As per [JACKSON-722], more checks for structured types
         XmlAdapter<Object,Object> adapter = findAdapter(am, true, type);
         if (adapter != null) {
@@ -1243,7 +1245,7 @@ public class JaxbAnnotationIntrospector
                     member.getDeclaringClass());
             Class<?> contentType = containerType.getContentType().getRawClass();
             XmlAdapter<Object,Object> adapter = findAdapter(member, true, type);
-            if (adapter != null && this.adapterTypeMatches(adapter, contentType)) {
+            if (adapter != null && adapterTypeMatches(adapter, contentType)) {
                 return adapter;
             }
         }
@@ -1254,4 +1256,30 @@ public class JaxbAnnotationIntrospector
     {
         return (n == null) ? null : n.getSimpleName();
     }
+
+    /**
+     * @since 2.1.2
+     */
+    protected Class<?> _rawDeserializationType(Annotated a)
+    {
+        if (a instanceof AnnotatedMethod) {
+            AnnotatedMethod am = (AnnotatedMethod) a;
+            // 27-Nov-2012, tatu: Bit nasty, as we are assuming
+            //    things about method signatures here... but has to do
+            if (am.getParameterCount() == 1) {
+                return am.getRawParameterType(0);
+            }
+        }
+        return a.getRawType();
+    }
+
+    /**
+     * @since 2.1.2
+     */
+    protected Class<?> _rawSerializationType(Annotated a)
+    {
+        // 27-Nov-2012, tatu: No work-arounds needed yet...
+        return a.getRawType();
+    }
 }
+
