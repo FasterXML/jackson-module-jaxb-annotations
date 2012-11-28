@@ -506,11 +506,11 @@ public class JaxbAnnotationIntrospector
     }
 
     @Override
-    public Object findContentSerializer(Annotated am)
+    public Object findContentSerializer(Annotated a)
     {
         // [JACKSON-722]: Adapter applicable to value types
-        XmlAdapter<?,?> adapter = _findContentAdapter(am);
-        boolean fromClass = !(am instanceof AnnotatedMember);
+        XmlAdapter<?,?> adapter = _findContentAdapter(a, true);
+        boolean fromClass = !(a instanceof AnnotatedMember);
         return (adapter == null) ? null : new XmlAdapterJsonSerializer(adapter, fromClass);
     }
 
@@ -731,10 +731,10 @@ public class JaxbAnnotationIntrospector
     }
 
     @Override
-    public Object findContentDeserializer(Annotated am)
+    public Object findContentDeserializer(Annotated a)
     {
         // [JACKSON-722]: Adapter applicable to value types
-        XmlAdapter<?,?> adapter = _findContentAdapter(am);
+        XmlAdapter<?,?> adapter = _findContentAdapter(a, false);
         return (adapter == null) ? null : new XmlAdapterJsonDeserializer(adapter);
     }
 
@@ -1235,16 +1235,19 @@ public class JaxbAnnotationIntrospector
         return params[1].getRawClass();
     }
 
-    protected XmlAdapter<?,?> _findContentAdapter(Annotated ann)
+    protected XmlAdapter<?,?> _findContentAdapter(Annotated ann,
+            boolean forSerialization)
     {
-        Class<?> type = ann.getRawType();
+        Class<?> rawType = forSerialization ?
+            _rawSerializationType(ann) : _rawDeserializationType(ann);
+        
         // and let's assume this only applies as member annotation:
-        if (isContainerType(type) && (ann instanceof AnnotatedMember)) {
+        if (isContainerType(rawType) && (ann instanceof AnnotatedMember)) {
             AnnotatedMember member = (AnnotatedMember) ann;
-            JavaType containerType = getTypeFactory().constructType(member.getGenericType(),
-                    member.getDeclaringClass());
-            Class<?> contentType = containerType.getContentType().getRawClass();
-            XmlAdapter<Object,Object> adapter = findAdapter(member, true, type);
+            JavaType fullType = forSerialization ?
+                _fullSerializationType(member) : _fullDeserializationType(member);
+            Class<?> contentType = fullType.getContentType().getRawClass();
+            XmlAdapter<Object,Object> adapter = findAdapter(member, forSerialization, contentType);
             if (adapter != null && adapterTypeMatches(adapter, contentType)) {
                 return adapter;
             }
@@ -1276,10 +1279,38 @@ public class JaxbAnnotationIntrospector
     /**
      * @since 2.1.2
      */
+    protected JavaType _fullDeserializationType(AnnotatedMember am)
+    {
+        if (am instanceof AnnotatedMethod) {
+            AnnotatedMethod method = (AnnotatedMethod) am;
+            // 27-Nov-2012, tatu: Bit nasty, as we are assuming
+            //    things about method signatures here... but has to do
+            if (method.getParameterCount() == 1) {
+                return getTypeFactory().constructType(((AnnotatedMethod) am).getGenericParameterType(0),
+                        am.getDeclaringClass());
+            }
+        }
+        return getTypeFactory().constructType(am.getGenericType(),
+                am.getDeclaringClass());
+    }
+
+    /**
+     * @since 2.1.2
+     */
     protected Class<?> _rawSerializationType(Annotated a)
     {
         // 27-Nov-2012, tatu: No work-arounds needed yet...
         return a.getRawType();
     }
+
+    /**
+     * @since 2.1.2
+     */
+    protected JavaType _fullSerializationType(AnnotatedMember am)
+    {
+        return getTypeFactory().constructType(am.getGenericType(),
+                am.getDeclaringClass());
+    }
 }
+
 

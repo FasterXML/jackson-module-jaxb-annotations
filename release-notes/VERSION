@@ -2,6 +2,9 @@ Version: 2.1.2 (xx-xxx-2012)
 
 Fixes:
 
+* [Issue#16]: Problems with XmlAdapters for deserialization contents of
+  Collection types
+ (reported by rcpoison@github)
 * Changed JaxbAnnotationIntrospector to force access if need be (mostly
   needed for constructing Adapter instances)
 
