@@ -40,6 +40,9 @@
   </scm>
 
   <properties>
+    <javac.src.version>1.5</javac.src.version>
+    <javac.target.version>1.5</javac.target.version>
+    <jackson.core.version>2.1.2</jackson.core.version>
     <osgi.export>
 com.fasterxml.jackson.module.jaxb,
 com.fasterxml.jackson.module.jaxb.deser,
@@ -77,12 +80,12 @@ javax.activation
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>2.1.1</version>
+      <version>${jackson.core.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.1.1</version>
+      <version>${jackson.core.version}</version>
     </dependency>
     <!--  and actual JAXB annotations... -->
     <dependency>
@@ -129,7 +132,5 @@ javax.activation
         </configuration>
       </plugin>
     </plugins>
-
   </build>
-
 </project>
