@@ -1,16 +1,19 @@
-Version: 2.1.2 (04-Dec-2012)
+Project: jackson-module-jaxb-annotations
+Version 2.1.3 (31-Jan-2013)
 
-Fixes:
+No functional changes, just dependency update
+
+------------------------------------------------------------------------
+=== History: ===
+------------------------------------------------------------------------
+
+2.1.2 (04-Dec-2012)
 
 * [Issue#16]: Problems with XmlAdapters for deserialization contents of
   Collection types
  (reported by rcpoison@github)
 * Changed JaxbAnnotationIntrospector to force access if need be (mostly
   needed for constructing Adapter instances)
-
-------------------------------------------------------------------------
-=== History: ===
-------------------------------------------------------------------------
 
 2.1.1 (11-Nov-2012)
 
