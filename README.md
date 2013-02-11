@@ -13,11 +13,13 @@ For Jackson 2.0 functionality will be only offered through this module.
 
 To use this extension on Maven-based projects, use following dependency:
 
-    <dependency>
-      <groupId>com.fasterxml.jackson.module</groupId>
-      <artifactId>jackson-module-jaxb-annotations</artifactId>
-      <version>2.1.1</version>
-    </dependency>
+```xml
+<dependency>
+  <groupId>com.fasterxml.jackson.module</groupId>
+  <artifactId>jackson-module-jaxb-annotations</artifactId>
+  <version>2.1.1</version>
+</dependency>
+```
 
 (or whatever version is most up-to-date at the moment)
 
@@ -30,18 +32,22 @@ To enable use of JAXB annotations, one must add `JaxbAnnotationIntrospector` pro
 
 Module registration works in standard way:
 
-   JaxbAnnotationModule module = new JaxbAnnotationModule();
-   // configure as necessary
-   objectMapper.registerModule(module);
+```java
+JaxbAnnotationModule module = new JaxbAnnotationModule();
+// configure as necessary
+objectMapper.registerModule(module);
+```
 
 and the alternative -- explicit configuration is done as:
 
-    AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
-    // if ONLY using JAXB annotations:
-    mapper.setAnnotationIntrospector(introspector);
-    // if using BOTH JAXB annotations AND Jackson annotations:
-    AnnotationIntrospector secondary = new JacksonAnnotationIntrospector();
-    mapper.setAnnotationIntrospector(new AnnotationIntrospector.Pair(introspector, secondary);
+```java
+AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
+// if ONLY using JAXB annotations:
+mapper.setAnnotationIntrospector(introspector);
+// if using BOTH JAXB annotations AND Jackson annotations:
+AnnotationIntrospector secondary = new JacksonAnnotationIntrospector();
+mapper.setAnnotationIntrospector(new AnnotationIntrospector.Pair(introspector, secondary);
+```
 
 Note that by default Module version will use JAXB annotations as the primary, and Jackson annotations as secondary source; but you can change this behavior
 
