@@ -1,11 +1,15 @@
 Project: jackson-module-jaxb-annotations
-Version 2.1.3 (31-Jan-2013)
+Version 2.1.4 (26-Feb-2013)
 
 No functional changes, just dependency update
 
 ------------------------------------------------------------------------
 === History: ===
 ------------------------------------------------------------------------
+
+2.1.3 (31-Jan-2013)
+
+No functional changes, just dependency update
 
 2.1.2 (04-Dec-2012)
 
