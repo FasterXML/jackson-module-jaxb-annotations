@@ -36,7 +36,7 @@
     <connection>scm:git:git@github.com:FasterXML/jackson-module-jaxb-annotations.git</connection>
     <developerConnection>scm:git:git@github.com:FasterXML/jackson-module-jaxb-annotations.git</developerConnection>
     <url>http://github.com/FasterXML/jackson-module-jaxb-annotations</url>    
-    <tag>HEAD</tag>
+    <tag>jackson-module-jaxb-annotations-2.1.4</tag>
   </scm>
 
   <properties>
