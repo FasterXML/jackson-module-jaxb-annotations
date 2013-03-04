@@ -20,7 +20,7 @@
   <parent>
     <groupId>com.fasterxml</groupId>
     <artifactId>oss-parent</artifactId>
-    <version>4</version>
+    <version>8</version>
   </parent>
 
   <groupId>com.fasterxml.jackson.module</groupId>
@@ -40,9 +40,13 @@
   </scm>
 
   <properties>
+   <!-- Generate PackageVersion.java into this directory. -->
+    <packageVersion.dir>com/fasterxml/jackson/module/jaxb</packageVersion.dir>
+    <packageVersion.package>com.fasterxml.jackson.module.jaxb</packageVersion.package>
+
     <jackson.core.version>2.2.0-SNAPSHOT</jackson.core.version>
-    <javac.src.version>1.5</javac.src.version>
-    <javac.target.version>1.5</javac.target.version>
+    <javac.src.version>1.6</javac.src.version>
+    <javac.target.version>1.6</javac.target.version>
     <osgi.export>
 com.fasterxml.jackson.module.jaxb,
 com.fasterxml.jackson.module.jaxb.deser,
@@ -112,14 +116,6 @@ javax.activation
   </dependencies>
 
   <build>
-    <!--  need to enable filtering to add version info -->
-    <resources>
-      <resource>
-        <directory>${basedir}/src/main/resources</directory>
-        <filtering>true</filtering>
-      </resource>
-    </resources>
-
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -131,6 +127,18 @@ javax.activation
           </excludes>
         </configuration>
       </plugin>
+      <plugin>
+        <!-- Inherited from oss-base. Generate PackageVersion.java.-->
+        <groupId>com.google.code.maven-replacer-plugin</groupId>
+        <artifactId>replacer</artifactId>
+        <executions>
+          <execution>
+            <id>process-packageVersion</id>
+            <phase>process-sources</phase>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
   </build>
 </project>
