@@ -40,6 +40,7 @@ public class TestAdapters extends BaseJaxbTest
     {
         public String value;
 
+        protected IdentityAdapterBean() { }
         public IdentityAdapterBean(String s) { value = s; }
     }
 

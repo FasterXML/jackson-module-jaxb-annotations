@@ -36,7 +36,6 @@ public class TestIntrospectorPair
      * Simple test bean for verifying basic field detection and property
      * naming annotation handling
      */
-    @SuppressWarnings("unused")
     @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
     static class NamedBean
     {

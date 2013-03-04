@@ -32,6 +32,7 @@ public class TestDeserializerCaching extends BaseJaxbTest
         }
     }
 
+    @SuppressWarnings("serial")
     static class MyBeanDeserializer extends BeanDeserializer {
         public MyBeanDeserializer(BeanDeserializer src) {
             super(src);

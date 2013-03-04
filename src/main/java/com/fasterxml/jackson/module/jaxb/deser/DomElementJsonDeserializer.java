@@ -24,6 +24,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 public class DomElementJsonDeserializer
     extends StdDeserializer<Element>
 {
+    private static final long serialVersionUID = 1L;
+
     private final DocumentBuilder builder;
 
     public DomElementJsonDeserializer()

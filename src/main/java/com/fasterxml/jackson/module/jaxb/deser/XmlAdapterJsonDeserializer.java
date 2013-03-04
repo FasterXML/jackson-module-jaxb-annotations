@@ -19,6 +19,8 @@ public class XmlAdapterJsonDeserializer
     extends StdDeserializer<Object>
     implements ContextualDeserializer
 {
+    private static final long serialVersionUID = 1223899190001940742L;
+
     protected final XmlAdapter<Object,Object> _xmlAdapter;
 
     protected final JavaType _valueType;

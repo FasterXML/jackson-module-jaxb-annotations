@@ -27,6 +27,7 @@ public class TestDomElementSerialization extends BaseJaxbTest
     /**********************************************************
      */
 
+    @SuppressWarnings("serial")
     private final static class DomModule extends SimpleModule
     {
         public DomModule()

@@ -147,7 +147,6 @@ public class TestJaxbAnnotationIntrospector
         @XmlElement
         protected String jaxb2 = "2";
 
-        @SuppressWarnings("unused")
         @XmlElement(name="jaxb3")
         private String oddName = "3";
 

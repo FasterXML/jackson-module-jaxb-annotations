@@ -14,6 +14,7 @@ import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
  * 
  * @author tatu
  */
+@SuppressWarnings("deprecation")
 public class TestSchemaGeneration extends BaseJaxbTest
 {
     /*

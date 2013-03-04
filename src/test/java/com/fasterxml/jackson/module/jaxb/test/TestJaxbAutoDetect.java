@@ -80,6 +80,7 @@ public class TestJaxbAutoDetect extends BaseJaxbTest
         }
     }
 
+    @SuppressWarnings("serial")
     public static class DualAnnotationObjectMapper extends ObjectMapper {
 
         public DualAnnotationObjectMapper() {

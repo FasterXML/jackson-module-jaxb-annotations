@@ -9,7 +9,6 @@ import com.fasterxml.jackson.core.*;
 
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.jsonschema.SchemaAware;
-import com.fasterxml.jackson.databind.jsonschema.JsonSchema;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -96,6 +95,7 @@ public class XmlAdapterJsonSerializer
         }
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public JsonNode getSchema(SerializerProvider provider, Type typeHint)
             throws JsonMappingException
@@ -104,7 +104,7 @@ public class XmlAdapterJsonSerializer
         if (_serializer instanceof SchemaAware) {
             return ((SchemaAware) _serializer).getSchema(provider, null);
         }
-        return JsonSchema.getDefaultSchemaNode();
+        return com.fasterxml.jackson.databind.jsonschema.JsonSchema.getDefaultSchemaNode();
     }
 
     private final void _checkSerializer()
