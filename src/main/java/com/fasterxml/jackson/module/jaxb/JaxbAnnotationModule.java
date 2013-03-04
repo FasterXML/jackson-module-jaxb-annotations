@@ -15,6 +15,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
  */
 public class JaxbAnnotationModule extends SimpleModule
 {
+    private static final long serialVersionUID = 1L;
+
     /**
      * Enumeration that defines how we use JAXB Annotations: either
      * as "primary" annotations (before any other already configured
