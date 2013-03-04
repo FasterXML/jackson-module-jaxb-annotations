@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.jaxb.failing;
+package com.fasterxml.jackson.module.jaxb.adapters;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -9,7 +9,7 @@ import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
 /**
  * Failing unit tests related to Adapter handling.
  */
-public class TestAdapters extends BaseJaxbTest
+public class TestIdentityAdapters extends BaseJaxbTest
 {
     // [Issue-10]: Infinite recursion in "self" adapters
     public static class IdentityAdapter extends XmlAdapter<IdentityAdapterBean, IdentityAdapterBean> {
@@ -58,17 +58,16 @@ public class TestAdapters extends BaseJaxbTest
     /* Unit tests
     /**********************************************************
      */
-
-    // 27-Jul-2012, tatu: NOTE that these 2 are still failing as of 2.0.5;
-    //   should be fixed soon
     
     // [Issue-10]
     public void testIdentityAdapterForClass() throws Exception
     {
         IdentityAdapterBean input = new IdentityAdapterBean("A");
         ObjectMapper mapper = getJaxbMapper();
+        
         String json = mapper.writeValueAsString(input);
         assertEquals("{\"value\":\"AM\"}", json);
+        
         IdentityAdapterBean result = mapper.readValue(json, IdentityAdapterBean.class);
         assertEquals("AMU", result.value);
     }
