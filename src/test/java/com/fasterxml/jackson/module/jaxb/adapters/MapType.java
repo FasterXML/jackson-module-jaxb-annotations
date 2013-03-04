@@ -1,6 +1,6 @@
-package com.fasterxml.jackson.module.jaxb.test;
+package com.fasterxml.jackson.module.jaxb.adapters;
 
-import com.fasterxml.jackson.module.jaxb.test.EntryType;
+import com.fasterxml.jackson.module.jaxb.adapters.EntryType;
 
 import java.util.List;
 

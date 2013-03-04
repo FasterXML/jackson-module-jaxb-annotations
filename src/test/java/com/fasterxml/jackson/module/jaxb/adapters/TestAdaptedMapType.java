@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.jaxb.test;
+package com.fasterxml.jackson.module.jaxb.adapters;
 
 import java.io.*;
 import java.util.HashMap;
