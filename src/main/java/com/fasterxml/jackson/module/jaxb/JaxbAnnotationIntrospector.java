@@ -1191,9 +1191,16 @@ public class JaxbAnnotationIntrospector
         }
         // Otherwise for a member. First, let's figure out type of property
 
+        /* 03-Mar-2013, tatu: This can cause issues, since annotations on class itself are unlikely
+         *   to be of value to properties declared in it -- rather, such annotations should
+         *   be handled differently. So let's comment out for 2.2; remove if/when not used for
+         *   next version or two.
+         */
+
+        /*
         // 09-Nov-2010, tatu: Not quite sure why we are to check declaring class... but that's how code was:
         Member member = (Member) am.getAnnotated();
-        // [JACKSON-495]: Will be null for AnnotatedParam -- note, probably should find declaring class for it; won't for now
+
         if (member != null) {
             Class<?> potentialAdaptee = member.getDeclaringClass();
             if (potentialAdaptee != null) {
@@ -1206,6 +1213,7 @@ public class JaxbAnnotationIntrospector
                 }
             }
         }
+        */
 
         XmlJavaTypeAdapter adapterInfo = findAnnotation(XmlJavaTypeAdapter.class, am, true, false, false);
         if (adapterInfo != null) {
