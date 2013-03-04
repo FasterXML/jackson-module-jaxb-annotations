@@ -89,7 +89,7 @@ public class TestAdaptersForContainers extends BaseJaxbTest
     
     /*
     /**********************************************************
-    /* Unit tests, Listss
+    /* Unit tests, Lists
     /**********************************************************
      */
  

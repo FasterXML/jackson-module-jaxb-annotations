@@ -13,7 +13,9 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import com.fasterxml.jackson.core.*;
+
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.*;
@@ -23,11 +25,10 @@ import com.fasterxml.jackson.databind.jsontype.impl.StdTypeResolverBuilder;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.fasterxml.jackson.databind.util.ClassUtil;
+import com.fasterxml.jackson.databind.util.Converter;
 
 import com.fasterxml.jackson.module.jaxb.deser.DataHandlerJsonDeserializer;
-import com.fasterxml.jackson.module.jaxb.deser.XmlAdapterJsonDeserializer;
 import com.fasterxml.jackson.module.jaxb.ser.DataHandlerJsonSerializer;
-import com.fasterxml.jackson.module.jaxb.ser.XmlAdapterJsonSerializer;
 
 /**
  * Annotation introspector that leverages JAXB annotations where applicable to JSON mapping.
@@ -468,6 +469,8 @@ public class JaxbAnnotationIntrospector
     public JsonSerializer<?> findSerializer(Annotated am)
     {
         final Class<?> type = _rawSerializationType(am);
+
+        /*
         // As per [JACKSON-722], more checks for structured types
         XmlAdapter<Object,Object> adapter = findAdapter(am, true, type);
         if (adapter != null) {
@@ -483,6 +486,8 @@ public class JaxbAnnotationIntrospector
                 return new XmlAdapterJsonSerializer(adapter, fromClass);
             }
         }
+        */
+
         // [JACKSON-150]: add support for additional core XML types needed by JAXB
         if (type != null) {
             if (_dataHandlerSerializer != null && isDataHandler(type)) {
@@ -506,12 +511,8 @@ public class JaxbAnnotationIntrospector
     }
 
     @Override
-    public Object findContentSerializer(Annotated a)
-    {
-        // [JACKSON-722]: Adapter applicable to value types
-        XmlAdapter<?,?> adapter = _findContentAdapter(a, true);
-        boolean fromClass = !(a instanceof AnnotatedMember);
-        return (adapter == null) ? null : new XmlAdapterJsonSerializer(adapter, fromClass);
+    public Object findContentSerializer(Annotated a) {
+        return null;
     }
 
     @Override
@@ -597,6 +598,34 @@ public class JaxbAnnotationIntrospector
         // Yup, XmlAccessorOrder can provide this...
         XmlAccessorOrder order = findAnnotation(XmlAccessorOrder.class, ac, true, true, true);
         return (order == null) ? null : (order.value() == XmlAccessOrder.ALPHABETICAL);
+    }
+
+    @Override
+    public Object findSerializationConverter(Annotated a)
+    {
+        // One limitation: for structured types this is done later on
+        Class<?> serType = _rawSerializationType(a);
+        if (!isContainerType(serType)) {
+            XmlAdapter<?,?> adapter = findAdapter(a, true, serType);
+            if (adapter != null) {
+                return _converter(adapter, true);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Object findSerializationContentConverter(AnnotatedMember a)
+    {
+        // conversely, here we only apply this to container types:
+        Class<?> serType = _rawSerializationType(a);
+        if (isContainerType(serType)) {
+            XmlAdapter<?,?> adapter = _findContentAdapter(a, true);
+            if (adapter != null) {
+                return _converter(adapter, true);
+            }
+        }
+        return null;
     }
 
     /*
@@ -700,6 +729,8 @@ public class JaxbAnnotationIntrospector
     public Object findDeserializer(Annotated am)
     {
         final Class<?> type = _rawDeserializationType(am);
+
+        /*
         // As per [JACKSON-722], more checks for structured types
         XmlAdapter<Object,Object> adapter = findAdapter(am, true, type);
         if (adapter != null) {
@@ -712,6 +743,7 @@ public class JaxbAnnotationIntrospector
                 return new XmlAdapterJsonDeserializer(adapter);
             }
         }
+        */
 
         // [JACKSON-150]: add support for additional core XML types needed by JAXB
         if (type != null) {
@@ -724,18 +756,14 @@ public class JaxbAnnotationIntrospector
     }
 
     @Override
-    public Object findKeyDeserializer(Annotated am)
-    {
+    public Object findKeyDeserializer(Annotated am) {
         // Is there something like this in JAXB?
         return null;
     }
 
     @Override
-    public Object findContentDeserializer(Annotated a)
-    {
-        // [JACKSON-722]: Adapter applicable to value types
-        XmlAdapter<?,?> adapter = _findContentAdapter(a, false);
-        return (adapter == null) ? null : new XmlAdapterJsonDeserializer(adapter);
+    public Object findContentDeserializer(Annotated a) {
+        return null;
     }
 
     /**
@@ -909,7 +937,34 @@ public class JaxbAnnotationIntrospector
         XmlElement annotation = m.getAnnotation(XmlElement.class);
         return annotation == null ? null : Boolean.valueOf(annotation.required());
     }
-    
+
+    @Override
+    public Object findDeserializationConverter(Annotated a)
+    {
+        // One limitation: for structured types this is done later on
+        Class<?> deserType = _rawDeserializationType(a);
+        if (!isContainerType(deserType)) {
+            XmlAdapter<?,?> adapter = findAdapter(a, true, deserType);
+            if (adapter != null) {
+                return _converter(adapter, false);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Object findDeserializationContentConverter(AnnotatedMember a)
+    {
+        // conversely, here we only apply this to container types:
+        Class<?> deserType = _rawDeserializationType(a);
+        if (isContainerType(deserType)) {
+            XmlAdapter<?,?> adapter = _findContentAdapter(a, true);
+            if (adapter != null) {
+                return _converter(adapter, false);
+            }
+        }
+        return null;
+    }    
     /*
     /**********************************************************
     /* Helper methods (non-API)
@@ -1310,6 +1365,17 @@ public class JaxbAnnotationIntrospector
     {
         return getTypeFactory().constructType(am.getGenericType(),
                 am.getDeclaringClass());
+    }
+
+    protected Converter<Object,Object> _converter(XmlAdapter<?,?> adapter, boolean forSerialization)
+    {
+        JavaType[] pt = getTypeFactory().findTypeParameters(adapter.getClass(), XmlAdapter.class);
+        // Order of type parameters for Converter is reverse between serializer, deserializer,
+        // whereas JAXB just uses single ordering
+        if (forSerialization) {
+            return new AdapterConverter(adapter, pt[1], pt[0], forSerialization);
+        }
+        return new AdapterConverter(adapter, pt[0], pt[1], forSerialization);
     }
 }
 
