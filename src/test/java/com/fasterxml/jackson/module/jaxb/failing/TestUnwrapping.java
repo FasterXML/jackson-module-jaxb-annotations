@@ -45,24 +45,30 @@ public class TestUnwrapping extends BaseJaxbTest
         }
     }
 
+    /*
+    /**********************************************************
+    /* Unit tests
+    /**********************************************************
+     */
+    
     // not asserting anything
     public void testXmlElementAndXmlElementRefs() throws Exception
     {
-            Bean<A> bean = new Bean<A>();
-            bean.r = new A(12);
-            bean.name = "test";
-            ObjectMapper mapper = new ObjectMapper();
-            AnnotationIntrospector pair = new AnnotationIntrospectorPair(
-                            new JacksonAnnotationIntrospector(),
-                            new JaxbAnnotationIntrospector(TypeFactory.defaultInstance())
-                            );
-            mapper.setAnnotationIntrospector(pair);
+        Bean<A> bean = new Bean<A>();
+        bean.r = new A(12);
+        bean.name = "test";
+        ObjectMapper mapper = new ObjectMapper();
+        AnnotationIntrospector pair = new AnnotationIntrospectorPair(
+                new JacksonAnnotationIntrospector(),
+                new JaxbAnnotationIntrospector(mapper.getTypeFactory())
+        );
+        mapper.setAnnotationIntrospector(pair);
             
 //            mapper.setAnnotationIntrospector(new JacksonAnnotationIntrospector());
             // mapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector());
 
-            String json = mapper.writeValueAsString(bean);
-            // !!! TODO: verify
-            assertNotNull(json);
+        String json = mapper.writeValueAsString(bean);
+        // !!! TODO: verify
+        assertNotNull(json);
     } 
 }
