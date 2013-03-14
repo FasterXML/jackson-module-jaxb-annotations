@@ -40,7 +40,6 @@ public class TestAdaptedMapType extends BaseJaxbTest
         @Override
         public Map<String, String> marshal(Map<String, String> input)
         {
-System.err.println("mmarshal -> "+input);            
             LinkedHashMap<String,String> result = new LinkedHashMap<String,String>();
             for (Map.Entry<String,String> entry : input.entrySet()) {
                 result.put(entry.getKey(), "M-"+entry.getValue());
@@ -51,7 +50,6 @@ System.err.println("mmarshal -> "+input);
         @Override
         public Map<String, String> unmarshal(Map<String, String> input)
         {
-System.err.println("unmarshal -> "+input);            
             LinkedHashMap<String,String> result = new LinkedHashMap<String,String>();
             for (Map.Entry<String,String> entry : input.entrySet()) {
                 result.put(entry.getKey(), "U-"+entry.getValue());
@@ -74,12 +72,15 @@ System.err.println("unmarshal -> "+input);
         obj.getMyMap().put("how", "here");
 
         ObjectMapper mapper = getJaxbMapper();
+
+        // Ok, first serialize:
         String json = mapper.writeValueAsString(obj);
         
-System.out.println("JSON == "+json);
-        
         obj = mapper.readValue(json, ObjectContainingAMap.class);
-        assertNotNull(obj.getMyMap());
+        Map<String,String> map = obj.getMyMap();
+        assertNotNull(map);
+        assertEquals(2, map.size());
+        assertEquals("here", map.get("how"));
     }
 
     public void testStringMaps() throws IOException
@@ -89,5 +90,9 @@ System.out.println("JSON == "+json);
         assertNotNull(map.values);
         assertEquals(1, map.values.size());
         assertEquals("U-b", map.values.get("a"));
+
+        // and then out again
+        String json = mapper.writeValueAsString(map);
+        assertEquals("{\"values\":{\"a\":\"M-U-b\"}}", json);
     }
 }
