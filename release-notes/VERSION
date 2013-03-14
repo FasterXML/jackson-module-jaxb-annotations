@@ -4,6 +4,7 @@ Version: 2.2.0 (xx-xxx-xxx)
 Fixes:
 
 * Last problems with identity adapters resolved
+* Improved handling of adapters for Map types
 
 ------------------------------------------------------------------------
 === History: ===

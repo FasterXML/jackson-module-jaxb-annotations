@@ -68,6 +68,8 @@ public class JaxbAnnotationIntrospector
     extends AnnotationIntrospector
     implements Versioned
 {
+    private static final long serialVersionUID = 2406885758759038380L;
+
     protected final static boolean DEFAULT_IGNORE_XMLIDREF = false;
     
     protected final static String MARKER_FOR_DEFAULT = "##default";
@@ -603,13 +605,11 @@ public class JaxbAnnotationIntrospector
     @Override
     public Object findSerializationConverter(Annotated a)
     {
-        // One limitation: for structured types this is done later on
         Class<?> serType = _rawSerializationType(a);
-        if (!isContainerType(serType)) {
-            XmlAdapter<?,?> adapter = findAdapter(a, true, serType);
-            if (adapter != null) {
-                return _converter(adapter, true);
-            }
+        // Can apply to both container and regular type; no difference yet here
+        XmlAdapter<?,?> adapter = findAdapter(a, true, serType);
+        if (adapter != null) {
+            return _converter(adapter, true);
         }
         return null;
     }
@@ -617,7 +617,7 @@ public class JaxbAnnotationIntrospector
     @Override
     public Object findSerializationContentConverter(AnnotatedMember a)
     {
-        // conversely, here we only apply this to container types:
+        // But this one only applies to structured (container) types:
         Class<?> serType = _rawSerializationType(a);
         if (isContainerType(serType)) {
             XmlAdapter<?,?> adapter = _findContentAdapter(a, true);
@@ -943,7 +943,12 @@ public class JaxbAnnotationIntrospector
     {
         // One limitation: for structured types this is done later on
         Class<?> deserType = _rawDeserializationType(a);
-        if (!isContainerType(deserType)) {
+        if (isContainerType(deserType)) {
+            XmlAdapter<?,?> adapter = findAdapter(a, true, deserType);
+            if (adapter != null) {
+                return _converter(adapter, false);
+            }
+        } else {
             XmlAdapter<?,?> adapter = findAdapter(a, true, deserType);
             if (adapter != null) {
                 return _converter(adapter, false);
@@ -1190,34 +1195,9 @@ public class JaxbAnnotationIntrospector
             return findAdapterForClass((AnnotatedClass) am, forSerialization);
         }
         // Otherwise for a member. First, let's figure out type of property
-
-        /* 03-Mar-2013, tatu: This can cause issues, since annotations on class itself are unlikely
-         *   to be of value to properties declared in it -- rather, such annotations should
-         *   be handled differently. So let's comment out for 2.2; remove if/when not used for
-         *   next version or two.
-         */
-
-        /*
-        // 09-Nov-2010, tatu: Not quite sure why we are to check declaring class... but that's how code was:
-        Member member = (Member) am.getAnnotated();
-
-        if (member != null) {
-            Class<?> potentialAdaptee = member.getDeclaringClass();
-            if (potentialAdaptee != null) {
-                XmlJavaTypeAdapter adapterInfo = (XmlJavaTypeAdapter) potentialAdaptee.getAnnotation(XmlJavaTypeAdapter.class);
-                if (adapterInfo != null) { // should we try caching this?
-                    XmlAdapter<Object,Object> adapter = checkAdapter(adapterInfo, type);
-                    if (adapter != null) {
-                        return adapter;
-                    }
-                }
-            }
-        }
-        */
-
         XmlJavaTypeAdapter adapterInfo = findAnnotation(XmlJavaTypeAdapter.class, am, true, false, false);
         if (adapterInfo != null) {
-            XmlAdapter<Object,Object> adapter = checkAdapter(adapterInfo, type);
+            XmlAdapter<Object,Object> adapter = checkAdapter(adapterInfo, type, forSerialization);
             if (adapter != null) {
                 return adapter;
             }
@@ -1225,7 +1205,7 @@ public class JaxbAnnotationIntrospector
         XmlJavaTypeAdapters adapters = findAnnotation(XmlJavaTypeAdapters.class, am, true, false, false);
         if (adapters != null) {
             for (XmlJavaTypeAdapter info : adapters.value()) {
-                XmlAdapter<Object,Object> adapter = checkAdapter(info, type);
+                XmlAdapter<Object,Object> adapter = checkAdapter(info, type, forSerialization);
                 if (adapter != null) {
                     return adapter;
                 }
@@ -1235,12 +1215,17 @@ public class JaxbAnnotationIntrospector
     }
     
     @SuppressWarnings("unchecked")
-    private final XmlAdapter<Object,Object> checkAdapter(XmlJavaTypeAdapter adapterInfo, Class<?> typeNeeded)
+    private final XmlAdapter<Object,Object> checkAdapter(XmlJavaTypeAdapter adapterInfo, Class<?> typeNeeded,
+            boolean forSerialization)
     {
         // if annotation has no type, it's applicable; if it has, must match
         Class<?> adaptedType = adapterInfo.type();
-        if (adaptedType == XmlJavaTypeAdapter.DEFAULT.class
-                || adaptedType.isAssignableFrom(typeNeeded)) {
+        
+        if (adaptedType == XmlJavaTypeAdapter.DEFAULT.class) {
+            JavaType[] params = _typeFactory.findTypeParameters(adapterInfo.value(), XmlAdapter.class);
+            adaptedType = params[forSerialization ? 1 : 0].getRawClass();
+        }
+        if (adaptedType.isAssignableFrom(typeNeeded)) {
             @SuppressWarnings("rawtypes")
             Class<? extends XmlAdapter> cls = adapterInfo.value();
             // true -> yes, force access if need be
