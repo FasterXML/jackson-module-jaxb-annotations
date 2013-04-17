@@ -48,7 +48,7 @@ public class JaxbAnnotationModule extends SimpleModule
     
     public JaxbAnnotationModule()
     {
-        super("jaxb-annotations", ModuleVersion.instance.version());
+        super(PackageVersion.VERSION);
     }
     
     @Override
