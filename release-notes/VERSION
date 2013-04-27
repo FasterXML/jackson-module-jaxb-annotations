@@ -1,14 +1,16 @@
 Project: jackson-module-jaxb-annotations
-Version: 2.2.0 (22-Apr-2013)
+Version: 2.2.1 (xx-May-2013)
 
-Changes:
-
-* Fixed last problems with identity adapters resolved
-* Improved handling of adapters for Map types
+No changes.
 
 ------------------------------------------------------------------------
 === History: ===
 ------------------------------------------------------------------------
+
+2.2.0 (22-Apr-2013)
+
+* Fixed last problems with identity adapters resolved
+* Improved handling of adapters for Map types
 
 2.1.2 (04-Dec-2012)
 
