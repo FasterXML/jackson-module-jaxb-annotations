@@ -36,13 +36,13 @@
     <connection>scm:git:git@github.com:FasterXML/jackson-module-jaxb-annotations.git</connection>
     <developerConnection>scm:git:git@github.com:FasterXML/jackson-module-jaxb-annotations.git</developerConnection>
     <url>http://github.com/FasterXML/jackson-module-jaxb-annotations</url>    
-    <tag>jackson-module-jaxb-annotations-2.1.4</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
     <javac.src.version>1.5</javac.src.version>
     <javac.target.version>1.5</javac.target.version>
-    <jackson.core.version>2.1.4</jackson.core.version>
+    <jackson.core.version>2.1.5</jackson.core.version>
     <osgi.export>
 com.fasterxml.jackson.module.jaxb,
 com.fasterxml.jackson.module.jaxb.deser,
