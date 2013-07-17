@@ -1,7 +1,7 @@
 Project: jackson-module-jaxb-annotations
 Version: 2.2.3 (xx-xxx-2013)
 
-No changes.
+#21: Add LICENSE, NOTICE in jar
 
 ------------------------------------------------------------------------
 === History: ===
