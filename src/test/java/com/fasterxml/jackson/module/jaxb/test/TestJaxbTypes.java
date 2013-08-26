@@ -4,6 +4,7 @@ import java.util.*;
 
 import javax.xml.bind.annotation.*;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.*;
@@ -25,6 +26,7 @@ public class TestJaxbTypes
 
     interface AbstractBean { }
 
+    @JsonPropertyOrder({ "a", "b" })
     static class BeanImpl
         implements AbstractBean
     {
@@ -120,7 +122,7 @@ public class TestJaxbTypes
 
     public void testXmlElementTypeSer() throws Exception
     {
-        ObjectMapper mapper = getJaxbMapper();
+        ObjectMapper mapper = getJaxbAndJacksonMapper();
         AbstractWrapper wrapper = new AbstractWrapper(new BeanImpl(-3, "c"));
         assertEquals("{\"wrapped\":{\"a\":-3,\"b\":\"c\"}}",
                      mapper.writeValueAsString(wrapper));
@@ -169,7 +171,8 @@ public class TestJaxbTypes
 
     public void testXmlElementListTypeSer() throws Exception
     {
-        ObjectMapper mapper = getJaxbMapper();
+        // important: Jackson mapper so we can force ordering
+        ObjectMapper mapper = getJaxbAndJacksonMapper();
         ListBean bean = new ListBean();
         List<AbstractBean> beans = new ArrayList<AbstractBean>();
         beans.add(new BeanImpl(1, "a"));
