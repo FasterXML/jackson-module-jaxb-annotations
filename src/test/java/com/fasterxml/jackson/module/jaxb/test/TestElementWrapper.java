@@ -50,8 +50,8 @@ public class TestElementWrapper extends BaseJaxbTest
         public int id;
     }
     
-    // [Issue#24]: should also work with 'default' name
-    static class Bean24
+    // [Issue#25]: should also work with 'default' name
+    static class Bean25
     {
         @XmlElement(name="element")
 // This would work
@@ -59,8 +59,8 @@ public class TestElementWrapper extends BaseJaxbTest
         @XmlElementWrapper
         public List<Integer> values;
 
-        public Bean24() { }
-        public Bean24(int... v0) {
+        public Bean25() { }
+        public Bean25(int... v0) {
             values = new ArrayList<Integer>();
             for (int v : v0) {
                 values.add(v);
@@ -113,18 +113,18 @@ public class TestElementWrapper extends BaseJaxbTest
         assertEquals("{\"wrap\":3}", mapper.writeValueAsString(input));
     }
 
-    // [Issue#24]
+    // [Issue#25]
     public void testWrapperDefaultName() throws Exception
     {
         ObjectMapper mapper = getJaxbMapper();
         mapper = getJaxbMapper();
         mapper.enable(MapperFeature.USE_WRAPPER_NAME_AS_PROPERTY_NAME);
-        Bean24 input = new Bean24(1, 2, 3);
+        Bean25 input = new Bean25(1, 2, 3);
         final String JSON = "{\"values\":[1,2,3]}";
         assertEquals(JSON, mapper.writeValueAsString(input));
 
         // plus needs to come back ok as well
-        Bean24 result = mapper.readValue(JSON, Bean24.class);
+        Bean25 result = mapper.readValue(JSON, Bean25.class);
         assertNotNull(result);
         assertNotNull(result.values);
         assertEquals(3, result.values.size());
