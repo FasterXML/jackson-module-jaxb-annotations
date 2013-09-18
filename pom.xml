@@ -61,6 +61,7 @@ javax.activation
 ,com.fasterxml.jackson.databind.type
 ,com.fasterxml.jackson.databind.util
 ,com.fasterxml.jackson.databind.jsonschema
+,com.fasterxml.jackson.databind.jsonFormatVisitors
 </osgi.import>
   </properties>
 
