@@ -266,7 +266,28 @@ public class JaxbAnnotationIntrospector
     {
         XmlElementWrapper w = findAnnotation(XmlElementWrapper.class, ann, false, false, false);
         if (w != null) {
-            return _combineNames(w.name(), w.namespace(), "");
+            /* 18-Sep-2013, tatu: As per #24, need to take special care with empty
+             *   String, as that should indicate here "use underlying unmodified
+             *   property name" (that is, one NOT overridden by @JsonProperty)
+             */
+            PropertyName name =  _combineNames(w.name(), w.namespace(), "");
+            // clumsy, yes, but has to do:
+            if (!name.hasSimpleName()) {
+                if (ann instanceof AnnotatedMethod) {
+                    AnnotatedMethod am = (AnnotatedMethod) ann;
+                    String str;
+                    if (am.getParameterCount() == 0) {
+                        str = BeanUtil.okNameForGetter(am);
+                    } else {
+                        str = BeanUtil.okNameForSetter(am);
+                    }
+                    if (str != null) {
+                        return name.withSimpleName(str);
+                    }
+                }
+                return name.withSimpleName(ann.getName());
+            }
+            return name;
         }
         return null;
     }

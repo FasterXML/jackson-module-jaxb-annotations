@@ -120,7 +120,16 @@ public class TestElementWrapper extends BaseJaxbTest
         mapper = getJaxbMapper();
         mapper.enable(MapperFeature.USE_WRAPPER_NAME_AS_PROPERTY_NAME);
         Bean24 input = new Bean24(1, 2, 3);
-        assertEquals("{\"values\":[1,2,3]}",
-                mapper.writeValueAsString(input));
+        final String JSON = "{\"values\":[1,2,3]}";
+        assertEquals(JSON, mapper.writeValueAsString(input));
+
+        // plus needs to come back ok as well
+        Bean24 result = mapper.readValue(JSON, Bean24.class);
+        assertNotNull(result);
+        assertNotNull(result.values);
+        assertEquals(3, result.values.size());
+
+        // and finally verify roundtrip as well
+        assertEquals(JSON, mapper.writeValueAsString(result));
     }
 }
