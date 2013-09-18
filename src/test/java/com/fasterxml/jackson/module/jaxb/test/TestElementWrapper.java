@@ -38,10 +38,36 @@ public class TestElementWrapper extends BaseJaxbTest
         public Phone() { }
         
         public Phone(String number) { this.number = number; }
+        @Override
         public String getNumber() { return number; }
         public void setNumber(String number) { this.number = number; }
     }
+
+    // [Issue#13]
+    static class Bean13
+    {
+        @XmlElementWrapper(name="wrap")
+        public int id;
+    }
     
+    // [Issue#24]: should also work with 'default' name
+    static class Bean24
+    {
+        @XmlElement(name="element")
+// This would work
+// @XmlElementWrapper(name="values")
+        @XmlElementWrapper
+        public List<Integer> values;
+
+        public Bean24() { }
+        public Bean24(int... v0) {
+            values = new ArrayList<Integer>();
+            for (int v : v0) {
+                values.add(v);
+            }
+        }
+    }
+
     /*
     /**********************************************************
     /* Unit tests
@@ -70,5 +96,31 @@ public class TestElementWrapper extends BaseJaxbTest
         assertNotNull(result.phone);
         assertEquals(1, result.phone.size());
         assertEquals("555-6666", result.phone.iterator().next().getNumber());
+    }
+
+    // [Issue#13]
+    public void testWrapperRenaming() throws Exception
+    {
+        ObjectMapper mapper = getJaxbMapper();
+        // verify that by default feature is off:
+        assertFalse(mapper.isEnabled(MapperFeature.USE_WRAPPER_NAME_AS_PROPERTY_NAME));
+        Bean13 input = new Bean13();
+        input.id = 3;
+        assertEquals("{\"id\":3}", mapper.writeValueAsString(input));
+        // but if we create new instance, configure
+        mapper = getJaxbMapper();
+        mapper.enable(MapperFeature.USE_WRAPPER_NAME_AS_PROPERTY_NAME);
+        assertEquals("{\"wrap\":3}", mapper.writeValueAsString(input));
+    }
+
+    // [Issue#24]
+    public void testWrapperDefaultName() throws Exception
+    {
+        ObjectMapper mapper = getJaxbMapper();
+        mapper = getJaxbMapper();
+        mapper.enable(MapperFeature.USE_WRAPPER_NAME_AS_PROPERTY_NAME);
+        Bean24 input = new Bean24(1, 2, 3);
+        assertEquals("{\"values\":[1,2,3]}",
+                mapper.writeValueAsString(input));
     }
 }

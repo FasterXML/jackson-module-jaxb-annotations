@@ -6,18 +6,15 @@ import java.lang.reflect.Type;
 import org.w3c.dom.*;
 
 import com.fasterxml.jackson.core.*;
-
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper;
 
-/**
- * @author Ryan Heaton
- */
 public class DomElementJsonSerializer
-        extends StdSerializer<Element>
+    extends StdSerializer<Element>
 {
     public DomElementJsonSerializer() { super(Element.class); }
 
@@ -69,15 +66,21 @@ public class DomElementJsonSerializer
         jgen.writeEndObject();
     }
 
+    // Improved in 2.3; was missing from 2.2
+    @Override
+    public void acceptJsonFormatVisitor(JsonFormatVisitorWrapper visitor, JavaType typeHint)
+        throws JsonMappingException
+    {
+        if (visitor != null) {
+            visitor.expectStringFormat(typeHint);
+        }
+    }
+
     @Override
     public JsonNode getSchema(SerializerProvider provider, Type typeHint)
             throws JsonMappingException
     {
-        ObjectNode o = createSchemaNode("object", true);
-        o.put("name", createSchemaNode("string"));
-        o.put("namespace", createSchemaNode("string", true));
-        o.put("attributes", createSchemaNode("array", true));
-        o.put("children", createSchemaNode("array", true));
-        return o;
+        // Since 2.3: should be more like String type really, not structure
+        return createSchemaNode("string", true);
     }
 }
