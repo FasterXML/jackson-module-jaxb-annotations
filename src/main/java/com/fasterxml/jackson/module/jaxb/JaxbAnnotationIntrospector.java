@@ -187,7 +187,8 @@ public class JaxbAnnotationIntrospector
              */
             Class<?> scope = Object.class; // alternatively would use 'ac.getRawType()'
             // and we will assume that there exists property thus named...
-            return new ObjectIdInfo(idPropName.getSimpleName(), scope, ObjectIdGenerators.PropertyGenerator.class);
+            return new ObjectIdInfo(idPropName,
+                    scope, ObjectIdGenerators.PropertyGenerator.class);
         }
         
         return null;
