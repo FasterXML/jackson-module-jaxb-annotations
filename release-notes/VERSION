@@ -1,12 +1,14 @@
 Project: jackson-module-jaxb-annotations
-Version: 2.3.0 (14-Nov-2013)
-
-#25: @XmlElementWrapper() should work wrt USE_WRAPPER_NAME_AS_PROPERTY_NAME,
-  use underlying "default" property name
+Version: 2.3.1 (xx-Dec-2013)
 
 ------------------------------------------------------------------------
 === History: ===
 ------------------------------------------------------------------------
+
+2.3.0 (14-Nov-2013)
+
+#25: @XmlElementWrapper() should work wrt USE_WRAPPER_NAME_AS_PROPERTY_NAME,
+  use underlying "default" property name
 
 2.2.3 (23-Aug-2013)
 
