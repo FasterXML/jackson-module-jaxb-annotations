@@ -81,7 +81,7 @@ public class JaxbAnnotationIntrospector
     protected final TypeFactory _typeFactory;
     
     protected final boolean _ignoreXmlIDREF;
-    
+
     /**
      * @deprecated Since 2.1, use the ctor that takes TypeFactory
      */
@@ -686,38 +686,9 @@ public class JaxbAnnotationIntrospector
         }
         return null;
     }
-    
-    @Deprecated
+
     @Override
-    public String findSerializationName(AnnotatedMethod am)
-    {
-        if (!isVisible(am)) {
-            return null;
-        }
-        return _propertyNameToString(findJaxbPropertyName(am, am.getRawType(), BeanUtil.okNameForGetter(am)));
-    }
-    
-    @Deprecated
-    @Override
-    public String findSerializationName(AnnotatedField af)
-    {
-        if (!isVisible(af)) {
-            return null;
-        }
-        PropertyName name = findJaxbPropertyName(af, af.getRawType(), null);
-        /* This may seem wrong, but since JAXB field auto-detection
-         * needs to find even non-public fields (if enabled by
-         * JAXB access type), we need to return name like so:
-         */
-        if (name == null) {
-            return af.getName();
-        }
-        return _propertyNameToString(name);
-    }
-    
-    @Override
-    public boolean hasAsValueAnnotation(AnnotatedMethod am)
-    {
+    public boolean hasAsValueAnnotation(AnnotatedMethod am) {
         //since jaxb says @XmlValue can exist with attributes, this won't map as a JSON value.
         return false;
     }
@@ -900,47 +871,9 @@ public class JaxbAnnotationIntrospector
         }
         */
     }
-    
-    @Deprecated
-    @Override
-    public String findDeserializationName(AnnotatedMethod am)
-    {
-        if (!isVisible(am)) {
-            return null;
-        }
-        Class<?> rawType = am.getRawParameterType(0);
-        return _propertyNameToString(findJaxbPropertyName(am, rawType, BeanUtil.okNameForSetter(am)));
-    }
-
-    @Deprecated
-    @Override
-    public String findDeserializationName(AnnotatedField af)
-    {
-        if (!isVisible(af)) {
-            return null;
-        }
-        PropertyName name = findJaxbPropertyName(af, af.getRawType(), null);
-        /* This may seem wrong, but since JAXB field auto-detection
-         * needs to find even non-public fields (if enabled by
-         * JAXB access type), we need to return name like so:
-         */
-        if (name == null) {
-            return af.getName();
-        }
-        return _propertyNameToString(name);
-    }
-
-    /*
-    public String findDeserializationName(AnnotatedParameter param)
-    {
-        // JAXB has nothing like this...
-        return null;
-    }
-    */
 
     @Override
-    public boolean hasAnySetterAnnotation(AnnotatedMethod am)
-    {
+    public boolean hasAnySetterAnnotation(AnnotatedMethod am) {
         //(ryan) JAXB has @XmlAnyAttribute and @XmlAnyElement annotations, but they're not applicable in this case
         // because JAXB says those annotations are only applicable to methods with specific signatures
         // that Jackson doesn't support (Jackson's any setter needs 2 arguments, name and value, whereas
@@ -949,8 +882,7 @@ public class JaxbAnnotationIntrospector
     }
 
     @Override
-    public boolean hasCreatorAnnotation(Annotated am)
-    {
+    public boolean hasCreatorAnnotation(Annotated am) {
         return false;
     }
 

@@ -46,7 +46,6 @@ public class DataHandlerJsonSerializer extends StdSerializer<DataHandler>
         jgen.writeBinary(out.toByteArray());
     }
 
-    // Improved in 2.3; was missing from 2.2
     @Override
     public void acceptJsonFormatVisitor(JsonFormatVisitorWrapper visitor, JavaType typeHint)
         throws JsonMappingException
@@ -64,7 +63,7 @@ public class DataHandlerJsonSerializer extends StdSerializer<DataHandler>
     {
         ObjectNode o = createSchemaNode("array", true);
         ObjectNode itemSchema = createSchemaNode("string"); //binary values written as strings?
-        o.put("items", itemSchema);
+        o.set("items", itemSchema);
         return o;
     }
 }
