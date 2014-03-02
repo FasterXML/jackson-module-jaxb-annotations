@@ -29,7 +29,7 @@
     <packageVersion.dir>com/fasterxml/jackson/module/jaxb</packageVersion.dir>
     <packageVersion.package>${project.groupId}.jaxb</packageVersion.package>
 
-    <jackson.core.version>2.3.1</jackson.core.version>
+    <jackson.core.version>2.3.2</jackson.core.version>
     <osgi.export>
 com.fasterxml.jackson.module.jaxb,
 com.fasterxml.jackson.module.jaxb.deser,
