@@ -617,13 +617,22 @@ public class JaxbAnnotationIntrospector
         return order;
     }
 
+    @Deprecated // since 2.4
     @Override
     public Boolean findSerializationSortAlphabetically(AnnotatedClass ac) {
-        // Yup, XmlAccessorOrder can provide this...
-        XmlAccessorOrder order = findAnnotation(XmlAccessorOrder.class, ac, true, true, true);
-        return (order == null) ? null : (order.value() == XmlAccessOrder.ALPHABETICAL);
+        return _findAlpha(ac);
     }
 
+    @Override
+    public Boolean findSerializationSortAlphabetically(Annotated ann) {
+        return _findAlpha(ann);
+    }
+
+    private final Boolean _findAlpha(Annotated ann) {
+        XmlAccessorOrder order = findAnnotation(XmlAccessorOrder.class, ann, true, true, true);
+        return (order == null) ? null : (order.value() == XmlAccessOrder.ALPHABETICAL);
+    }
+    
     @Override
     public Object findSerializationConverter(Annotated a)
     {
