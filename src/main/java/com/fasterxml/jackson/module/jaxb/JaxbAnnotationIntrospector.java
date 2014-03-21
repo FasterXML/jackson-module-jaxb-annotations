@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.SimpleObjectIdResolver;
 
 import com.fasterxml.jackson.core.*;
 
@@ -188,7 +189,9 @@ public class JaxbAnnotationIntrospector
             Class<?> scope = Object.class; // alternatively would use 'ac.getRawType()'
             // and we will assume that there exists property thus named...
             return new ObjectIdInfo(idPropName,
-                    scope, ObjectIdGenerators.PropertyGenerator.class);
+                    scope, ObjectIdGenerators.PropertyGenerator.class,
+                    // should we customize Object Id resolver somehow?
+                    SimpleObjectIdResolver.class);
         }
         
         return null;
@@ -1334,5 +1337,3 @@ public class JaxbAnnotationIntrospector
         return new AdapterConverter(adapter, pt[0], pt[1], forSerialization);
     }
 }
-
-
