@@ -1,12 +1,15 @@
 Project: jackson-module-jaxb-annotations
-Version: 2.3.2 (01-Mar-2014)
+Version: 2.3.3 (xx-xxx-2014)
 
-No functional changes.
+#27: Try to make `JaxbAnnotationIntrospector` work with Jackson XML module
+  in determining whether property is output as attribute
+ (reported by jbuhacoff@github)
 
 ------------------------------------------------------------------------
 === History: ===
 ------------------------------------------------------------------------
 
+2.3.2 (01-Mar-2014)
 2.3.1 (28-Dec-2013)
 
 No functional changes.

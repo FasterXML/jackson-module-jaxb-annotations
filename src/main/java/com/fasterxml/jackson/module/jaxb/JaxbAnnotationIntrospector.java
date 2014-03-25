@@ -26,7 +26,6 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.fasterxml.jackson.databind.util.ClassUtil;
 import com.fasterxml.jackson.databind.util.Converter;
-
 import com.fasterxml.jackson.module.jaxb.deser.DataHandlerJsonDeserializer;
 import com.fasterxml.jackson.module.jaxb.ser.DataHandlerJsonSerializer;
 
@@ -60,6 +59,13 @@ import com.fasterxml.jackson.module.jaxb.ser.DataHandlerJsonSerializer;
  * <li>Any property annotated with {@link XmlValue} will have a property named 'value' on its JSON object.
  *   </li>
  * </ul>
+ * 
+ * 
+ *<p>
+ * A note on compatibility with Jackson XML module: since this module does not depend
+ * on Jackson XML module, it is bit difficult to make sure we will properly expose
+ * all information. But effort is made (as of version 2.3.3) to expose this information,
+ * even without using a specific sub-class from that project.
  *
  * @author Ryan Heaton
  * @author Tatu Saloranta
@@ -134,6 +140,67 @@ public class JaxbAnnotationIntrospector
         return PackageVersion.VERSION;
     }
 
+    /*
+    /**********************************************************
+    /* Extended API (XmlAnnotationIntrospector)
+    /**********************************************************
+     */
+
+    // From XmlAnnotationIntrospector
+    // @Override
+    public String findNamespace(Annotated ann) {
+        String ns = null;
+        if (ann instanceof AnnotatedClass) {
+            // For classes, it must be @XmlRootElement. Also, we do
+            // want to use defaults from package, base class
+            XmlRootElement elem = findRootElementAnnotation((AnnotatedClass) ann);
+            if (elem != null) {
+                ns = elem.namespace();
+            }
+        } else {
+            // For others, XmlElement or XmlAttribute work (anything else?)
+            XmlElement elem = findAnnotation(XmlElement.class, ann, false, false, false);
+            if (elem != null) {
+                ns = elem.namespace();
+            }
+            if (ns == null || MARKER_FOR_DEFAULT.equals(ns)) {
+                XmlAttribute attr = findAnnotation(XmlAttribute.class, ann, false, false, false);
+                if (attr != null) {
+                    ns = attr.namespace();
+                }
+            }
+        }
+        // JAXB uses marker for "not defined"
+        if (MARKER_FOR_DEFAULT.equals(ns)) {
+            ns = null;
+        }
+        return ns;
+    }
+
+    // From XmlAnnotationIntrospector
+    // @Override
+    public Boolean isOutputAsAttribute(Annotated ann) {
+        XmlAttribute attr = findAnnotation(XmlAttribute.class, ann, false, false, false);
+        if (attr != null) {
+            return Boolean.TRUE;
+        }
+        XmlElement elem = findAnnotation(XmlElement.class, ann, false, false, false);
+        if (elem != null) {
+            return Boolean.FALSE;
+        }
+        return null;
+    }
+
+    // From XmlAnnotationIntrospector
+    // @Override
+    public Boolean isOutputAsText(Annotated ann) {
+        XmlValue attr = findAnnotation(XmlValue.class, ann, false, false, false);
+        if (attr != null) {
+           return Boolean.TRUE;
+       }
+       return null;
+    }
+    
     /*
     /**********************************************************
     /* General annotations (for classes, properties)
