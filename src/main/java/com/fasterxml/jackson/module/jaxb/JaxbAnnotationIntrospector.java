@@ -178,6 +178,12 @@ public class JaxbAnnotationIntrospector
 
     // From XmlAnnotationIntrospector
     // @Override
+    /**
+     * Here we assume fairly simple logic; if there is <code>XmlAttribute</code> to be found,
+     * we consider it an attribute; if <code>XmlElement</code>, not-an-attribute; and otherwise
+     * we will consider there to be no information.
+     * Caller is likely to default to considering things as elements.
+     */
     public Boolean isOutputAsAttribute(Annotated ann) {
         XmlAttribute attr = findAnnotation(XmlAttribute.class, ann, false, false, false);
         if (attr != null) {
