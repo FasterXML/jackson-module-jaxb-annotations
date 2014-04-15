@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion> 
-
   <parent>
-    <groupId>com.fasterxml</groupId>
-    <artifactId>oss-parent</artifactId>
-    <version>12</version>
+    <groupId>com.fasterxml.jackson</groupId>
+    <artifactId>jackson-parent</artifactId>
+    <version>2.4</version>
   </parent>
-
   <groupId>com.fasterxml.jackson.module</groupId>
   <artifactId>jackson-module-jaxb-annotations</artifactId>
   <version>2.4.0-SNAPSHOT</version>
@@ -16,7 +14,6 @@
   <description>Support for using JAXB annotations as an alternative to "native" Jackson annotations, for configuring data binding.
   </description>
   <url>http://wiki.fasterxml.com/JacksonJAXBAnnotations</url>
-
   <scm>
     <connection>scm:git:git@github.com:FasterXML/jackson-module-jaxb-annotations.git</connection>
     <developerConnection>scm:git:git@github.com:FasterXML/jackson-module-jaxb-annotations.git</developerConnection>
@@ -85,14 +82,7 @@ javax.activation
       <scope>provided</scope>
     </dependency>
 
-     <!-- and for testing, JUnit (or TestNG?) is needed -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.10</version>
-      <scope>test</scope>
-    </dependency>
-     <!-- as well as JAX-RS (jsr-311) -->
+     <!-- and for testing, JAX-RS (jsr-311) API needed -->
     <dependency>
       <groupId>javax.ws.rs</groupId>
       <artifactId>jsr311-api</artifactId>
