@@ -41,6 +41,8 @@ javax.activation
 ,javax.xml.bind
 ,javax.xml.bind.annotation
 ,javax.xml.bind.annotation.adapters
+,javax.xml.parsers
+, org.w3c.dom
 ,com.fasterxml.jackson.annotation
 ,com.fasterxml.jackson.core
 ,com.fasterxml.jackson.core.type
