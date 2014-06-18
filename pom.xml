@@ -26,7 +26,7 @@
     <packageVersion.dir>com/fasterxml/jackson/module/jaxb</packageVersion.dir>
     <packageVersion.package>${project.groupId}.jaxb</packageVersion.package>
 
-    <jackson.core.version>2.4.1-SNAPSHOT</jackson.core.version>
+    <jackson.version.core>2.4.1</jackson.version.core>
     <osgi.export>
 com.fasterxml.jackson.module.jaxb,
 com.fasterxml.jackson.module.jaxb.deser,
@@ -67,12 +67,12 @@ javax.activation
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>${jackson.core.version}</version>
+      <version>${jackson.version.core}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>${jackson.core.version}</version>
+      <version>${jackson.version.core}</version>
     </dependency>
     <!--  and actual JAXB annotations... -->
     <dependency>
