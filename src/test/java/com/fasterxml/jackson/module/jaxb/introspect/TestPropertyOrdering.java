@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.jaxb.misc;
+package com.fasterxml.jackson.module.jaxb.introspect;
 
 import javax.xml.bind.annotation.*;
 
@@ -8,12 +8,6 @@ import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
 public class TestPropertyOrdering
     extends BaseJaxbTest
 {
-    /*
-    /**********************************************************
-    /* Helper beans
-    /**********************************************************
-     */
-
     @XmlType(propOrder = {"cparty", "contacts"})
     @XmlAccessorOrder(XmlAccessOrder.ALPHABETICAL)
     public class BeanFor268
