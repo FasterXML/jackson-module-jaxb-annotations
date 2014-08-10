@@ -1,8 +1,11 @@
-package com.fasterxml.jackson.module.jaxb.misc;
+package com.fasterxml.jackson.module.jaxb.introspect;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.annotation.*;
 
@@ -57,45 +60,26 @@ import org.w3c.dom.Element;
  */
 @XmlRootElement(name = "content")
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class Content extends CommonAttributes
+class Content extends CommonAttributes
 {
-
    private String type;
-
    private MediaType mediaType;
-
    private String text;
-
    private Element element;
-
    private URI src;
-
    private List<Object> value;
-
    protected Object jaxbObject;
 
    @XmlAnyElement
    @XmlMixed
-   public List<Object> getValue()
-   {
-      return value;
-   }
+   public List<Object> getValue() { return value; }
 
-   public void setValue(List<Object> value)
-   {
-      this.value = value;
-   }
+   public void setValue(List<Object> value) { this.value = value; }
 
    @XmlAttribute
-   public URI getSrc()
-   {
-      return src;
-   }
+   public URI getSrc() { return src; }
 
-   public void setSrc(URI src)
-   {
-      this.src = src;
-   }
+   public void setSrc(URI src) { this.src = src; }
 
    /**
     * Mime type of the content
@@ -123,21 +107,11 @@ public class Content extends CommonAttributes
    }
 
    @XmlAttribute(name = "type")
-   public String getRawType()
-   {
-      return type;
-   }
+   public String getRawType() { return type; }
 
 
-   public void setRawType(String type)
-   {
-      this.type = type;
-   }
+   public void setRawType(String type) { this.type = type; }
 
-
-   /**
-    * If content is text, return it as a String.  Otherwise, if content is not text this will return null.
-    */
    @XmlTransient
    public String getText()
    {
@@ -153,11 +127,6 @@ public class Content extends CommonAttributes
       return text;
    }
 
-   /**
-    * Set content as text
-    *
-    * @param text
-    */
    public void setText(String text)
    {
       if (value == null) value = new ArrayList<Object>();
@@ -196,7 +165,37 @@ public class Content extends CommonAttributes
       if (this.element != null && value != null) value.clear();
       this.element = element;
       value.add(element);
+   }
+}
 
+@XmlAccessorType(XmlAccessType.PROPERTY)
+class CommonAttributes
+{
+   private String language;
+   private URI base;
+
+   private Map<?,?> extensionAttributes = new HashMap<String,String>();
+
+   @XmlAttribute(name = "lang", namespace = "http://www.w3.org/XML/1998/namespace")
+   public String getLanguage() {
+      return language;
    }
 
+   public void setLanguage(String language) {
+      this.language = language;
+   }
+
+   @XmlAttribute(namespace = "http://www.w3.org/XML/1998/namespace")
+   public URI getBase() {
+      return base;
+   }
+
+   public void setBase(URI base) {
+      this.base = base;
+   }
+
+   @XmlAnyAttribute
+   public Map<?,?> getExtensionAttributes() {
+      return extensionAttributes;
+   }
 }

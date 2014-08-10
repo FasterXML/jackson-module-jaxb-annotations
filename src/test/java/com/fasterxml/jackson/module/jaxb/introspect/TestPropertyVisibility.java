@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.jaxb.misc;
+package com.fasterxml.jackson.module.jaxb.introspect;
 
 import java.io.IOException;
 
