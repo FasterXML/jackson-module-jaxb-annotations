@@ -7,5 +7,5 @@
     value = com.fasterxml.jackson.module.jaxb.introspect.TestJaxbAnnotationIntrospector.QNameAdapter.class
   )
 })
-package com.fasterxml.jackson.module.jaxb.test;
+package com.fasterxml.jackson.module.jaxb.misc;
 

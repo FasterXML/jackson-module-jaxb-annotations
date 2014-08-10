@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.jaxb.test;
+package com.fasterxml.jackson.module.jaxb.misc;
 
 import java.net.URI;
 import java.util.ArrayList;

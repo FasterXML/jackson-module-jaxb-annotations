@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.jaxb.test;
+package com.fasterxml.jackson.module.jaxb.introspect;
 
 import java.util.Date;
 
@@ -16,12 +16,6 @@ import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
 public class TestAccessType
     extends BaseJaxbTest
 {
-    /*
-    /**********************************************************
-    /* Helper beans
-    /**********************************************************
-     */
-
     @XmlRootElement(name = "model")
     @XmlAccessorType(XmlAccessType.NONE)
     public static class SimpleNamed

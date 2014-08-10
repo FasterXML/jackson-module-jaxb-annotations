@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.jaxb.test;
+package com.fasterxml.jackson.module.jaxb.misc;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

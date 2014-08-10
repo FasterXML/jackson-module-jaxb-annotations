@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.jaxb.test;
+package com.fasterxml.jackson.module.jaxb.misc;
 
 import javax.xml.bind.annotation.*;
 
@@ -17,12 +17,6 @@ import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
 @SuppressWarnings("deprecation")
 public class TestSchemaGeneration extends BaseJaxbTest
 {
-    /*
-    /**********************************************************
-    /* Helper beans
-    /**********************************************************
-     */
-    
     @XmlAccessorType(XmlAccessType.FIELD)
     protected static class Person {
         public String firstName;
