@@ -8,21 +8,9 @@ import com.fasterxml.jackson.databind.*;
 
 import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
 
-/**
- * Those JAXB support unit tests that fail, mostly because our JAXB
- * introspector is not all that good... But fixing that is easiest
- * done once we rewrite the method introspector (can't do it with
- * current version 1.8)
- */
 public class TestPropertyVisibility
     extends BaseJaxbTest
 {
-    /*
-    /**********************************************************
-    /* Helper beans
-    /**********************************************************
-     */
-
     @XmlAccessorType(XmlAccessType.NONE)
     protected static class Bean354
     {

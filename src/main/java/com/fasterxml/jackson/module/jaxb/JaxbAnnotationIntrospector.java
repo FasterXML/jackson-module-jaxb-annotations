@@ -55,11 +55,10 @@ import com.fasterxml.jackson.module.jaxb.ser.DataHandlerJsonSerializer;
  * Note also the following limitations:
  *
  * <ul>
- * <li>Any property annotated with {@link XmlValue} will have a property named 'value' on its JSON object.
+ * <li>Any property annotated with {@link XmlValue} will have implicit property named 'value' on
+ *    its JSON object; although (as of 2.4) it should be possible to override this name
  *   </li>
  * </ul>
- * 
- * 
  *<p>
  * A note on compatibility with Jackson XML module: since this module does not depend
  * on Jackson XML module, it is bit difficult to make sure we will properly expose
@@ -75,6 +74,8 @@ public class JaxbAnnotationIntrospector
 {
     private static final long serialVersionUID = 2406885758759038380L;
 
+    protected final static String DEFAULT_NAME_FOR_XML_VALUE = "value";
+    
     protected final static boolean DEFAULT_IGNORE_XMLIDREF = false;
     
     protected final static String MARKER_FOR_DEFAULT = "##default";
@@ -86,6 +87,13 @@ public class JaxbAnnotationIntrospector
     protected final TypeFactory _typeFactory;
     
     protected final boolean _ignoreXmlIDREF;
+
+    /**
+     * When using {@link @XmlValue} annotation, a placeholder name is assigned
+     * to property (unless overridden by explicit name); this configuration
+     * value specified what that name is.
+     */
+    protected String _xmlValueName = DEFAULT_NAME_FOR_XML_VALUE;
 
     /**
      * @deprecated Since 2.1, use the ctor that takes TypeFactory
@@ -139,6 +147,33 @@ public class JaxbAnnotationIntrospector
         return PackageVersion.VERSION;
     }
 
+    /*
+    /**********************************************************
+    /* Configuration
+    /**********************************************************
+     */
+
+    /**
+     * Configuration method that can be used to change default name
+     * ("value") used for properties annotated with {@link XmlValue};
+     * note that setting it to <code>null</code> will actually avoid
+     * name override, and name will instead be derived from underlying
+     * method name using standard bean name introspection.
+     * 
+     * @since 2.5
+     */
+    public void setNameUsedForXmlValue(String name) {
+        _xmlValueName = name;
+    }
+
+    /**
+     * Accessor for getting currently configured placeholder named
+     * used for property annotated with {@link XmlValue}.
+     */
+    public String getNameUsedForXmlValue() {
+        return _xmlValueName;
+    }
+    
     /*
     /**********************************************************
     /* Extended API (XmlAnnotationIntrospector)
@@ -363,6 +398,16 @@ public class JaxbAnnotationIntrospector
                 return name.withSimpleName(ann.getName());
             }
             return name;
+        }
+        return null;
+    }
+
+    // since 2.4
+    @Override
+    public String findImplicitPropertyName(AnnotatedMember m) {
+        XmlValue valueInfo = m.getAnnotation(XmlValue.class);
+        if (valueInfo != null) {
+            return _xmlValueName;
         }
         return null;
     }
@@ -1186,11 +1231,8 @@ public class JaxbAnnotationIntrospector
                 }
             }
         }
-        XmlValue valueInfo = ae.getAnnotation(XmlValue.class);
-        if (valueInfo != null) {
-            return new PropertyName("value");
-        }
-
+        // 09-Aug-2014, tatu: Note: prior to 2.4.2, we used to give explicit name "value"
+        //   if there was "@XmlValue" annotation; since then, only implicit name.
         return null;
     }
 
