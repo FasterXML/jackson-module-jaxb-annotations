@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.jaxb.failing;
+package com.fasterxml.jackson.module.jaxb.id;
 
 import java.util.*;
 
