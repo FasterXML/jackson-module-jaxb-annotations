@@ -1,5 +1,5 @@
 Project: jackson-module-jaxb-annotations
-Version: 2.4.2 (xx-Aug-2014)
+Version: 2.4.2 (14-Aug-2014)
 
 #30: Need a way to override name @XmlValue induces when not doing XML
 
