@@ -86,6 +86,25 @@ public class TestAdaptersForContainers extends BaseJaxbTest
             values.add(new Date(l));
         }
     }
+
+    static class WrapperWithGetterAndSetter {
+        private List<Date> values;
+
+        public WrapperWithGetterAndSetter() { }
+        public WrapperWithGetterAndSetter(long l) {
+            values = new ArrayList<Date>();
+            values.add(new Date(l));
+        }
+
+        @XmlJavaTypeAdapter(SillyAdapter.class)
+        public List<Date> getValues() {
+            return values;
+        }
+
+        public void setValues(List<Date> values) {
+            this.values = values;
+        }
+    }
     
     /*
     /**********************************************************
@@ -102,6 +121,22 @@ public class TestAdaptersForContainers extends BaseJaxbTest
     public void testSimpleAdapterDeserialization() throws Exception
     {
         Wrapper w = getJaxbMapper().readValue("{\"values\":[\"abc\"]}", Wrapper.class);
+        assertNotNull(w);
+        assertNotNull(w.values);
+        assertEquals(1, w.values.size());
+        assertEquals(29L, w.values.get(0).getTime());
+    }
+
+    public void testAdapterOnGetterSerialization() throws Exception
+    {
+        WrapperWithGetterAndSetter w = new WrapperWithGetterAndSetter(123L);
+        assertEquals("{\"values\":[\"XXX\"]}", getJaxbMapper().writeValueAsString(w));
+    }
+
+    public void testAdapterOnGetterDeserialization() throws Exception
+    {
+        WrapperWithGetterAndSetter w = getJaxbMapper().readValue("{\"values\":[\"abc\"]}",
+                WrapperWithGetterAndSetter.class);
         assertNotNull(w);
         assertNotNull(w.values);
         assertEquals(1, w.values.size());

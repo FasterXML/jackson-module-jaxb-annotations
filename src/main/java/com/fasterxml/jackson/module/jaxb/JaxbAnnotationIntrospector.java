@@ -1045,7 +1045,7 @@ public class JaxbAnnotationIntrospector
         // conversely, here we only apply this to container types:
         Class<?> deserType = _rawDeserializationType(a);
         if (isContainerType(deserType)) {
-            XmlAdapter<?,?> adapter = _findContentAdapter(a, true);
+            XmlAdapter<?,?> adapter = _findContentAdapter(a, false);
             if (adapter != null) {
                 return _converter(adapter, false);
             }
@@ -1302,7 +1302,7 @@ public class JaxbAnnotationIntrospector
         
         if (adaptedType == XmlJavaTypeAdapter.DEFAULT.class) {
             JavaType[] params = _typeFactory.findTypeParameters(adapterInfo.value(), XmlAdapter.class);
-            adaptedType = params[forSerialization ? 1 : 0].getRawClass();
+            adaptedType = params[1].getRawClass();
         }
         if (adaptedType.isAssignableFrom(typeNeeded)) {
             @SuppressWarnings("rawtypes")
