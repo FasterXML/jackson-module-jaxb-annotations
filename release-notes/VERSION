@@ -1,11 +1,16 @@
 Project: jackson-module-jaxb-annotations
-Version: 2.4.3 (03-Oct-2014)
+Version: 2.4.4 (xx-xxx-2014)
 
-No changes.
+#32: fix deserialization of Collection with @XmlJavaTypeAdapter on method
+ (contributed by Andy C, q3aiml@github)
 
 ------------------------------------------------------------------------
 === History: ===
 ------------------------------------------------------------------------
+
+2.4.3 (04-Oct-2014)
+
+No changes
 
 2.4.2 (14-Aug-2014)
 
