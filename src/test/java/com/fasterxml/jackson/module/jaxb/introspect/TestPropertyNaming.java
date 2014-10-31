@@ -27,7 +27,7 @@ public class TestPropertyNaming
             return 13;
         }
     }
-   
+
     /*
     /**********************************************************
     /* Unit tests
