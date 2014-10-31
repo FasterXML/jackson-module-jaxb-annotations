@@ -834,8 +834,11 @@ public class JaxbAnnotationIntrospector
              * needs to find even non-public fields (if enabled by
              * JAXB access type), we need to return name like so:
              */
+            // 31-Oct-2014, tatu: As per [Issue#31], need to be careful to indicate "use default"
+            //    and NOT to force use of specific name; latter would establish explicit name
+            //    and what we want is implicit (unless there is real explicitly annotated name)
             if (name == null) {
-                return new PropertyName(af.getName());
+                return PropertyName.USE_DEFAULT;
             }
             return name;
         }
@@ -1002,29 +1005,25 @@ public class JaxbAnnotationIntrospector
         }
         if (a instanceof AnnotatedField) {
             AnnotatedField af = (AnnotatedField) a;
+            
             if (!isVisible(af)) {
                 return null;
             }
             PropertyName name = findJaxbPropertyName(af, af.getRawType(), null);
+            
             /* This may seem wrong, but since JAXB field auto-detection
              * needs to find even non-public fields (if enabled by
              * JAXB access type), we need to return name like so:
              */
+            // 31-Oct-2014, tatu: As per [Issue#31], need to be careful to indicate "use default"
+            //    and NOT to force use of specific name; latter would establish explicit name
+            //    and what we want is implicit (unless there is real explicitly annotated name)
             if (name == null) {
-                return new PropertyName(af.getName());
+                return PropertyName.USE_DEFAULT;
             }
             return name;
         }
         return null;
-
-        /*
-        if (name != null) {
-            if (name.length() == 0) { // empty String means 'default'
-                return PropertyName.USE_DEFAULT;
-            }
-            return new PropertyName(name);
-        }
-        */
     }
 
     @Override

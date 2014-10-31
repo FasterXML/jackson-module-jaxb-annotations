@@ -8,6 +8,7 @@ Project: jackson-module-jaxb-annotations
 
 #33: Using @XmlEnum to generate an enum of type Integer in json schema
  (requested by jesse8888@github)
+- Fixes to handling of `@XmlValue` provided name (problem with #30 fix)
 
 2.4.3 (03-Oct-2014)
 
