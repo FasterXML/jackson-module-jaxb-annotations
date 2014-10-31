@@ -39,13 +39,13 @@ public class TestJaxbAnnotationIntrospector
 
     public static class JaxbExample
     {
-        private String attributeProperty;
-        private String elementProperty;
-        private List<String> wrappedElementProperty;
-        private EnumExample enumProperty;
-        private QName qname;
-        private QName qname1;
-        private String propertyToIgnore;
+        protected String attributeProperty;
+        protected String elementProperty;
+        protected List<String> wrappedElementProperty;
+        protected EnumExample enumProperty;
+        protected QName qname;
+        protected QName qname1;
+        protected String propertyToIgnore;
 
         @XmlJavaTypeAdapter(QNameAdapter.class)
         public QName getQname()

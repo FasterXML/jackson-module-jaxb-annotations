@@ -48,7 +48,7 @@ public class TestJaxbTypes
          * and accessors. 
          */
         @XmlElement(type=BeanImpl.class)
-        private List<AbstractBean> beans;
+        protected List<AbstractBean> beans;
 
         public ListBean() { }
         public ListBean(AbstractBean ... beans) {
@@ -69,7 +69,7 @@ public class TestJaxbTypes
      */
     static class ComboBean
     {
-        private AbstractBean bean;
+        protected AbstractBean bean;
 
         public ListBean beans;
 
