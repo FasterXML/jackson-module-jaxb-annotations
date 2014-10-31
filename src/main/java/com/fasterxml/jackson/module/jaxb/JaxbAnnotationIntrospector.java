@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.*;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -79,6 +80,12 @@ public class JaxbAnnotationIntrospector
     protected final static boolean DEFAULT_IGNORE_XMLIDREF = false;
     
     protected final static String MARKER_FOR_DEFAULT = "##default";
+
+    // @since 2.5
+    protected final static JsonFormat.Value FORMAT_STRING = new JsonFormat.Value().withShape(JsonFormat.Shape.STRING);
+
+    // @since 2.5
+    protected final static JsonFormat.Value FORMAT_INT = new JsonFormat.Value().withShape(JsonFormat.Shape.NUMBER_INT);
     
     protected final String _jaxbPackageName;
     protected final JsonSerializer<?> _dataHandlerSerializer;
@@ -408,6 +415,26 @@ public class JaxbAnnotationIntrospector
         XmlValue valueInfo = m.getAnnotation(XmlValue.class);
         if (valueInfo != null) {
             return _xmlValueName;
+        }
+        return null;
+    }
+
+    @Override
+    public JsonFormat.Value findFormat(Annotated m) {
+        /* [Issue#33]: Use @XmlEnum value (Class) to indicate format,
+         *   iff it makes sense
+         */
+        if (m instanceof AnnotatedClass) {
+            XmlEnum ann = m.getAnnotation(XmlEnum.class);
+            if (ann != null) {
+                Class<?> type = ann.value();
+                if (type == String.class || type.isEnum()) {
+                    return FORMAT_STRING;
+                }
+                if (Number.class.isAssignableFrom(type)) {
+                    return FORMAT_INT;
+                }
+            }
         }
         return null;
     }

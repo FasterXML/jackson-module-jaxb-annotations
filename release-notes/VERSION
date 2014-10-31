@@ -1,16 +1,19 @@
 Project: jackson-module-jaxb-annotations
-Version: 2.4.4 (xx-xxx-2014)
+
+------------------------------------------------------------------------
+=== Releases ===
+------------------------------------------------------------------------
+
+2.4.4 (not yet released)
 
 #32: fix deserialization of Collection with @XmlJavaTypeAdapter on method
  (contributed by Andy C, q3aiml@github)
+#33: Using @XmlEnum to generate an enum of type Integer in json schema
+ (requested by jesse8888@github)
 
-------------------------------------------------------------------------
-=== History: ===
-------------------------------------------------------------------------
+2.4.3 (03-Oct-2014)
 
-2.4.3 (04-Oct-2014)
-
-No changes
+No changes.
 
 2.4.2 (14-Aug-2014)
 
