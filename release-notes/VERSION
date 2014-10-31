@@ -4,6 +4,10 @@ Project: jackson-module-jaxb-annotations
 === Releases ===
 ------------------------------------------------------------------------
 
+2.5.0 (not yet released)
+
+#31: Add a way to configure name to use for `@XmlValue` annotated properties #31
+
 2.4.4 (not yet released)
 
 #32: fix deserialization of Collection with @XmlJavaTypeAdapter on method
