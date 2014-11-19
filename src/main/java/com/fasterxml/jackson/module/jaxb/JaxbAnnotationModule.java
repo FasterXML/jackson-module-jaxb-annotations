@@ -1,6 +1,7 @@
 package com.fasterxml.jackson.module.jaxb;
 
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.Module;
 
 /**
  * Module that can be registered to add support for JAXB annotations.
@@ -13,10 +14,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
  * (by default, JAXB annotations are used as {@link Priority#PRIMARY}
  * annotations).
  */
-public class JaxbAnnotationModule extends SimpleModule
+public class JaxbAnnotationModule extends Module
 {
-    private static final long serialVersionUID = 1L;
-
     /**
      * Enumeration that defines how we use JAXB Annotations: either
      * as "primary" annotations (before any other already configured
@@ -46,9 +45,16 @@ public class JaxbAnnotationModule extends SimpleModule
     /**********************************************************
      */
     
-    public JaxbAnnotationModule()
-    {
-        super(PackageVersion.VERSION);
+    public JaxbAnnotationModule() { }
+
+    @Override
+    public String getModuleName() {
+        return getClass().getSimpleName();
+    }
+
+    @Override
+    public Version version() {
+        return PackageVersion.VERSION;
     }
     
     @Override
