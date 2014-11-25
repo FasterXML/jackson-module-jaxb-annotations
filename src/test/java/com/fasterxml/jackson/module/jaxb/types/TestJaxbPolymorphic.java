@@ -5,7 +5,6 @@ import java.util.*;
 import javax.xml.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
 
 /**
  * Tests for handling of type-related JAXB annotations 
@@ -14,7 +13,7 @@ import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
  * @author Ryan Heaton
  */
 public class TestJaxbPolymorphic 
-    extends BaseJaxbTest
+    extends PolymorpicTestBase
 {
     /*
     /**********************************************************
@@ -57,51 +56,6 @@ public class TestJaxbPolymorphic
          public ArrayBean() { }
          public ArrayBean(Animal... a) {
              animals = a;
-         }
-     }
-     
-     static abstract class Animal {
-         public String nickname;
-
-         protected Animal(String n) { nickname = n; }
-     }
-
-     static class Buffalo extends Animal {
-         public String hairColor;
-
-         public Buffalo() { this(null, null); }
-         public Buffalo(String name, String hc) {
-             super(name);
-             hairColor = hc;
-         }
-     }
-
-     static class Whale extends Animal {
-         public int weightInTons;
-         public Whale() { this(null, 0); }
-         public Whale(String n, int w) {
-             super(n);
-             weightInTons = w;
-         }
-     }
-
-     @XmlRootElement
-     static class Emu extends Animal {
-         public String featherColor;
-         public Emu() { this(null, null); }
-         public Emu(String n, String w) {
-             super(n);
-             featherColor = w;
-         }
-     }
-
-     @XmlRootElement (name="moo")
-     static class Cow extends Animal {
-         public int weightInPounds;
-         public Cow() { this(null, 0); }
-         public Cow(String n, int w) {
-             super(n);
-             weightInPounds = w;
          }
      }
 

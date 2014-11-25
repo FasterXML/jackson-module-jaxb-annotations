@@ -5,19 +5,13 @@ import java.util.*;
 import javax.xml.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
-import com.fasterxml.jackson.module.jaxb.types.TestJaxbPolymorphic.Animal;
-import com.fasterxml.jackson.module.jaxb.types.TestJaxbPolymorphic.Buffalo;
-import com.fasterxml.jackson.module.jaxb.types.TestJaxbPolymorphic.Cow;
-import com.fasterxml.jackson.module.jaxb.types.TestJaxbPolymorphic.Emu;
-import com.fasterxml.jackson.module.jaxb.types.TestJaxbPolymorphic.Whale;
 
 /**
  * Tests for handling of type-related JAXB annotations with collection (List)
  * types.
  */
 public class TestJaxbPolymorphicLists
-    extends BaseJaxbTest
+    extends PolymorpicTestBase
 {
     /*
     /**********************************************************
