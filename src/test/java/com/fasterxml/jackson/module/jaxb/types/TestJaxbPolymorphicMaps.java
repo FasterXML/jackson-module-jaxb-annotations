@@ -5,20 +5,12 @@ import java.util.*;
 import javax.xml.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
-import com.fasterxml.jackson.module.jaxb.types.TestJaxbPolymorphic.Animal;
-import com.fasterxml.jackson.module.jaxb.types.TestJaxbPolymorphic.Buffalo;
-import com.fasterxml.jackson.module.jaxb.types.TestJaxbPolymorphic.Cow;
-import com.fasterxml.jackson.module.jaxb.types.TestJaxbPolymorphic.Emu;
-import com.fasterxml.jackson.module.jaxb.types.TestJaxbPolymorphic.Whale;
 
 /**
  * Tests for handling of type-related JAXB annotations 
- *
- * @since 1.5
  */
 public class TestJaxbPolymorphicMaps
-    extends BaseJaxbTest
+    extends PolymorpicTestBase
 {
     /*
     /**********************************************************
@@ -65,8 +57,7 @@ public class TestJaxbPolymorphicMaps
         input.add(1, a);
         input.add(2, b);
         input.add(3, c);
-        String str = mapper.writeValueAsString(input);
-
+        String str = mapper.writer().withDefaultPrettyPrinter().writeValueAsString(input);
         MapBean result = mapper.readValue(str, MapBean.class);
         Map<Integer,Animal> map = result.animals;
         assertEquals(3, map.size());
@@ -75,7 +66,6 @@ public class TestJaxbPolymorphicMaps
         assertEquals("Pena", ((Whale) map.get(Integer.valueOf(3))).nickname);
     }
 
-    /*
     public void testPolymorphicMapElementRefs() throws Exception
     {
         ObjectMapper mapper = getJaxbMapper();
@@ -95,5 +85,4 @@ public class TestJaxbPolymorphicMaps
         assertEquals("Arska", ((Cow) map.get(Integer.valueOf(2))).nickname);
         assertEquals("Pena", ((Cow) map.get(Integer.valueOf(3))).nickname);
     }
-    */
 }
