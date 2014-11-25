@@ -4,7 +4,7 @@ Project: jackson-module-jaxb-annotations
 === Releases ===
 ------------------------------------------------------------------------
 
-2.4.4 (not yet released)
+2.4.4 (24-Nov-2014)
 
 #33: Using @XmlEnum to generate an enum of type Integer in json schema
  (requested by jesse8888@github)
