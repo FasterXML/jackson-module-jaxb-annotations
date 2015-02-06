@@ -4,6 +4,11 @@ Project: jackson-module-jaxb-annotations
 === Releases ===
 ------------------------------------------------------------------------
 
+2.5.1 (not yet released)
+
+#39: JaxbAnnotationIntrospector does not honor JsonInclude.Include.NON_EMPTY set on ObjectMapper
+ (reported by jdmichal@github)
+
 2.5.0 (01-Jan-2015)
 
 #31: Add a way to configure name to use for `@XmlValue` annotated properties #31
