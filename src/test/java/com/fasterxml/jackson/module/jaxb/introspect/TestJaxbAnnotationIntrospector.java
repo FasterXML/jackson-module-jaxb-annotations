@@ -204,19 +204,6 @@ public class TestJaxbAnnotationIntrospector
     	}
     }
 
-    // Beans for [JACKSON-256]
-    
-    @XmlRootElement
-    static class BeanWithNillable {
-        public Nillable X;
-    }
-
-    @XmlRootElement
-    static class Nillable {
-        @XmlElement (name="Z", nillable=true)
-        Integer Z;
-    } 
-
     /*
     /****************************************************
     /* Unit tests
@@ -311,14 +298,6 @@ public class TestJaxbAnnotationIntrospector
     public void testSerializationAlphaOrdering() throws Exception
     {
         assertEquals("{\"a\":1,\"b\":2,\"c\":3}", MAPPER.writeValueAsString(new AlphaBean()));
-    }
-
-    // Test for [JACKSON-256], thanks John.
-    public void testWriteNulls() throws Exception
-    {
-        BeanWithNillable bean = new BeanWithNillable();
-        bean.X = new Nillable();
-        assertEquals("{\"X\":{\"Z\":null}}", MAPPER.writeValueAsString(bean));
     }
 
     /**
