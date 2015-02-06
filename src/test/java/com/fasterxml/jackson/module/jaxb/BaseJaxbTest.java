@@ -37,6 +37,15 @@ public abstract class BaseJaxbTest
         return mapper;
     }
 
+    protected ObjectMapper getJacksonAndJaxbMapper()
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        AnnotationIntrospector intr = new AnnotationIntrospectorPair(new JacksonAnnotationIntrospector(),
+                new JaxbAnnotationIntrospector(mapper.getTypeFactory()) );
+        mapper.setAnnotationIntrospector(intr);
+        return mapper;
+    }
+    
     /*
     /**********************************************************************
     /* Helper methods
