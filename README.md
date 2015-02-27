@@ -5,6 +5,9 @@ It is most often used to make it easier to reuse existing data beans that used w
 
 ## Status
 
+[![Build Status](https://travis-ci.org/FasterXML/jackson-module-jaxb-annotations.svg)](https://travis-ci.org/FasterXML/jackson-module-jaxb-annotations)
+
+
 Module is fully usable, as it is based on earlier "jackson-xc" jar that was part of Jackson distribution in 1.x versions.
 
 For Jackson 2.0 functionality will be only offered through this module.
