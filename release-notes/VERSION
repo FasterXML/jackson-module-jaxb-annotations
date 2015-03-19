@@ -4,6 +4,8 @@ Project: jackson-module-jaxb-annotations
 === Releases ===
 ------------------------------------------------------------------------
 
+2.5.2 (not yet released)
+
 2.5.1 (06-Feb-2015)
 
 #39: JaxbAnnotationIntrospector does not honor JsonInclude.Include.NON_EMPTY set on ObjectMapper
