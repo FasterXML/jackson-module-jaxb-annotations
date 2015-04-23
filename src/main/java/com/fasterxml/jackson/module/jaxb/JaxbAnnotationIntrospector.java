@@ -1235,17 +1235,9 @@ public class JaxbAnnotationIntrospector
         if (element != null) {
             return _combineNames(element.name(), element.namespace(), defaultName);
         }
-        /* 11-Sep-2012, tatu: Wrappers should not be automatically used for renaming.
-         *   At least not here (databinding core can do it if feature enabled).
-         */
-        /*
-        XmlElementWrapper elementWrapper = ae.getAnnotation(XmlElementWrapper.class);
-        if (elementWrapper != null) {
-            return _combineNames(elementWrapper.name(), elementWrapper.namespace(), defaultName);
-        }
-        */
         XmlElementRef elementRef = ae.getAnnotation(XmlElementRef.class);
-        if (elementRef != null) {
+        boolean hasAName = (elementRef != null);
+        if (hasAName) {
             if (!MARKER_FOR_DEFAULT.equals(elementRef.name())) {
                 return _combineNames(elementRef.name(), elementRef.namespace(), defaultName);
             }
@@ -1261,9 +1253,14 @@ public class JaxbAnnotationIntrospector
                 }
             }
         }
+        if (!hasAName) {
+            hasAName = ae.hasAnnotation(XmlElementWrapper.class);
+        }
         // 09-Aug-2014, tatu: Note: prior to 2.4.2, we used to give explicit name "value"
         //   if there was "@XmlValue" annotation; since then, only implicit name.
-        return null;
+
+        // One more thing: 
+        return hasAName ? PropertyName.USE_DEFAULT : null;
     }
 
     private static PropertyName _combineNames(String localName, String namespace,

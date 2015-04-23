@@ -20,6 +20,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class DataHandlerJsonSerializer extends StdSerializer<DataHandler>
 {
+    private static final long serialVersionUID = 1L;
+
     public DataHandlerJsonSerializer() { super(DataHandler.class); }
     
     @Override

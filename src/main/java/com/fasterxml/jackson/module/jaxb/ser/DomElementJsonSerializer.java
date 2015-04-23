@@ -16,6 +16,8 @@ import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrappe
 public class DomElementJsonSerializer
     extends StdSerializer<Element>
 {
+    private static final long serialVersionUID = 1L;
+
     public DomElementJsonSerializer() { super(Element.class); }
 
     @Override
