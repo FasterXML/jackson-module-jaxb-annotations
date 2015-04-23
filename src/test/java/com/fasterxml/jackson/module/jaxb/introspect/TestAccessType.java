@@ -1,6 +1,6 @@
 package com.fasterxml.jackson.module.jaxb.introspect;
 
-import java.util.Date;
+import java.util.*;
 
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
@@ -54,7 +54,21 @@ public class TestAccessType
             return new Date(Long.parseLong(arg0));
         }
     }
-    
+
+    // [jaxb-annotations#40]: Need to recognize more marker annotations
+    @XmlAccessorType(XmlAccessType.NONE)
+    public class Bean40
+    {
+        @XmlElement
+        public int getA() { return 1; }
+
+        @XmlElementWrapper(name="b")
+        public int getX() { return 2; }
+
+        @XmlElementRef
+        public int getC() { return 3; }
+    }    
+
     /*
     /**********************************************************
     /* Unit tests
@@ -88,5 +102,19 @@ public class TestAccessType
          Date d = bean.date;
          assertNotNull(d);
          assertEquals(TIMESTAMP, d.getTime());
+     }
+
+     public void testInclusionIssue40() throws Exception
+     {
+         ObjectMapper mapper = getJaxbMapper();
+         mapper.enable(MapperFeature.USE_WRAPPER_NAME_AS_PROPERTY_NAME);
+         String json = mapper.writeValueAsString(new Bean40());
+         @SuppressWarnings("unchecked")
+         Map<String,Object> map = mapper.readValue(json, Map.class);
+         Map<String,Object> exp = new LinkedHashMap<String,Object>();
+         exp.put("a", Integer.valueOf(1));
+         exp.put("b", Integer.valueOf(2));
+         exp.put("c", Integer.valueOf(3));
+         assertEquals(exp, map);
      }
 }
