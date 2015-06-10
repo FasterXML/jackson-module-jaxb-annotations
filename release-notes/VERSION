@@ -4,6 +4,10 @@ Project: jackson-module-jaxb-annotations
 === Releases ===
 ------------------------------------------------------------------------
 
+2.5.4 (09-Jun-2015)
+
+No changes since 2.5.3
+
 2.5.3 (24-Apr-2015)
 
 #40: XmlElementRef ignored if inside XmlElementWrapper
