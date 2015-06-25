@@ -279,10 +279,12 @@ public class JaxbAnnotationIntrospector
             }
             switch (m.getParameterCount()) {
             case 0: // getter
-                idPropName = findJaxbPropertyName(m, m.getRawType(), BeanUtil.okNameForGetter(m));
+                idPropName = findJaxbPropertyName(m, m.getRawType(),
+                        BeanUtil.okNameForGetter(m, true));
                 break method_loop;
             case 1: // setter
-                idPropName = findJaxbPropertyName(m, m.getRawType(), BeanUtil.okNameForSetter(m));
+                idPropName = findJaxbPropertyName(m, m.getRawType(),
+                        BeanUtil.okNameForSetter(m, true));
                 break method_loop;
             }
         }
@@ -394,9 +396,9 @@ public class JaxbAnnotationIntrospector
                     AnnotatedMethod am = (AnnotatedMethod) ann;
                     String str;
                     if (am.getParameterCount() == 0) {
-                        str = BeanUtil.okNameForGetter(am);
+                        str = BeanUtil.okNameForGetter(am, true);
                     } else {
-                        str = BeanUtil.okNameForSetter(am);
+                        str = BeanUtil.okNameForSetter(am, true);
                     }
                     if (str != null) {
                         return name.withSimpleName(str);
@@ -767,12 +769,6 @@ public class JaxbAnnotationIntrospector
         return order;
     }
 
-    @Deprecated // since 2.4
-    @Override
-    public Boolean findSerializationSortAlphabetically(AnnotatedClass ac) {
-        return _findAlpha(ac);
-    }
-
     @Override
     public Boolean findSerializationSortAlphabetically(Annotated ann) {
         return _findAlpha(ann);
@@ -826,7 +822,7 @@ public class JaxbAnnotationIntrospector
                 return null;
             }
             return findJaxbPropertyName(am, am.getRawType(),
-                    BeanUtil.okNameForGetter(am));
+                    BeanUtil.okNameForGetter(am, true));
         }
         if (a instanceof AnnotatedField) {
             AnnotatedField af = (AnnotatedField) a;
@@ -1005,7 +1001,7 @@ public class JaxbAnnotationIntrospector
                 return null;
             }
             Class<?> rawType = am.getRawParameterType(0);
-            return findJaxbPropertyName(am, rawType, BeanUtil.okNameForSetter(am));
+            return findJaxbPropertyName(am, rawType, BeanUtil.okNameForSetter(am, true));
         }
         if (a instanceof AnnotatedField) {
             AnnotatedField af = (AnnotatedField) a;
