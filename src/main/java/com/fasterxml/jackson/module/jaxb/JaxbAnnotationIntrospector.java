@@ -73,7 +73,7 @@ public class JaxbAnnotationIntrospector
     extends AnnotationIntrospector
     implements Versioned
 {
-    private static final long serialVersionUID = 2406885758759038380L;
+    private static final long serialVersionUID = -1L;
 
     protected final static String DEFAULT_NAME_FOR_XML_VALUE = "value";
     
@@ -96,7 +96,7 @@ public class JaxbAnnotationIntrospector
     protected final boolean _ignoreXmlIDREF;
 
     /**
-     * When using {@link @XmlValue} annotation, a placeholder name is assigned
+     * When using {@link XmlValue} annotation, a placeholder name is assigned
      * to property (unless overridden by explicit name); this configuration
      * value specified what that name is.
      */
