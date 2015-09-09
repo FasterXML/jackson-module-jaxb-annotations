@@ -1042,8 +1042,21 @@ public class JaxbAnnotationIntrospector
 
     @Override
     public Boolean hasRequiredMarker(AnnotatedMember m) {
-        XmlElement annotation = m.getAnnotation(XmlElement.class);
-        return annotation == null ? null : Boolean.valueOf(annotation.required());
+        XmlElement elem = m.getAnnotation(XmlElement.class);
+        if ((elem != null) && elem.required()) {
+            return Boolean.TRUE;
+        }
+        XmlAttribute attr = m.getAnnotation(XmlAttribute.class);
+        if ((attr != null) && attr.required()) {
+            return Boolean.TRUE;
+        }
+        // 09-Sep-2015, tatu: Not 100% sure that we should ever return `false`
+        //   here (as it blocks calls to secondary introspector), but since that
+        //   was the existing behavior before 2.6, is retained for now.
+        if ((elem != null) || (attr != null)) {
+            return null;
+        }
+        return Boolean.FALSE;
     }
 
     @Override
