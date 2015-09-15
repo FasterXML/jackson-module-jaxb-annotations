@@ -4,7 +4,7 @@ Project: jackson-module-jaxb-annotations
 === Releases ===
 ------------------------------------------------------------------------
 
-2.6.2 (not yet released)
+2.6.2 (15-Sep-2015)
 
 #47: JaxbAnnotationIntrospector does not pick up 'required' property of @XmlAttribute
  (reported by phantomjinx@github)
