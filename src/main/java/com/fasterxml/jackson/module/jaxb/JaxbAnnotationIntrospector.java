@@ -1337,7 +1337,8 @@ public class JaxbAnnotationIntrospector
         Class<?> adaptedType = adapterInfo.type();
         
         if (adaptedType == XmlJavaTypeAdapter.DEFAULT.class) {
-            JavaType[] params = _typeFactory.findTypeParameters(adapterInfo.value(), XmlAdapter.class);
+            JavaType type = _typeFactory.constructType(adapterInfo.value());
+            JavaType[] params = _typeFactory.findTypeParameters(type, XmlAdapter.class);
             adaptedType = params[1].getRawClass();
         }
         if (adaptedType.isAssignableFrom(typeNeeded)) {
@@ -1439,9 +1440,6 @@ public class JaxbAnnotationIntrospector
         return a.getRawType();
     }
 
-    /**
-     * @since 2.1.2
-     */
     protected JavaType _fullDeserializationType(AnnotatedMember am)
     {
         if (am instanceof AnnotatedMethod) {
@@ -1449,35 +1447,27 @@ public class JaxbAnnotationIntrospector
             // 27-Nov-2012, tatu: Bit nasty, as we are assuming
             //    things about method signatures here... but has to do
             if (method.getParameterCount() == 1) {
-                return getTypeFactory().constructType(((AnnotatedMethod) am).getGenericParameterType(0),
-                        am.getDeclaringClass());
+                return ((AnnotatedMethod) am).getParameterType(0);
             }
         }
-        return getTypeFactory().constructType(am.getGenericType(),
-                am.getDeclaringClass());
+        return am.getType();
     }
 
-    /**
-     * @since 2.1.2
-     */
     protected Class<?> _rawSerializationType(Annotated a)
     {
         // 27-Nov-2012, tatu: No work-arounds needed yet...
         return a.getRawType();
     }
 
-    /**
-     * @since 2.1.2
-     */
-    protected JavaType _fullSerializationType(AnnotatedMember am)
-    {
-        return getTypeFactory().constructType(am.getGenericType(),
-                am.getDeclaringClass());
+    protected JavaType _fullSerializationType(AnnotatedMember am) {
+        return am.getType();
     }
 
     protected Converter<Object,Object> _converter(XmlAdapter<?,?> adapter, boolean forSerialization)
     {
-        JavaType[] pt = getTypeFactory().findTypeParameters(adapter.getClass(), XmlAdapter.class);
+        TypeFactory tf = getTypeFactory();
+        JavaType adapterType = tf.constructType(adapter.getClass());
+        JavaType[] pt = tf.findTypeParameters(adapterType, XmlAdapter.class);
         // Order of type parameters for Converter is reverse between serializer, deserializer,
         // whereas JAXB just uses single ordering
         if (forSerialization) {

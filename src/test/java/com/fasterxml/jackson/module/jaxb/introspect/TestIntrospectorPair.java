@@ -248,43 +248,30 @@ public class TestIntrospectorPair
         assertEquals(Boolean.TRUE, result.get("any"));
     }
 
-    public void testSimpleOther() throws Exception
-    {
-        // Let's use Jackson+JAXB comb
-        AnnotationIntrospector ann = new AnnotationIntrospectorPair(_jacksonAI, _jaxbAI);
-
-        AnnotatedClass testClass = AnnotatedClass.construct(NamedBean.class, ann, null);
-        //assertNull(ann.findSerializationInclusion(testClass, null));
-
-        JavaType type = TypeFactory.defaultInstance().constructType(Object.class);
-        assertNull(ann.findDeserializationType(testClass, type));
-        assertNull(ann.findDeserializationContentType(testClass, type));
-        assertNull(ann.findDeserializationKeyType(testClass, type));
-        assertNull(ann.findSerializationType(testClass));
-
-        assertNull(ann.findDeserializer(testClass));
-        assertNull(ann.findContentDeserializer(testClass));
-        assertNull(ann.findKeyDeserializer(testClass));
-
-        assertFalse(ann.hasCreatorAnnotation(testClass));
-    }
-    
     public void testRootName() throws Exception
     {
         // first: test with Jackson/Jaxb pair (jackson having precedence)
         AnnotationIntrospector pair = new AnnotationIntrospectorPair(_jacksonAI, _jaxbAI);
-        assertNull(pair.findRootName(AnnotatedClass.construct(NamedBean.class, pair, null)));
-        PropertyName name = pair.findRootName(AnnotatedClass.construct(NamespaceBean.class, pair, null));
+        ObjectMapper mapper = new ObjectMapper()
+            .setAnnotationIntrospector(pair);
+        TypeFactory tf = mapper.getTypeFactory();
+        
+        assertNull(pair.findRootName(AnnotatedClass.construct(tf.constructType(NamedBean.class),
+                mapper.getSerializationConfig(), null)));
+        PropertyName name = pair.findRootName(AnnotatedClass.construct(tf.constructType(NamespaceBean.class),
+                mapper.getSerializationConfig(), null));
         assertNotNull(name);
         assertEquals("test", name.getSimpleName());
         assertEquals("urn:whatever", name.getNamespace());
 
         // then reverse; should make no difference
         pair = new AnnotationIntrospectorPair(_jaxbAI, _jacksonAI);
-        name = pair.findRootName(AnnotatedClass.construct(NamedBean.class, pair, null));
+        name = pair.findRootName(AnnotatedClass.construct(tf.constructType(NamedBean.class),
+                mapper.getSerializationConfig(), null));
         assertNull(name);
         
-        name = pair.findRootName(AnnotatedClass.construct(NamespaceBean.class, pair, null));
+        name = pair.findRootName(AnnotatedClass.construct(tf.constructType(NamespaceBean.class),
+                mapper.getSerializationConfig(), null));
         assertEquals("test", name.getSimpleName());
         assertEquals("urn:whatever", name.getNamespace());
     }

@@ -278,17 +278,21 @@ public class TestJaxbAnnotationIntrospector
 
     public void testRootNameAccess() throws Exception
     {
-        AnnotationIntrospector ai = new JaxbAnnotationIntrospector(TypeFactory.defaultInstance());
+        final TypeFactory tf = TypeFactory.defaultInstance();
+        AnnotationIntrospector ai = new JaxbAnnotationIntrospector(tf);
         // If no @XmlRootElement, should get null (unless pkg has etc)
-        assertNull(ai.findRootName(AnnotatedClass.construct(SimpleBean.class, ai, null)));
+        assertNull(ai.findRootName(AnnotatedClass.construct(tf.constructType(SimpleBean.class),
+                MAPPER.getSerializationConfig(), null)));
         // With @XmlRootElement, but no name, empty String
-        PropertyName rootName = ai.findRootName(AnnotatedClass.construct(NamespaceBean.class, ai, null));
+        PropertyName rootName = ai.findRootName(AnnotatedClass.construct(tf.constructType(NamespaceBean.class),
+                MAPPER.getSerializationConfig(), null));
         assertNotNull(rootName);
         assertEquals("", rootName.getSimpleName());
         assertEquals("urn:class", rootName.getNamespace());
 
         // and otherwise explicit name
-        rootName = ai.findRootName(AnnotatedClass.construct(RootNameBean.class, ai, null));
+        rootName = ai.findRootName(AnnotatedClass.construct(tf.constructType(RootNameBean.class),
+                MAPPER.getSerializationConfig(), null));
         assertNotNull(rootName);
         assertEquals("test", rootName.getSimpleName());
         assertNull(rootName.getNamespace());
@@ -308,8 +312,10 @@ public class TestJaxbAnnotationIntrospector
      */
     public void testNamespaces() throws Exception
     {
+        final TypeFactory tf = TypeFactory.defaultInstance();
         JaxbAnnotationIntrospector ai = new JaxbAnnotationIntrospector(TypeFactory.defaultInstance());
-        AnnotatedClass ac = AnnotatedClass.construct(NamespaceBean.class, ai, null);
+        AnnotatedClass ac = AnnotatedClass.construct(tf.constructType(NamespaceBean.class),
+                MAPPER.getSerializationConfig(), null);
         AnnotatedField af = _findField(ac, "string");
         assertNotNull(af);
         PropertyName pn = ai.findNameForDeserialization(af);
