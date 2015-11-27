@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.introspect.*;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder;
 import com.fasterxml.jackson.databind.jsontype.impl.StdTypeResolverBuilder;
+import com.fasterxml.jackson.databind.type.MapLikeType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.fasterxml.jackson.databind.util.ClassUtil;
@@ -688,38 +689,17 @@ public class JaxbAnnotationIntrospector
     }
 
     @Override
+    @Deprecated // since 2.7
     public Class<?> findSerializationType(Annotated a)
     {
-        // As per [JACKSON-416], need to allow coercing serialization type...
-        /* false for class, package, super-class, since annotation can
-         * only be attached to fields and methods
-         */
-        // Note: caller does necessary sub/supertype checks
-        XmlElement annotation = findAnnotation(XmlElement.class, a, false, false, false);
-        if (annotation == null || annotation.type() == XmlElement.DEFAULT.class) {
-            return null;
+        Class<?> allegedType = _getTypeFromXmlElement(a);
+        if (allegedType != null){
+            Class<?> rawPropType = _rawSerializationType(a);
+            if (!isContainerType(rawPropType)) {
+                return allegedType;
+            }
         }
-        /* [JACKSON-436]: Apparently collection types (array, Collection, maybe Map)
-         *   require type definition to relate to contents, not collection type
-         *   itself. So; we must return null here for those cases, and modify content
-         *   type on another method.
-         */
-        Class<?> rawPropType = _rawSerializationType(a);
-        if (isContainerType(rawPropType)) {
-            return null;
-        }
-        /* [JACKSON-288]: Further, JAXB has peculiar notion of declaring intermediate
-         *  (and, for the most part, useless) type... So basically we better
-         *  just ignore type if there is adapter annotation
-         *  (we could check to see if intermediate type is compatible, but let's not yet
-         *  bother)
-         * 
-         */
-        Class<?> allegedType = annotation.type();
-        if (a.getAnnotation(XmlJavaTypeAdapter.class) != null) {
-            return null;
-        }
-        return allegedType;
+        return null;
     }
 
     /**
@@ -747,7 +727,63 @@ public class JaxbAnnotationIntrospector
          */
         return defValue;
     }
-    
+
+    @Override
+    public JavaType refineSerializationType(final MapperConfig<?> config,
+            final Annotated a, final JavaType baseType) throws JsonMappingException
+    {
+        Class<?> serClass = _getTypeFromXmlElement(a);
+        if (serClass == null) {
+            return baseType;
+        }
+
+        // First, JAXB has no annotations for key type, so can skip that part (wrt std annotations)
+        // But the meaning of main annotation(s) varies between container/non-container types
+
+        final TypeFactory tf = config.getTypeFactory();
+
+        if (baseType.getContentType() == null) { // non-container/-structured types, usually scalar:
+            if (baseType.hasRawClass(serClass)) { // no change
+                return baseType;
+            }
+            // 27-Nov-2015, tatu: Since JAXB has just one annotation, must ignore it in
+            //   one direction, typically serialization (but not always):
+            if (!serClass.isAssignableFrom(baseType.getRawClass())) {
+                return baseType;
+            }
+            try {
+                // 11-Oct-2015, tatu: For deser, we call `TypeFactory.constructSpecializedType()`,
+                //   may be needed here too in future?
+                return tf.constructGeneralizedType(baseType, serClass);
+            } catch (IllegalArgumentException iae) {
+                throw new JsonMappingException(null,
+                        String.format("Failed to widen type %s with annotation (value %s), from '%s': %s",
+                                baseType, serClass.getName(), a.getName(), iae.getMessage()),
+                                iae);
+            }
+        } else {
+            // Otherwise, structured type:
+            JavaType contentType = baseType.getContentType();
+            if (contentType != null) { // collection[like], map[like], array, reference
+                // as per earlier, may need to ignore annotation meant for deserialization
+                if (!serClass.isAssignableFrom(contentType.getRawClass())) {
+                    return baseType;
+                }
+                // And then value types for all containers:
+                try {
+                   contentType = tf.constructGeneralizedType(contentType, serClass);
+                   return baseType.withContentType(contentType);
+                } catch (IllegalArgumentException iae) {
+                    throw new JsonMappingException(null,
+                            String.format("Failed to widen value type of %s with concrete-type annotation (value %s), from '%s': %s",
+                                    baseType, serClass.getName(), a.getName(), iae.getMessage()),
+                                    iae);
+                }
+            }
+        }
+        return baseType;
+    }
+
     /*
     /**********************************************************
     /* Serialization: class annotations
@@ -1474,5 +1510,23 @@ public class JaxbAnnotationIntrospector
             return new AdapterConverter(adapter, pt[1], pt[0], forSerialization);
         }
         return new AdapterConverter(adapter, pt[0], pt[1], forSerialization);
+    }
+
+    protected Class<?> _getTypeFromXmlElement(Annotated a) {
+        XmlElement annotation = findAnnotation(XmlElement.class, a, false, false, false);
+        if (annotation != null) {
+            // Further, JAXB has peculiar notion of declaring intermediate (and, for the
+            // most part, useless) type... So basically we betterjust ignore type if there
+            // is adapter annotation (we could check to see if intermediate type is compatible,
+            // but let's not yet bother)
+            if (a.getAnnotation(XmlJavaTypeAdapter.class) != null) {
+                return null;
+            }
+            Class<?> type = annotation.type();
+            if (type != XmlElement.DEFAULT.class) {
+                return type;
+            }
+        }
+        return null;
     }
 }
