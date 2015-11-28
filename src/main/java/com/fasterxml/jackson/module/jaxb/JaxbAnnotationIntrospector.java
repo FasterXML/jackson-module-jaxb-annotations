@@ -728,6 +728,7 @@ public class JaxbAnnotationIntrospector
         return defValue;
     }
 
+    // @since 2.7
     @Override
     public JavaType refineSerializationType(final MapperConfig<?> config,
             final Annotated a, final JavaType baseType) throws JsonMappingException
@@ -736,7 +737,6 @@ public class JaxbAnnotationIntrospector
         if (serClass == null) {
             return baseType;
         }
-
         // First, JAXB has no annotations for key type, so can skip that part (wrt std annotations)
         // But the meaning of main annotation(s) varies between container/non-container types
 
@@ -752,8 +752,6 @@ public class JaxbAnnotationIntrospector
                 return baseType;
             }
             try {
-                // 11-Oct-2015, tatu: For deser, we call `TypeFactory.constructSpecializedType()`,
-                //   may be needed here too in future?
                 return tf.constructGeneralizedType(baseType, serClass);
             } catch (IllegalArgumentException iae) {
                 throw new JsonMappingException(null,
@@ -850,7 +848,7 @@ public class JaxbAnnotationIntrospector
     @Override
     public PropertyName findNameForSerialization(Annotated a)
     {
-        // [Issue#69], need bit of delegation (note: copy of super-class functionality)
+        // [jaxb-annotations#69], need bit of delegation (note: copy of super-class functionality)
         // !!! TODO: in 2.2, remove old methods?
         if (a instanceof AnnotatedMethod) {
             AnnotatedMethod am = (AnnotatedMethod) a;
@@ -870,7 +868,7 @@ public class JaxbAnnotationIntrospector
              * needs to find even non-public fields (if enabled by
              * JAXB access type), we need to return name like so:
              */
-            // 31-Oct-2014, tatu: As per [Issue#31], need to be careful to indicate "use default"
+            // 31-Oct-2014, tatu: As per [jaxb-annotations#31], need to be careful to indicate "use default"
             //    and NOT to force use of specific name; latter would establish explicit name
             //    and what we want is implicit (unless there is real explicitly annotated name)
             if (name == null) {
@@ -1020,6 +1018,58 @@ public class JaxbAnnotationIntrospector
         return null;
     }
 
+    // @since 2.7
+    @Override
+    public JavaType refineDeserializationType(final MapperConfig<?> config,
+            final Annotated a, final JavaType baseType) throws JsonMappingException
+    {
+        Class<?> deserClass = _getTypeFromXmlElement(a);
+        if (deserClass == null) {
+            return baseType;
+        }
+
+        final TypeFactory tf = config.getTypeFactory();
+
+        if (baseType.getContentType() == null) { // non-container/-structured types, usually scalar:
+            if (baseType.hasRawClass(deserClass)) { // no change
+                return baseType;
+            }
+            // 27-Nov-2015, tatu: Since JAXB has just one annotation, must ignore it in
+            //   one direction, typically serialization (but not always):
+            if (!baseType.getRawClass().isAssignableFrom(deserClass)) {
+                return baseType;
+            }
+            try {
+                return tf.constructSpecializedType(baseType, deserClass);
+            } catch (IllegalArgumentException iae) {
+                throw new JsonMappingException(null,
+                        String.format("Failed to narrow type %s with annotation (value %s), from '%s': %s",
+                                baseType, deserClass.getName(), a.getName(), iae.getMessage()),
+                                iae);
+            }
+        } else {
+            // Otherwise, structured type:
+            JavaType contentType = baseType.getContentType();
+            if (contentType != null) { // collection[like], map[like], array, reference
+                // as per earlier, may need to ignore annotation meant for deserialization
+                if (!contentType.getRawClass().isAssignableFrom(deserClass)) {
+                    return baseType;
+                }
+                // And then value types for all containers:
+                try {
+                   contentType = tf.constructSpecializedType(contentType, deserClass);
+                   return baseType.withContentType(contentType);
+                } catch (IllegalArgumentException iae) {
+                    throw new JsonMappingException(null,
+                            String.format("Failed to narrow type %s with annotation (value %s), from '%s': %s",
+                                    baseType, deserClass.getName(), a.getName(), iae.getMessage()),
+                                    iae);
+                }
+            }
+        }
+        return baseType;
+    }
+
     /*
     /**********************************************************
     /* Deserialization: property annotations
@@ -1029,7 +1079,7 @@ public class JaxbAnnotationIntrospector
     @Override
     public PropertyName findNameForDeserialization(Annotated a)
     {
-        // [Issue#69], need bit of delegation -- note: copy from super-class
+        // [jaxb-annotations#69], need bit of delegation -- note: copy from super-class
         // TODO: should simplify, messy.
         if (a instanceof AnnotatedMethod) {
             AnnotatedMethod am = (AnnotatedMethod) a;
