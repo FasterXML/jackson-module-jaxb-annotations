@@ -1,11 +1,12 @@
-package com.fasterxml.jackson.module.jaxb.types;
+package com.fasterxml.jackson.module.jaxb.failing;
 
 import javax.xml.bind.annotation.XmlElement;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
 
-public class TestJaxbTypeCoercion extends BaseJaxbTest
+// Failing temporarily due to [databind#1023]
+public class TestJaxbTypeCoercion1023 extends BaseJaxbTest
 {
     /*
     /**********************************************************

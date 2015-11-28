@@ -82,7 +82,7 @@ public class JaxbAnnotationIntrospector
 
     // @since 2.5
     protected final static JsonFormat.Value FORMAT_INT = new JsonFormat.Value().withShape(JsonFormat.Shape.NUMBER_INT);
-    
+
     protected final String _jaxbPackageName;
     protected final JsonSerializer<?> _dataHandlerSerializer;
     protected final JsonDeserializer<?> _dataHandlerDeserializer;
@@ -732,9 +732,7 @@ public class JaxbAnnotationIntrospector
         }
         // First, JAXB has no annotations for key type, so can skip that part (wrt std annotations)
         // But the meaning of main annotation(s) varies between container/non-container types
-
         final TypeFactory tf = config.getTypeFactory();
-
         if (baseType.getContentType() == null) { // non-container/-structured types, usually scalar:
             if (baseType.hasRawClass(serClass)) { // no change
                 return baseType;
@@ -978,6 +976,7 @@ public class JaxbAnnotationIntrospector
      * deserialization by using \@XmlElement annotation.
      */
     @Override
+    @Deprecated // since 2.7
     public Class<?> findDeserializationType(Annotated a, JavaType baseType)
     {
         // First: only applicable for non-structured types (yes, JAXB annotations are tricky)
@@ -990,6 +989,7 @@ public class JaxbAnnotationIntrospector
     //public Class<?> findDeserializationKeyType(Annotated am, JavaType baseKeyType)
 
     @Override
+    @Deprecated // since 2.7
     public Class<?> findDeserializationContentType(Annotated a, JavaType baseContentType)
     {
         /* 15-Feb-2010, tatus: JAXB usage of XmlElement/XmlElements is really
@@ -1516,9 +1516,6 @@ public class JaxbAnnotationIntrospector
         return (n == null) ? null : n.getSimpleName();
     }
 
-    /**
-     * @since 2.1.2
-     */
     protected Class<?> _rawDeserializationType(Annotated a)
     {
         if (a instanceof AnnotatedMethod) {
