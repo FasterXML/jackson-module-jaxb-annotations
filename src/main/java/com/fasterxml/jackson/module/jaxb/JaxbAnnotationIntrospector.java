@@ -9,12 +9,8 @@ import javax.xml.bind.*;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.*;
 
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.fasterxml.jackson.annotation.SimpleObjectIdResolver;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
@@ -22,7 +18,6 @@ import com.fasterxml.jackson.databind.introspect.*;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder;
 import com.fasterxml.jackson.databind.jsontype.impl.StdTypeResolverBuilder;
-import com.fasterxml.jackson.databind.type.MapLikeType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.fasterxml.jackson.databind.util.ClassUtil;
@@ -386,7 +381,7 @@ public class JaxbAnnotationIntrospector
     {
         XmlElementWrapper w = findAnnotation(XmlElementWrapper.class, ann, false, false, false);
         if (w != null) {
-            /* 18-Sep-2013, tatu: As per #24, need to take special care with empty
+            /* 18-Sep-2013, tatu: As per [jaxb-annotations#24], need to take special care with empty
              *   String, as that should indicate here "use underlying unmodified
              *   property name" (that is, one NOT overridden by @JsonProperty)
              */
@@ -424,7 +419,7 @@ public class JaxbAnnotationIntrospector
 
     @Override
     public JsonFormat.Value findFormat(Annotated m) {
-        /* [Issue#33]: Use @XmlEnum value (Class) to indicate format,
+        /* [jaxb-annotations#33]: Use @XmlEnum value (Class) to indicate format,
          *   iff it makes sense
          */
         if (m instanceof AnnotatedClass) {
@@ -585,7 +580,7 @@ public class JaxbAnnotationIntrospector
                     Class<?> refType = elemRef.type();
                     // only good for types other than JAXBElement (which is XML based)
                     if (!JAXBElement.class.isAssignableFrom(refType)) {
-                        // [JACKSON-253] first consider explicit name declaration
+                        // first consider explicit name declaration
                         String name = elemRef.name();
                         if (name == null || MARKER_FOR_DEFAULT.equals(name)) {
                             XmlRootElement rootElement = (XmlRootElement) refType.getAnnotation(XmlRootElement.class);
@@ -602,7 +597,7 @@ public class JaxbAnnotationIntrospector
             }
         }
         
-        // [Issue#1] check @XmlSeeAlso as well.
+        // Check @XmlSeeAlso as well.
         /* 17-Aug-2012, tatu:  But wait! For structured type, what we really is
          *    value (content) type!
          *    If code below does not make full (or any) sense, do not despair -- it
@@ -661,7 +656,7 @@ public class JaxbAnnotationIntrospector
         }
         */
 
-        // [JACKSON-150]: add support for additional core XML types needed by JAXB
+        // Add support for additional core XML types needed by JAXB
         if (type != null) {
             if (_dataHandlerSerializer != null && isDataHandler(type)) {
                 return _dataHandlerSerializer;
@@ -722,9 +717,7 @@ public class JaxbAnnotationIntrospector
                 return JsonInclude.Include.ALWAYS;
             }
         }
-        /* [JACKSON-256]: better pass default value through, if no explicit direction indicating
-         * otherwise
-         */
+        //better pass default value through, if no explicit direction indicating otherwise
         return defValue;
     }
 
@@ -849,7 +842,6 @@ public class JaxbAnnotationIntrospector
     public PropertyName findNameForSerialization(Annotated a)
     {
         // [jaxb-annotations#69], need bit of delegation (note: copy of super-class functionality)
-        // !!! TODO: in 2.2, remove old methods?
         if (a instanceof AnnotatedMethod) {
             AnnotatedMethod am = (AnnotatedMethod) a;
             if (!isVisible(am)) {
@@ -902,6 +894,36 @@ public class JaxbAnnotationIntrospector
         } catch (NoSuchFieldException e1) {
             throw new IllegalStateException("Could not locate Enum entry '"+enumValue+"' (Enum class "+enumClass.getName()+")", e1);
         }
+    }
+
+    @Override // since 2.7
+    public String[] findEnumValues(Class<?> enumType, Enum<?>[] enumValues, String[] names) {
+        HashMap<String,String> expl = null;
+        for (Field f : ClassUtil.getDeclaredFields(enumType)) {
+            if (!f.isEnumConstant()) {
+                continue;
+            }
+            XmlEnumValue enumValue = f.getAnnotation(XmlEnumValue.class);
+            if (enumValue == null) {
+                continue;
+            }
+            String n = enumValue.value();
+            if (n.isEmpty()) {
+                continue;
+            }
+            if (expl == null) {
+                expl = new HashMap<String,String>();
+            }
+            expl.put(f.getName(), n);
+        }
+        // and then stitch them together if and as necessary
+        if (expl != null) {
+            for (int i = 0, end = enumValues.length; i < end; ++i) {
+                String defName = enumValues[i].name();
+                names[i] = expl.get(defName);
+            }
+        }
+        return names;
     }
 
     /*
@@ -958,9 +980,7 @@ public class JaxbAnnotationIntrospector
     @Override
     public Class<?> findDeserializationType(Annotated a, JavaType baseType)
     {
-        /* First: only applicable for non-structured types (yes, JAXB annotations
-         * are tricky)
-         */
+        // First: only applicable for non-structured types (yes, JAXB annotations are tricky)
         if (!baseType.isContainerType()) {
             return _doFindDeserializationType(a, baseType);
         }
@@ -1001,20 +1021,6 @@ public class JaxbAnnotationIntrospector
                 return type;
             }
         }
-        /* 16-Feb-2010, tatu: May also have annotation associated with field, not method
-         *    itself... and findAnnotation() won't find that (nor property descriptor)
-         */
-        /*
-        if (a instanceof AnnotatedMethod) {
-            AnnotatedMethod am = (AnnotatedMethod) a;
-            // Hmmhh. does name have to match?
-            String propName = am.getName();
-            annotation = findFieldAnnotation(XmlElement.class, am.getDeclaringClass(), propName);
-            if (annotation != null && annotation.type() != XmlElement.DEFAULT.class) {
-                return annotation.type();
-            }
-        }
-        */
         return null;
     }
 
