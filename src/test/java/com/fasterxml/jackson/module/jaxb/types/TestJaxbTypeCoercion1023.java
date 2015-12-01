@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.jaxb.failing;
+package com.fasterxml.jackson.module.jaxb.types;
 
 import javax.xml.bind.annotation.XmlElement;
 

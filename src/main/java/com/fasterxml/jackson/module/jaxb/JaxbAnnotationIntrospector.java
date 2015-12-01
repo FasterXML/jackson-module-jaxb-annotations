@@ -734,13 +734,15 @@ public class JaxbAnnotationIntrospector
         // But the meaning of main annotation(s) varies between container/non-container types
         final TypeFactory tf = config.getTypeFactory();
         if (baseType.getContentType() == null) { // non-container/-structured types, usually scalar:
-            if (baseType.hasRawClass(serClass)) { // no change
-                return baseType;
-            }
             // 27-Nov-2015, tatu: Since JAXB has just one annotation, must ignore it in
             //   one direction, typically serialization (but not always):
             if (!serClass.isAssignableFrom(baseType.getRawClass())) {
                 return baseType;
+            }
+            if (baseType.hasRawClass(serClass)) {
+                // 30-Nov-2015, tatu: As per [databind#1023], need to allow forcing of
+                //    static typing this way
+                return baseType.withStaticTyping();
             }
             try {
                 return tf.constructGeneralizedType(baseType, serClass);
@@ -759,15 +761,19 @@ public class JaxbAnnotationIntrospector
                     return baseType;
                 }
                 // And then value types for all containers:
-                try {
-                   contentType = tf.constructGeneralizedType(contentType, serClass);
-                   return baseType.withContentType(contentType);
-                } catch (IllegalArgumentException iae) {
-                    throw new JsonMappingException(null,
-                            String.format("Failed to widen value type of %s with concrete-type annotation (value %s), from '%s': %s",
-                                    baseType, serClass.getName(), a.getName(), iae.getMessage()),
-                                    iae);
+                if (contentType.hasRawClass(serClass)) {
+                     contentType = contentType.withStaticTyping();
+                } else {
+                    try {
+                       contentType = tf.constructGeneralizedType(contentType, serClass);
+                    } catch (IllegalArgumentException iae) {
+                        throw new JsonMappingException(null,
+                                String.format("Failed to widen value type of %s with concrete-type annotation (value %s), from '%s': %s",
+                                        baseType, serClass.getName(), a.getName(), iae.getMessage()),
+                                        iae);
+                    }
                 }
+                return baseType.withContentType(contentType);
             }
         }
         return baseType;
