@@ -703,6 +703,7 @@ public class JaxbAnnotationIntrospector
      * Jackson defaults (which are configurable), and only using JAXB explicit annotations.
      */
     @Override
+    @Deprecated // since 2.7
     public JsonInclude.Include findSerializationInclusion(Annotated a, JsonInclude.Include defValue)
     {
         XmlElementWrapper w = a.getAnnotation(XmlElementWrapper.class);

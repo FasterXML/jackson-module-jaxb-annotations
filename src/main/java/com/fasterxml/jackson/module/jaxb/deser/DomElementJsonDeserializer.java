@@ -47,21 +47,20 @@ public class DomElementJsonDeserializer
     }
 
     @Override
-    public Element deserialize(JsonParser jp, DeserializationContext ctxt)
-        throws IOException, JsonProcessingException
+    public Element deserialize(JsonParser p, DeserializationContext ctxt) throws IOException
     {
         Document document = builder.newDocument();
-        JsonNode root = jp.readValueAsTree();
-        return fromNode(document, root);
+        JsonNode n = p.readValueAsTree();
+        return fromNode(p, document, n);
     }
 
-    protected Element fromNode(Document document, JsonNode jsonNode)
-            throws IOException
+    protected Element fromNode(JsonParser p, Document document, JsonNode jsonNode)
+        throws IOException
     {
         String ns = jsonNode.get("namespace") != null ? jsonNode.get("namespace").asText() : null;
         String name = jsonNode.get("name") != null ? jsonNode.get("name").asText() : null;
         if (name == null) {
-            throw new JsonMappingException("No name for DOM element was provided in the JSON object.");
+            throw JsonMappingException.from(p, "No name for DOM element was provided in the JSON object.");
         }
         Element element = document.createElementNS(ns, name);
 
@@ -92,7 +91,7 @@ public class DomElementJsonDeserializer
                     element.appendChild(document.createTextNode(value));
                 }
                 else if (name != null) {
-                    element.appendChild(fromNode(document, node));
+                    element.appendChild(fromNode(p, document, node));
                 }
             }
         }
