@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.fasterxml.jackson</groupId>
     <artifactId>jackson-parent</artifactId>
-    <version>2.6.1</version>
+    <version>2.6.2</version>
   </parent>
   <groupId>com.fasterxml.jackson.module</groupId>
   <artifactId>jackson-module-jaxb-annotations</artifactId>
@@ -25,7 +25,7 @@
    <!-- Generate PackageVersion.java into this directory. -->
     <packageVersion.dir>com/fasterxml/jackson/module/jaxb</packageVersion.dir>
     <packageVersion.package>${project.groupId}.jaxb</packageVersion.package>
-    <jackson.version.core>2.6.3</jackson.version.core>
+    <jackson.version.core>2.6.4</jackson.version.core>
     <osgi.export>
 com.fasterxml.jackson.module.jaxb,
 com.fasterxml.jackson.module.jaxb.deser,
