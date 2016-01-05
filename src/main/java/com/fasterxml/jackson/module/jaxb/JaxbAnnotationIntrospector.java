@@ -10,11 +10,7 @@ import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.*;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.fasterxml.jackson.annotation.SimpleObjectIdResolver;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
@@ -103,7 +99,18 @@ public class JaxbAnnotationIntrospector
     protected String _xmlValueName = DEFAULT_NAME_FOR_XML_VALUE;
 
     /**
-     * @deprecated Since 2.1, use the ctor that takes TypeFactory
+     * Inclusion value to return for properties annotated with 
+     * {@link XmlElement} and {@link XmlElementWrapper}, in case <code>nillable</code>
+     * property is left as <code>false</false>. Default setting is
+     * <code>null</code>; this is typically changed to either
+     * {@link JsonInclude.Include#NON_NULL} or {@link JsonInclude.Include#NON_EMPTY}.
+     *
+     * @since 2.7
+     */
+    protected JsonInclude.Include _nonNillableInclusion = null;
+    
+    /**
+     * @deprecated Since 2.1, use constructor that takes TypeFactory.
      */
     @Deprecated
     public JaxbAnnotationIntrospector() {
@@ -180,7 +187,26 @@ public class JaxbAnnotationIntrospector
     public String getNameUsedForXmlValue() {
         return _xmlValueName;
     }
-    
+
+    /**
+     * Method to call to change inclusion criteria used for property annotated
+     * with {@link XmlElement} or {@link XmlElementWrapper}, with <code>nillable</code>
+     * set as <code>false</code>.
+     *
+     * @since 2.7
+     */
+    public JaxbAnnotationIntrospector setNonNillableInclusion(JsonInclude.Include incl) {
+        _nonNillableInclusion = incl;
+        return this;
+    }
+
+    /**
+     * @since 2.7
+     */
+    public JsonInclude.Include getNonNillableInclusion() {
+        return _nonNillableInclusion;
+    }
+
     /*
     /**********************************************************
     /* Extended API (XmlAnnotationIntrospector)
@@ -707,7 +733,7 @@ public class JaxbAnnotationIntrospector
      * Jackson defaults (which are configurable), and only using JAXB explicit annotations.
      */
     @Override
-    @Deprecated // since 2.7
+    @Deprecated // since 2.7; remove from 2.8
     public JsonInclude.Include findSerializationInclusion(Annotated a, JsonInclude.Include defValue)
     {
         XmlElementWrapper w = a.getAnnotation(XmlElementWrapper.class);
@@ -715,19 +741,36 @@ public class JaxbAnnotationIntrospector
             if (w.nillable()) {
                 return JsonInclude.Include.ALWAYS;
             }
+            // [jaxb-annotations#52]: Allow specifying inclusion for `nillable=false` too
+            if (_nonNillableInclusion != null) {
+                return _nonNillableInclusion;
+            }
         }
         XmlElement e = a.getAnnotation(XmlElement.class);
         if (e != null) {
             if (e.nillable()) {
                 return JsonInclude.Include.ALWAYS;
             }
+            // [jaxb-annotations#52]: Allow specifying inclusion for `nillable=false` too
+            if (_nonNillableInclusion != null) {
+                return _nonNillableInclusion;
+            }
         }
         //better pass default value through, if no explicit direction indicating otherwise
         return defValue;
     }
 
-    // @since 2.7
-    @Override
+    @Override // @since 2.7
+    public JsonInclude.Value findPropertyInclusion(Annotated a)
+    {
+        JsonInclude.Include incl = findSerializationInclusion(a, null);
+        if (incl == null) {
+            return JsonInclude.Value.empty();
+        }
+        return JsonInclude.Value.construct(incl, null);
+    }
+
+    @Override // @since 2.7
     public JavaType refineSerializationType(final MapperConfig<?> config,
             final Annotated a, final JavaType baseType) throws JsonMappingException
     {
@@ -888,9 +931,8 @@ public class JaxbAnnotationIntrospector
 
     /**
      *<p>
-     * !!! 12-Oct-2009, tatu: This is hideously slow implementation,
-     *   called potentially for every single enum value being
-     *   serialized. Should improve...
+     * This is very slow implementation, but as of Jackson 2.7, should not be called any more;
+     * instead, {@link #findEnumValues} should be called which has less overhead.
      */
     @Override
     public String findEnumValue(Enum<?> e)

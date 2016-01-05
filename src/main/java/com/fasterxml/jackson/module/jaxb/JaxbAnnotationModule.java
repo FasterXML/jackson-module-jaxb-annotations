@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.jaxb;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.Module;
 
@@ -39,13 +40,37 @@ public class JaxbAnnotationModule extends Module
      */
     protected Priority _priority = Priority.PRIMARY;
 
+    /**
+     * If the introspector is explicitly set or passed, we'll hold on to that
+     * until registration.
+     *
+     * @since 2.7
+     */
+    protected JaxbAnnotationIntrospector _introspector;
+
+    /**
+     * Value to pass to
+     * {@link JaxbAnnotationIntrospector#setNonNillableInclusion}
+     * if defined and non-null.
+     *
+     * @since 2.7
+     */
+    protected JsonInclude.Include _nonNillableInclusion;
+
     /*
     /**********************************************************
     /* Life cycle
     /**********************************************************
      */
-    
+
     public JaxbAnnotationModule() { }
+
+    /**
+     * @since 2.7
+     */
+    public JaxbAnnotationModule(JaxbAnnotationIntrospector intr) {
+        _introspector = intr;
+    }
 
     @Override
     public String getModuleName() {
@@ -60,7 +85,13 @@ public class JaxbAnnotationModule extends Module
     @Override
     public void setupModule(SetupContext context)
     {
-        JaxbAnnotationIntrospector intr = new JaxbAnnotationIntrospector(context.getTypeFactory());
+        JaxbAnnotationIntrospector intr = _introspector;
+        if (intr == null) {
+            intr = new JaxbAnnotationIntrospector(context.getTypeFactory());
+            if (_nonNillableInclusion != null) {
+                intr.setNonNillableInclusion(_nonNillableInclusion);
+            }
+        }
         switch (_priority) {
         case PRIMARY:
             context.insertAnnotationIntrospector(intr);
@@ -91,4 +122,22 @@ public class JaxbAnnotationModule extends Module
     }
     
     public Priority getPriority() { return _priority; }
+
+    /**
+     * @since 2.7
+     */
+    public JaxbAnnotationModule setNonNillableInclusion(JsonInclude.Include incl) {
+        _nonNillableInclusion = incl;
+        if (_introspector != null) {
+            _introspector.setNonNillableInclusion(incl);
+        }
+        return this;
+    }
+
+    /**
+     * @since 2.7
+     */
+    public JsonInclude.Include getNonNillableInclusion() {
+        return _nonNillableInclusion;
+    }
 }

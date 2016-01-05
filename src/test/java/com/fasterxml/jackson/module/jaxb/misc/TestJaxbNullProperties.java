@@ -6,6 +6,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.jaxb.BaseJaxbTest;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 /**
  * Unit tests to ensure that handling of writing of null properties (or not)
@@ -28,8 +30,6 @@ public class TestJaxbNullProperties
        public String x = "y";
     }
 
-    // Beans for [JACKSON-256]
-    
     @XmlRootElement
     static class BeanWithNillable {
         public Nillable X;
@@ -39,6 +39,22 @@ public class TestJaxbNullProperties
     static class Nillable {
         @XmlElement (name="Z", nillable=true)
         Integer Z;
+
+        public Nillable() { }
+        public Nillable(int i) {
+            Z = Integer.valueOf(i);
+        }
+    } 
+
+    @XmlRootElement
+    static class NonNillableZ {
+        @XmlElement(name="z", nillable=false)
+        public Integer z;
+
+        public NonNillableZ() { }
+        public NonNillableZ(int i) {
+            z = Integer.valueOf(i);
+        }
     } 
 
     /*
@@ -49,7 +65,6 @@ public class TestJaxbNullProperties
 
     private final ObjectMapper MAPPER = getJaxbMapper();
     
-    // Test for [JACKSON-256], thanks John.
     public void testWriteNulls() throws Exception
     {
         BeanWithNillable bean = new BeanWithNillable();
@@ -57,11 +72,29 @@ public class TestJaxbNullProperties
         assertEquals("{\"X\":{\"Z\":null}}", MAPPER.writeValueAsString(bean));
     }
 
-    // Testing [JACKSON-309]
     public void testNullProps() throws Exception
     {
         ObjectMapper mapper = getJaxbMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         assertEquals("{\"x\":\"y\"}", mapper.writeValueAsString(new Bean()));
+    }
+
+    public void testNillability() throws Exception
+    {
+        ObjectMapper mapper = getJaxbMapper();
+        // by default, something not marked as nillable will still be written if null
+        assertEquals("{\"z\":null}", mapper.writeValueAsString(new NonNillableZ()));
+        assertEquals("{\"z\":3}", mapper.writeValueAsString(new NonNillableZ(3)));
+
+        // but we can change that...
+        mapper = new ObjectMapper()
+            .registerModule(new JaxbAnnotationModule()
+                .setNonNillableInclusion(JsonInclude.Include.NON_NULL)
+                );
+        mapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector(mapper.getTypeFactory())
+            .setNonNillableInclusion(JsonInclude.Include.NON_NULL)
+        );
+        assertEquals("{}", mapper.writeValueAsString(new NonNillableZ()));
+        assertEquals("{\"z\":3}", mapper.writeValueAsString(new NonNillableZ(3)));
     }
 }
