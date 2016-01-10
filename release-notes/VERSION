@@ -4,7 +4,7 @@ Project: jackson-module-jaxb-annotations
 === Releases ===
 ------------------------------------------------------------------------
 
-2.7.0 (not yet released)
+2.7.0 (09-Jan-2016)
 
 #52: Add a feature in `JaxbAnnotationIntrospector` to define meaning of
   `nillable=false` as "JsonInclude.NON_EMPTY"
