@@ -4,6 +4,10 @@ Project: jackson-module-jaxb-annotations
 === Releases ===
 ------------------------------------------------------------------------
 
+2.7.1 (02-Feb-2016)
+
+No change since 2.7.0.
+
 2.7.0 (09-Jan-2016)
 
 #52: Add a feature in `JaxbAnnotationIntrospector` to define meaning of

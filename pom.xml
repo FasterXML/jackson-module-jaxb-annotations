@@ -25,14 +25,18 @@
    <!-- Generate PackageVersion.java into this directory. -->
     <packageVersion.dir>com/fasterxml/jackson/module/jaxb</packageVersion.dir>
     <packageVersion.package>${project.groupId}.jaxb</packageVersion.package>
-    <version.jackson.core>2.7.0</version.jackson.core>
+    <version.jackson.core>2.7.1</version.jackson.core>
   </properties>
   <dependencies>
-    <!-- Extends Jackson core and mapper, needs annotations as of 2.7 -->
+    <!-- Extends Jackson core and mapper; minor dep on annotations too (JsonInclude) -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
       <version>${version.jackson.core}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
