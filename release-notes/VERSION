@@ -4,6 +4,11 @@ Project: jackson-module-jaxb-annotations
 === Releases ===
 ------------------------------------------------------------------------
 
+2.7.3 (not yet released)
+
+- Minor changes to `JaxbAnnotationIntrospector.findEnumValues()` to help
+  with proper merging of explicit name overrides.
+
 2.7.2 (26-Feb-2016)
 
 - Change build to produce JDK6-compatible jar, to allow use on JDK6 runtime

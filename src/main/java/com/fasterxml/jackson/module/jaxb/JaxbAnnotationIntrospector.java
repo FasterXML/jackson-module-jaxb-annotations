@@ -972,7 +972,10 @@ public class JaxbAnnotationIntrospector
         if (expl != null) {
             for (int i = 0, end = enumValues.length; i < end; ++i) {
                 String defName = enumValues[i].name();
-                names[i] = expl.get(defName);
+                String explValue = expl.get(defName);
+                if (explValue != null) {
+                    names[i] = explValue;
+                }
             }
         }
         return names;

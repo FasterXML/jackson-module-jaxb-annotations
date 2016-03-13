@@ -25,7 +25,7 @@
    <!-- Generate PackageVersion.java into this directory. -->
     <packageVersion.dir>com/fasterxml/jackson/module/jaxb</packageVersion.dir>
     <packageVersion.package>${project.groupId}.jaxb</packageVersion.package>
-    <version.jackson.core>2.7.2</version.jackson.core>
+    <version.jackson.core>2.7.3-SNAPSHOT</version.jackson.core>
 
     <!-- 23-Feb-2016, tatu: Try to keep JDK6 runtime for 2.7 at least -->
     <javac.src.version>1.6</javac.src.version>
