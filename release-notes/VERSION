@@ -4,7 +4,7 @@ Project: jackson-module-jaxb-annotations
 === Releases ===
 ------------------------------------------------------------------------
 
-2.7.3 (not yet released)
+2.7.3 (16-Mar-2016)
 
 - Minor changes to `JaxbAnnotationIntrospector.findEnumValues()` to help
   with proper merging of explicit name overrides.
