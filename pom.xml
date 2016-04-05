@@ -30,7 +30,6 @@
     <!-- 23-Feb-2016, tatu: Try to keep JDK6 runtime for 2.7 at least -->
     <javac.src.version>1.6</javac.src.version>
     <javac.target.version>1.6</javac.target.version>
-
   </properties>
   <dependencies>
     <!-- Extends Jackson core and mapper; minor dep on annotations too (JsonInclude) -->
