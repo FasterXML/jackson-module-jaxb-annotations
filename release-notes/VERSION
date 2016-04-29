@@ -4,6 +4,10 @@ Project: jackson-module-jaxb-annotations
 === Releases ===
 ------------------------------------------------------------------------
 
+2.7.4 (29-Apr-2016)
+
+No changes since 2.7.3
+
 2.7.3 (16-Mar-2016)
 
 - Minor changes to `JaxbAnnotationIntrospector.findEnumValues()` to help
