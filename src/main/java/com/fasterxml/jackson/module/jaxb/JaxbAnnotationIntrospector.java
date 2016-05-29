@@ -379,16 +379,19 @@ public class JaxbAnnotationIntrospector
     }
     */
 
+    /* 08-Nov-2009, tatus: This is bit trickier: by default JAXB
+     * does actually ignore all unknown properties.
+     * But since there is no annotation to
+     * specify or change this, it seems wrong to claim such setting
+     * is in effect. May need to revisit this issue in future
+     */
+    /*
     @Override
-    public Boolean findIgnoreUnknownProperties(AnnotatedClass ac) {
-        /* 08-Nov-2009, tatus: This is bit trickier: by default JAXB
-         * does actually ignore all unknown properties.
-         * But since there is no annotation to
-         * specify or change this, it seems wrong to claim such setting
-         * is in effect. May need to revisit this issue in future
-         */
-        return null;
-    }
+    public Boolean findIgnoreUnknownProperties(AnnotatedClass ac);
+
+    @Override
+    public JsonIgnoreProperties.Value findPropertyIgnorals(Annotated ac);
+    */
 
     @Override
     public Boolean isIgnorableType(AnnotatedClass ac) {
@@ -405,6 +408,43 @@ public class JaxbAnnotationIntrospector
     @Override
     public boolean hasIgnoreMarker(AnnotatedMember m) {
         return m.getAnnotation(XmlTransient.class) != null;
+    }
+
+    //(ryan) JAXB has @XmlAnyAttribute and @XmlAnyElement annotations, but they're not applicable in this case
+    // because JAXB says those annotations are only applicable to methods with specific signatures
+    // that Jackson doesn't support (Jackson's any setter needs 2 arguments, name and value, whereas
+    // JAXB expects use of Map
+
+    // 28-May-2016, tatu: While `@XmlAnyAttribute` looks ALMOST like applicable (esp.
+    //   assuming Jackson could use `Map` field, not just setter/getter), it is alas not.
+    //   The reason is that key is expected to be `QNmae`, XML/JAXB specific name and
+    //   something Jackson does not require or use
+    
+    /*
+    @Override
+    public boolean hasAnySetterAnnotation(AnnotatedMethod am) { }
+    
+    @Override
+    public boolean hasAnySetterAnnotation(AnnotatedMethod am)
+    */
+
+    @Override
+    public Boolean hasRequiredMarker(AnnotatedMember m) {
+        XmlElement elem = m.getAnnotation(XmlElement.class);
+        if ((elem != null) && elem.required()) {
+            return Boolean.TRUE;
+        }
+        XmlAttribute attr = m.getAnnotation(XmlAttribute.class);
+        if ((attr != null) && attr.required()) {
+            return Boolean.TRUE;
+        }
+        // 09-Sep-2015, tatu: Not 100% sure that we should ever return `false`
+        //   here (as it blocks calls to secondary introspector), but since that
+        //   was the existing behavior before 2.6, is retained for now.
+        if ((elem != null) || (attr != null)) {
+            return null;
+        }
+        return Boolean.FALSE;
     }
 
     @Override
@@ -935,6 +975,7 @@ public class JaxbAnnotationIntrospector
      * This is very slow implementation, but as of Jackson 2.7, should not be called any more;
      * instead, {@link #findEnumValues} should be called which has less overhead.
      */
+    @Deprecated // since 2.8, remove from 2.9?
     @Override
     public String findEnumValue(Enum<?> e)
     {
@@ -1176,36 +1217,8 @@ public class JaxbAnnotationIntrospector
     }
 
     @Override
-    public boolean hasAnySetterAnnotation(AnnotatedMethod am) {
-        //(ryan) JAXB has @XmlAnyAttribute and @XmlAnyElement annotations, but they're not applicable in this case
-        // because JAXB says those annotations are only applicable to methods with specific signatures
-        // that Jackson doesn't support (Jackson's any setter needs 2 arguments, name and value, whereas
-        // JAXB expects use of Map
-        return false;
-    }
-
-    @Override
     public boolean hasCreatorAnnotation(Annotated am) {
         return false;
-    }
-
-    @Override
-    public Boolean hasRequiredMarker(AnnotatedMember m) {
-        XmlElement elem = m.getAnnotation(XmlElement.class);
-        if ((elem != null) && elem.required()) {
-            return Boolean.TRUE;
-        }
-        XmlAttribute attr = m.getAnnotation(XmlAttribute.class);
-        if ((attr != null) && attr.required()) {
-            return Boolean.TRUE;
-        }
-        // 09-Sep-2015, tatu: Not 100% sure that we should ever return `false`
-        //   here (as it blocks calls to secondary introspector), but since that
-        //   was the existing behavior before 2.6, is retained for now.
-        if ((elem != null) || (attr != null)) {
-            return null;
-        }
-        return Boolean.FALSE;
     }
 
     @Override
