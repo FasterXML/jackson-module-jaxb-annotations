@@ -25,7 +25,7 @@
    <!-- Generate PackageVersion.java into this directory. -->
     <packageVersion.dir>com/fasterxml/jackson/module/jaxb</packageVersion.dir>
     <packageVersion.package>${project.groupId}.jaxb</packageVersion.package>
-    <version.jackson.core>2.8.0.rc1</version.jackson.core>
+    <version.jackson.core>2.8.0.rc2</version.jackson.core>
 
     <!-- 29-Apr-2016, tatu: 2.8 requires JDK7, so no overrides needed (parent has them) -->
   </properties>
