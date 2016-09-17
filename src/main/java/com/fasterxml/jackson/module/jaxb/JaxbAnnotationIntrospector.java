@@ -768,14 +768,17 @@ public class JaxbAnnotationIntrospector
         return null;
     }
 
-    /**
-     * Implementation of this method is slightly tricky, given that JAXB defaults differ
-     * from Jackson defaults. As of version 1.5 and above, this is resolved by honoring
-     * Jackson defaults (which are configurable), and only using JAXB explicit annotations.
-     */
-    @Override
-    @Deprecated // since 2.7; remove from 2.8
-    public JsonInclude.Include findSerializationInclusion(Annotated a, JsonInclude.Include defValue)
+    @Override // @since 2.7
+    public JsonInclude.Value findPropertyInclusion(Annotated a)
+    {
+        JsonInclude.Include incl = _serializationInclusion(a, null);
+        if (incl == null) {
+            return JsonInclude.Value.empty();
+        }
+        return JsonInclude.Value.construct(incl, null);
+    }
+
+    JsonInclude.Include _serializationInclusion(Annotated a, JsonInclude.Include defValue)
     {
         XmlElementWrapper w = a.getAnnotation(XmlElementWrapper.class);
         if (w != null) {
@@ -799,16 +802,6 @@ public class JaxbAnnotationIntrospector
         }
         //better pass default value through, if no explicit direction indicating otherwise
         return defValue;
-    }
-
-    @Override // @since 2.7
-    public JsonInclude.Value findPropertyInclusion(Annotated a)
-    {
-        JsonInclude.Include incl = findSerializationInclusion(a, null);
-        if (incl == null) {
-            return JsonInclude.Value.empty();
-        }
-        return JsonInclude.Value.construct(incl, null);
     }
 
     @Override // @since 2.7
@@ -934,41 +927,20 @@ public class JaxbAnnotationIntrospector
     @Override
     public PropertyName findNameForSerialization(Annotated a)
     {
-        // need bit of delegation (note: copy of super-class functionality)
+        // 16-Sep-2016, tatu: Prior to 2.9 logic her more complicated, on assumption
+        //    that visibility rules may require return of "" if method/fied visible;
+        //    however, that is not required and causes issues so... now simpler:
         if (a instanceof AnnotatedMethod) {
             AnnotatedMethod am = (AnnotatedMethod) a;
-            if (!isVisible(am)) {
-                return null;
-            }
-            return findJaxbPropertyName(am, am.getRawType(),
-                    BeanUtil.okNameForGetter(am, true));
+            return isVisible(am)
+                ? findJaxbPropertyName(am, am.getRawType(), BeanUtil.okNameForGetter(am, true))
+                : null;
         }
         if (a instanceof AnnotatedField) {
             AnnotatedField af = (AnnotatedField) a;
-            if (!isVisible(af)) {
-                return null;
-            }
-            // Hmmh. As per [jaxb-annotations#61], looks like we must do one more thing to
-            // avoid accidentally exposing transient fields: this is necessary because later on
-            // our returning of "" suggests explicit annotation, which is NOT true, but may be
-            // necessary to indicate that visibility level is satisfied. That works ok except
-            // for specific case of transient fields that we must suppress now
-            if (af.isTransient()) {
-                return null;
-            }
-
-            PropertyName name = findJaxbPropertyName(af, af.getRawType(), null);
-            /* This may seem wrong, but since JAXB field auto-detection
-             * needs to find even non-public fields (if enabled by
-             * JAXB access type), we need to return name like so:
-             */
-            // 31-Oct-2014, tatu: As per [jaxb-annotations#31], need to be careful to indicate "use default"
-            //    and NOT to force use of specific name; latter would establish explicit name
-            //    and what we want is implicit (unless there is real explicitly annotated name)
-            if (name == null) {
-                return PropertyName.USE_DEFAULT;
-            }
-            return name;
+            return isVisible(af)
+                ? findJaxbPropertyName(af, af.getRawType(), null)
+                : null;
         }
         return null;
     }
@@ -1078,49 +1050,17 @@ public class JaxbAnnotationIntrospector
         return null;
     }
 
-    /**
-     * JAXB does allow specifying (more) concrete class for
-     * deserialization by using \@XmlElement annotation.
-     */
-    @Override
-    @Deprecated // since 2.7
-    public Class<?> findDeserializationType(Annotated a, JavaType baseType)
-    {
-        // First: only applicable for non-structured types (yes, JAXB annotations are tricky)
-        if (!baseType.isContainerType()) {
-            return _doFindDeserializationType(a, baseType);
-        }
-        return null;
-    }
-
-    //public Class<?> findDeserializationKeyType(Annotated am, JavaType baseKeyType)
-
-    @Override
-    @Deprecated // since 2.7
-    public Class<?> findDeserializationContentType(Annotated a, JavaType baseContentType)
-    {
-        /* 15-Feb-2010, tatus: JAXB usage of XmlElement/XmlElements is really
-         *   confusing: sometimes it's for type (non-container types), sometimes for
-         *   contents (container) types. I guess it's frugal to reuse these... but
-         *   I think it's rather short-sighted. Whatever, it is what it is, and here
-         *   we are being given content type explicitly.
-         */
-        return _doFindDeserializationType(a, baseContentType);
-    }
-
     protected Class<?> _doFindDeserializationType(Annotated a, JavaType baseType)
     {
-        /* As per [JACKSON-288], @XmlJavaTypeAdapter will complicate handling of type
-         * information; basically we better just ignore type we might find here altogether
-         * in that case
+        /* @XmlJavaTypeAdapter will complicate handling of type information;
+         * basically we better just ignore type we might find here altogether in that case
          */
         if (a.hasAnnotation(XmlJavaTypeAdapter.class)) {
             return null;
         }
         
-        /* false for class, package, super-class, since annotation can
-         * only be attached to fields and methods
-         */
+        // false for class, package, super-class, since annotation can
+        // only be attached to fields and methods
         XmlElement annotation = findAnnotation(XmlElement.class, a, false, false, false);
         if (annotation != null) {
             Class<?> type = annotation.type();
@@ -1192,11 +1132,12 @@ public class JaxbAnnotationIntrospector
     @Override
     public PropertyName findNameForDeserialization(Annotated a)
     {
-        // need bit of delegation -- note: copy from super-class
-        // TODO: should simplify, messy.
+        // 16-Sep-2016, tatu: Prior to 2.9 logic her more complicated, on assumption
+        //    that visibility rules may require return of "" if method/fied visible;
+        //    however, that is not required and causes issues so... now simpler:
         if (a instanceof AnnotatedMethod) {
             AnnotatedMethod am = (AnnotatedMethod) a;
-            if (!isVisible((AnnotatedMethod) a)) {
+            if (!isVisible(am)) {
                 return null;
             }
             Class<?> rawType = am.getRawParameterType(0);
@@ -1204,36 +1145,11 @@ public class JaxbAnnotationIntrospector
         }
         if (a instanceof AnnotatedField) {
             AnnotatedField af = (AnnotatedField) a;
-            
-            if (!isVisible(af)) {
-                return null;
-            }
-            // As per [jaxb-annotations#61] need to do explicit suppress (see
-            // `findNameForSerialization` for details)
-            if (af.isTransient()) {
-                return null;
-            }
-
-            PropertyName name = findJaxbPropertyName(af, af.getRawType(), null);
-            
-            /* This may seem wrong, but since JAXB field auto-detection
-             * needs to find even non-public fields (if enabled by
-             * JAXB access type), we need to return name like so:
-             */
-            // 31-Oct-2014, tatu: As per [jaxb-annotations#31], need to be careful to indicate "use default"
-            //    and NOT to force use of specific name; latter would establish explicit name
-            //    and what we want is implicit (unless there is real explicitly annotated name)
-            if (name == null) {
-                return PropertyName.USE_DEFAULT;
-            }
-            return name;
+            return isVisible(af)
+                ? findJaxbPropertyName(af, af.getRawType(), null)
+                : null;
         }
         return null;
-    }
-
-    @Override
-    public boolean hasCreatorAnnotation(Annotated am) {
-        return false;
     }
 
     @Override
@@ -1411,7 +1327,7 @@ public class JaxbAnnotationIntrospector
         return false;
     }
     
-    private static PropertyName findJaxbPropertyName(Annotated ae, Class<?> aeType, String defaultName)
+    private PropertyName findJaxbPropertyName(Annotated ae, Class<?> aeType, String defaultName)
     {
         XmlAttribute attribute = ae.getAnnotation(XmlAttribute.class);
         if (attribute != null) {
@@ -1440,11 +1356,11 @@ public class JaxbAnnotationIntrospector
             }
         }
         if (!hasAName) {
-            hasAName = ae.hasAnnotation(XmlElementWrapper.class);
+            hasAName = ae.hasAnnotation(XmlElementWrapper.class)
+                    // 09-Aug-2014, tatu: Note: prior to 2.4.2, we used to give explicit name "value"
+                    //   if there was "@XmlValue" annotation; since then, only implicit name.
+                    || ae.hasAnnotation(XmlValue.class);
         }
-        // 09-Aug-2014, tatu: Note: prior to 2.4.2, we used to give explicit name "value"
-        //   if there was "@XmlValue" annotation; since then, only implicit name.
-
         // One more thing: 
         return hasAName ? PropertyName.USE_DEFAULT : null;
     }

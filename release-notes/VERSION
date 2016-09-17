@@ -6,7 +6,8 @@ Project: jackson-module-jaxb-annotations
 
 2.9.0 (not yet released)
 
-...
+- Cleaned handling of names in `JaxbAnnotationIntrospector` to reduce
+  likelihood of accidental inclusion.
 
 2.8.3 (not yet released)
 

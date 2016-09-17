@@ -27,7 +27,7 @@ public class TestXmlValue extends BaseJaxbTest
         }
     }
     
-    // [Issue#31]
+    // [jaxb-annotations#31]
     static class Query {
         @XmlValue
         protected String query;
@@ -47,7 +47,7 @@ public class TestXmlValue extends BaseJaxbTest
     /**********************************************************
      */
 
-    // For [Issue#30]
+    // For [jaxb-annotations#30]
     public void testXmlValueDefault() throws IOException
     {
         ObjectMapper mapper = getJaxbAndJacksonMapper();
@@ -55,7 +55,7 @@ public class TestXmlValue extends BaseJaxbTest
         assertEquals("{\"value\":13}", mapper.writeValueAsString(new WithXmlValueNoOverride()));
     }
 
-    // For [Issue#30]
+    // For [jaxb-annotations#30]
     public void testXmlValueOverride() throws IOException
     {
         ObjectMapper mapper = getJaxbAndJacksonMapper();
@@ -63,7 +63,7 @@ public class TestXmlValue extends BaseJaxbTest
         assertEquals("{\"number\":13}", mapper.writeValueAsString(new WithXmlValueAndOverride()));
     }
 
-    // For [Issue#31]
+    // For [jaxb-annotations#31]
     public void testXmlValueDefault2() throws IOException
     {
         ObjectMapper mapper = getJaxbAndJacksonMapper();
