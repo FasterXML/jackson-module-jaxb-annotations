@@ -4,6 +4,10 @@ Project: jackson-module-jaxb-annotations
 === Releases ===
 ------------------------------------------------------------------------
 
+2.9.0 (not yet released)
+
+...
+
 2.8.3 (not yet released)
 
 #61: Transient fields serialized when @XmlAccessorType(XmlAccessType.FIELD)
