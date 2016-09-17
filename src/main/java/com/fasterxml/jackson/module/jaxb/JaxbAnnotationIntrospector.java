@@ -934,7 +934,7 @@ public class JaxbAnnotationIntrospector
     @Override
     public PropertyName findNameForSerialization(Annotated a)
     {
-        // [jaxb-annotations#69], need bit of delegation (note: copy of super-class functionality)
+        // need bit of delegation (note: copy of super-class functionality)
         if (a instanceof AnnotatedMethod) {
             AnnotatedMethod am = (AnnotatedMethod) a;
             if (!isVisible(am)) {
@@ -948,6 +948,15 @@ public class JaxbAnnotationIntrospector
             if (!isVisible(af)) {
                 return null;
             }
+            // Hmmh. As per [jaxb-annotations#61], looks like we must do one more thing to
+            // avoid accidentally exposing transient fields: this is necessary because later on
+            // our returning of "" suggests explicit annotation, which is NOT true, but may be
+            // necessary to indicate that visibility level is satisfied. That works ok except
+            // for specific case of transient fields that we must suppress now
+            if (af.isTransient()) {
+                return null;
+            }
+
             PropertyName name = findJaxbPropertyName(af, af.getRawType(), null);
             /* This may seem wrong, but since JAXB field auto-detection
              * needs to find even non-public fields (if enabled by
@@ -1183,7 +1192,7 @@ public class JaxbAnnotationIntrospector
     @Override
     public PropertyName findNameForDeserialization(Annotated a)
     {
-        // [jaxb-annotations#69], need bit of delegation -- note: copy from super-class
+        // need bit of delegation -- note: copy from super-class
         // TODO: should simplify, messy.
         if (a instanceof AnnotatedMethod) {
             AnnotatedMethod am = (AnnotatedMethod) a;
@@ -1199,13 +1208,19 @@ public class JaxbAnnotationIntrospector
             if (!isVisible(af)) {
                 return null;
             }
+            // As per [jaxb-annotations#61] need to do explicit suppress (see
+            // `findNameForSerialization` for details)
+            if (af.isTransient()) {
+                return null;
+            }
+
             PropertyName name = findJaxbPropertyName(af, af.getRawType(), null);
             
             /* This may seem wrong, but since JAXB field auto-detection
              * needs to find even non-public fields (if enabled by
              * JAXB access type), we need to return name like so:
              */
-            // 31-Oct-2014, tatu: As per [Issue#31], need to be careful to indicate "use default"
+            // 31-Oct-2014, tatu: As per [jaxb-annotations#31], need to be careful to indicate "use default"
             //    and NOT to force use of specific name; latter would establish explicit name
             //    and what we want is implicit (unless there is real explicitly annotated name)
             if (name == null) {
