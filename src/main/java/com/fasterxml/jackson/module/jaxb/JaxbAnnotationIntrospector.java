@@ -603,8 +603,8 @@ public class JaxbAnnotationIntrospector
         /* First: let's ensure property is a container type: caller should have
          * verified but just to be sure
          */
-        if (!containerType.isContainerType()) {
-            throw new IllegalArgumentException("Must call method with a container type (got "+containerType+")");
+        if (containerType.getContentType() == null) {
+            throw new IllegalArgumentException("Must call method with a container or reference type (got "+containerType+")");
         }
         return _typeResolverFromXmlElements(am);
     }
