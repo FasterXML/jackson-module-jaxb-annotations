@@ -8,7 +8,7 @@ Project: jackson-module-jaxb-annotations
 
 No changes since 2.7
 
-2.7.9 (not yet released)
+2.7.8.1 (06-Oct-2016)
 
 #63: Error in type resolution of reference type (`Optional`)
  (reported by adrianriley@github)
