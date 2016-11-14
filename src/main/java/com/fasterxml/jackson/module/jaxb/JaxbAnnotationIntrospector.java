@@ -951,25 +951,6 @@ public class JaxbAnnotationIntrospector
         return false;
     }
 
-    /**
-     *<p>
-     * This is very slow implementation, but as of Jackson 2.7, should not be called any more;
-     * instead, {@link #findEnumValues} should be called which has less overhead.
-     */
-    @Deprecated // since 2.8, remove from 2.9?
-    @Override
-    public String findEnumValue(Enum<?> e)
-    {
-        Class<?> enumClass = e.getDeclaringClass();
-        String enumValue = e.name();
-        try {
-            XmlEnumValue xmlEnumValue = enumClass.getDeclaredField(enumValue).getAnnotation(XmlEnumValue.class);
-            return (xmlEnumValue != null) ? xmlEnumValue.value() : enumValue;
-        } catch (NoSuchFieldException e1) {
-            throw new IllegalStateException("Could not locate Enum entry '"+enumValue+"' (Enum class "+enumClass.getName()+")", e1);
-        }
-    }
-
     @Override // since 2.7
     public String[] findEnumValues(Class<?> enumType, Enum<?>[] enumValues, String[] names) {
         HashMap<String,String> expl = null;
