@@ -311,7 +311,7 @@ public class JaxbAnnotationIntrospector
                 break method_loop;
             case 1: // setter
                 idPropName = findJaxbPropertyName(m, m.getRawType(),
-                        BeanUtil.okNameForSetter(m, true));
+                        BeanUtil.okNameForMutator(m, "set", true));
                 break method_loop;
             }
         }
@@ -465,7 +465,7 @@ public class JaxbAnnotationIntrospector
                     if (am.getParameterCount() == 0) {
                         str = BeanUtil.okNameForGetter(am, true);
                     } else {
-                        str = BeanUtil.okNameForSetter(am, true);
+                        str = BeanUtil.okNameForMutator(am, "set", true);
                     }
                     if (str != null) {
                         return name.withSimpleName(str);
@@ -945,11 +945,19 @@ public class JaxbAnnotationIntrospector
         return null;
     }
 
+    @Deprecated // since 2.9
     @Override
     public boolean hasAsValueAnnotation(AnnotatedMethod am) {
         //since jaxb says @XmlValue can exist with attributes, this won't map as a JSON value.
         return false;
     }
+
+    // As per above, nothing to detect here either...?
+    /*
+    @Override
+    public Boolean findAsValueAnnotation(Annotated a) {
+    }
+    */
 
     @Override // since 2.7
     public String[] findEnumValues(Class<?> enumType, Enum<?>[] enumValues, String[] names) {
@@ -1122,7 +1130,7 @@ public class JaxbAnnotationIntrospector
                 return null;
             }
             Class<?> rawType = am.getRawParameterType(0);
-            return findJaxbPropertyName(am, rawType, BeanUtil.okNameForSetter(am, true));
+            return findJaxbPropertyName(am, rawType, BeanUtil.okNameForMutator(am, "set", true));
         }
         if (a instanceof AnnotatedField) {
             AnnotatedField af = (AnnotatedField) a;
