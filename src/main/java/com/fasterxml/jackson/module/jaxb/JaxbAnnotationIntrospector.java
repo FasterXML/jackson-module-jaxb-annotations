@@ -349,12 +349,15 @@ public class JaxbAnnotationIntrospector
              * is fine...
              */
             if (idref != null) {
+                if (base == null) {
+                    base = ObjectIdInfo.empty();
+                }
                 base = base.withAlwaysAsId(true);
             }
         }
         return base;
     }
-    
+
     /*
     /**********************************************************
     /* General class annotations
