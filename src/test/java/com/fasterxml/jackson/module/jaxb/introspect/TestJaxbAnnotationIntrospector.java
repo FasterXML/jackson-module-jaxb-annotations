@@ -9,6 +9,7 @@ import javax.xml.namespace.QName;
 
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
+import com.fasterxml.jackson.databind.introspect.AnnotatedClassResolver;
 import com.fasterxml.jackson.databind.introspect.AnnotatedField;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
@@ -281,18 +282,18 @@ public class TestJaxbAnnotationIntrospector
         final TypeFactory tf = TypeFactory.defaultInstance();
         AnnotationIntrospector ai = new JaxbAnnotationIntrospector(tf);
         // If no @XmlRootElement, should get null (unless pkg has etc)
-        assertNull(ai.findRootName(AnnotatedClass.construct(tf.constructType(SimpleBean.class),
-                MAPPER.getSerializationConfig(), null)));
+        assertNull(ai.findRootName(AnnotatedClassResolver.resolve(MAPPER.getSerializationConfig(),
+                tf.constructType(SimpleBean.class), null)));
         // With @XmlRootElement, but no name, empty String
-        PropertyName rootName = ai.findRootName(AnnotatedClass.construct(tf.constructType(NamespaceBean.class),
-                MAPPER.getSerializationConfig(), null));
+        PropertyName rootName = ai.findRootName(AnnotatedClassResolver.resolve(MAPPER.getSerializationConfig(),
+                tf.constructType(NamespaceBean.class), null));
         assertNotNull(rootName);
         assertEquals("", rootName.getSimpleName());
         assertEquals("urn:class", rootName.getNamespace());
 
         // and otherwise explicit name
-        rootName = ai.findRootName(AnnotatedClass.construct(tf.constructType(RootNameBean.class),
-                MAPPER.getSerializationConfig(), null));
+        rootName = ai.findRootName(AnnotatedClassResolver.resolve(MAPPER.getSerializationConfig(),
+                tf.constructType(RootNameBean.class), null));
         assertNotNull(rootName);
         assertEquals("test", rootName.getSimpleName());
         assertNull(rootName.getNamespace());
@@ -314,8 +315,8 @@ public class TestJaxbAnnotationIntrospector
     {
         final TypeFactory tf = TypeFactory.defaultInstance();
         JaxbAnnotationIntrospector ai = new JaxbAnnotationIntrospector(TypeFactory.defaultInstance());
-        AnnotatedClass ac = AnnotatedClass.construct(tf.constructType(NamespaceBean.class),
-                MAPPER.getSerializationConfig(), null);
+        AnnotatedClass ac = AnnotatedClassResolver.resolve(MAPPER.getSerializationConfig(),
+                tf.constructType(NamespaceBean.class), null);
         AnnotatedField af = _findField(ac, "string");
         assertNotNull(af);
         PropertyName pn = ai.findNameForDeserialization(af);

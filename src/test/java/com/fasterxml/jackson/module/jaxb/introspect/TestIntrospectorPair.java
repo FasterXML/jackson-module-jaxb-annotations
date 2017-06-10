@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.*;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
+import com.fasterxml.jackson.databind.introspect.AnnotatedClassResolver;
 import com.fasterxml.jackson.databind.introspect.AnnotationIntrospectorPair;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -255,23 +255,23 @@ public class TestIntrospectorPair
         ObjectMapper mapper = new ObjectMapper()
             .setAnnotationIntrospector(pair);
         TypeFactory tf = mapper.getTypeFactory();
-        
-        assertNull(pair.findRootName(AnnotatedClass.construct(tf.constructType(NamedBean.class),
-                mapper.getSerializationConfig(), null)));
-        PropertyName name = pair.findRootName(AnnotatedClass.construct(tf.constructType(NamespaceBean.class),
-                mapper.getSerializationConfig(), null));
+
+        assertNull(pair.findRootName(AnnotatedClassResolver.resolve(mapper.getSerializationConfig(),
+                tf.constructType(NamedBean.class), null)));
+        PropertyName name = pair.findRootName(AnnotatedClassResolver.resolve(mapper.getSerializationConfig(),
+                tf.constructType(NamespaceBean.class), null));
         assertNotNull(name);
         assertEquals("test", name.getSimpleName());
         assertEquals("urn:whatever", name.getNamespace());
 
         // then reverse; should make no difference
         pair = new AnnotationIntrospectorPair(_jaxbAI, _jacksonAI);
-        name = pair.findRootName(AnnotatedClass.construct(tf.constructType(NamedBean.class),
-                mapper.getSerializationConfig(), null));
+        name = pair.findRootName(AnnotatedClassResolver.resolve(mapper.getSerializationConfig(),
+                tf.constructType(NamedBean.class), null));
         assertNull(name);
         
-        name = pair.findRootName(AnnotatedClass.construct(tf.constructType(NamespaceBean.class),
-                mapper.getSerializationConfig(), null));
+        name = pair.findRootName(AnnotatedClassResolver.resolve(mapper.getSerializationConfig(),
+                tf.constructType(NamespaceBean.class), null));
         assertEquals("test", name.getSimpleName());
         assertEquals("urn:whatever", name.getNamespace());
     }
