@@ -1,18 +1,15 @@
+**NOTE**: This module has become part of [Jackson Base Modules](../../../jackson-modules-base) repo.
+as of Jackson 2.9
+
+This repo still exists to allow release of patch versions of older versions; it will be hidden (made private)
+in near future.
+
+-----
+
 ## Overview
 
 This Jackson extension module provides support for using JAXB (`javax.xml.bind`) annotations as an alternative to native Jackson annotations.
 It is most often used to make it easier to reuse existing data beans that used with JAXB framework to read and write XML.
-
-## Status
-
-[![Build Status](https://travis-ci.org/FasterXML/jackson-module-jaxb-annotations.svg)](https://travis-ci.org/FasterXML/jackson-module-jaxb-annotations)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-jaxb-annotations/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-jaxb-annotations/)
-[![Javadoc](https://javadoc-emblem.rhcloud.com/doc/com.fasterxml.jackson.module/jackson-module-jaxb-annotations/badge.svg)](http://www.javadoc.io/doc/com.fasterxml.jackson.module/jackson-module-jaxb-annotations)
-
-
-Module is fully usable, as it is based on earlier "jackson-xc" jar that was part of Jackson distribution in 1.x versions.
-
-For Jackson 2.0 functionality will be only offered through this module.
 
 ## Maven dependency
 
@@ -55,5 +52,3 @@ mapper.setAnnotationIntrospector(new AnnotationIntrospector.Pair(introspector, s
 ```
 
 Note that by default Module version will use JAXB annotations as the primary, and Jackson annotations as secondary source; but you can change this behavior
-
-(need to add example here!)
