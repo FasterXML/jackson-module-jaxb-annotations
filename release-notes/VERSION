@@ -6,7 +6,7 @@ Project: jackson-module-jaxb-annotations
 
 2.9.0 (not yet released)
 
-2.8.11 (not yet released)
+2.8.11 (24-Dec-2017)
 
 #31: @JsonAppend causes IllegalStateException Unsupported annotated member with JaxbAnnotationModule
 
